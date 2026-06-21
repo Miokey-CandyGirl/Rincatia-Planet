@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="光线传奇小说">
+    <title>琳凯蒂亚星球- Rincatian Language Community</title>
+    <link rel="icon" href="flag_logo.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="starfield" id="starfield"></div>
+    
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <div class="rincatian-flag">
+                        <img src="rincatian-flag.png" alt="琳凯蒂亚国旗" class="flag-icon">
+                    </div>
+                    <div class="planet-icon"></div>
+                    <div class="logo-text">
+                        <span class="logo-chinese">琳凯蒂亚星球</span>
+                        <span class="logo-english">My Rincatia Planet</span>
+                    </div>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="active">首页</a></li>
+                    <li><a href="Rincatian.html">田语</a></li>
+                    <li><a href="world.html">世界</a></li>
+                    <li><a href="business.html">商务</a></li>
+                    <li><a href="community.html">社区</a></li>
+                </ul>
+                <div class="nav-extras">
+                    <div class="tian-calendar">
+                        <span class="calendar-icon">📅</span>
+                        <span class="tian-date" id="tianDate">载入中...</span>
+                    </div>
+                    <div class="auth-buttons">
+                        <button class="btn btn-primary btn-small" id="authBtn">进入星球</button>
+                    </div>
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar" id="userAvatar"></div>
+                        <span class="user-name" id="userName"></span>
+                        <div class="user-dropdown">
+                            <a href="#" id="profileLink">个人中心</a>
+                            <a href="#" id="logoutLink">退出登录</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <div class="planet-container">
+                    <div class="planet">
+                        <div class="planet-ring"></div>
+                        <div class="planet-surface"></div>
+                    </div>
+                </div>
+                
+                <div class="hero-text">
+                    <div class="hero-flag-display">
+                        <img src="rincatian-flag.png" alt="琳凯蒂亚联邦共和国国旗" class="hero-flag">
+                        <div class="flag-description">琳凯蒂亚联邦共和国国旗</div>
+                    </div>
+                    <h2 class="hero-title">欢迎您来到琳凯蒂亚星球</h2>
+                    <p class="hero-subtitle">探索《光线传奇》中的魔法语言</p>
+                    <p class="hero-description">
+                        在这颗被彩虹恒久包裹的星球上，每一个词汇都流淌着魔法的气息；
+                        银蓝色的铃铛树轻抚着流光云，双月在星法塔顶交织成彩虹光环。
+                        让我们一起学习这门来自星辰的语言吧！
+                    </p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" onclick="window.location.href='Rincatian.html'">开始学习</button>
+                        <button class="btn btn-secondary" onclick="window.location.href='business.html'">探索文化</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="floating-elements">
+                <div class="floating-crystal crystal-1"></div>
+                <div class="floating-crystal crystal-2"></div>
+                <div class="floating-crystal crystal-3"></div>
+                <div class="magic-particle particle-1"></div>
+                <div class="magic-particle particle-2"></div>
+                <div class="magic-particle particle-3"></div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">琳凯蒂亚星球的奇妙之处</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🌙</div>
+                        <h3>双月之光</h3>
+                        <p>银月如铜镜，金月似蜜浸，每月十五交叠成彩虹光环，照耀着这门古老的语言</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔮</div>
+                        <h3>星晶之语</h3>
+                        <p>语言如星晶山脉般透明纯净，每个音节都散发着七色彩霞的光芒</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🌸</div>
+                        <h3>回声花田</h3>
+                        <p>如回声花般保存着古老的歌谣，每个词汇都承载着琳凯蒂亚的记忆</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- 新增：学习路径指�?-->
+        <section class="learning-path">
+            <div class="container">
+                <h2 class="section-title">学习路径指引</h2>
+                <p class="section-subtitle">跟随光线使者的足迹，循序渐进掌握琳凯蒂亚语</p>
+                <div class="path-timeline">
+                    <div class="path-step" data-step="1">
+                        <div class="step-icon">🌟</div>
+                        <div class="step-content">
+                            <h3>初识星球</h3>
+                            <p>了解琳凯蒂亚星球的基本概况和语言背景</p>
+                            <div class="step-actions">
+                                <a href="business.html" class="btn btn-outline btn-small">探索文化</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="path-step" data-step="2">
+                        <div class="step-icon">🔤</div>
+                        <div class="step-content">
+                            <h3>字母发音</h3>
+                            <p>学习41个字母的发音和书写规则</p>
+                            <div class="step-actions">
+                                <a href="Rincatian.html#phonetics" class="btn btn-outline btn-small">学习发音</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="path-step" data-step="3">
+                        <div class="step-icon">📝</div>
+                        <div class="step-content">
+                            <h3>基础语法</h3>
+                            <p>掌握基本的语序、代词和连词系统</p>
+                            <div class="step-actions">
+                                <a href="Rincatian.html#basics" class="btn btn-outline btn-small">学习语法</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="path-step" data-step="4">
+                        <div class="step-icon">📚</div>
+                        <div class="step-content">
+                            <h3>词汇积累</h3>
+                            <p>学习常用词汇和短语表</p>
+                            <div class="step-actions">
+                                <a href="world.html" class="btn btn-outline btn-small">查看词典</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="path-step" data-step="5">
+                        <div class="step-icon">💬</div>
+                        <div class="step-content">
+                            <h3>交流实践</h3>
+                            <p>在社区中与其他学习者交流练习</p>
+                            <div class="step-actions">
+                                <a href="community.html" class="btn btn-outline btn-small">加入社区</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 新增：每日一词-->
+        <section class="daily-word">
+            <div class="container">
+                <div class="daily-word-card">
+                    <div class="daily-word-header">
+                        <h2>每日一词</h2>
+                        <div class="word-date" id="wordDate"></div>
+                    </div>
+                    <div class="daily-word-content">
+                        <div class="word-main">
+                            <div class="word-linkaitiya" id="dailyWordLinkaitiya">lātiŋ</div>
+                            <div class="word-pronunciation" id="dailyWordPronunciation">[lai ting]</div>
+                        </div>
+                        <div class="word-meaning">
+                            <div class="word-chinese" id="dailyWordChinese">光，光线</div>
+                            <div class="word-type" id="dailyWordType">名词</div>
+                        </div>
+                        <div class="word-example">
+                            <p class="example-linkaitiya" id="dailyWordExample">bela lātiŋ</p>
+                            <p class="example-chinese" id="dailyWordExampleChinese">美丽的光。</p>
+                        </div>
+                    </div>
+                    <div class="daily-word-actions">
+                        <button class="btn btn-secondary btn-small" id="refreshWordBtn">🔄 换一个</button>
+                        <button class="btn btn-primary btn-small" id="learnMoreBtn">📖 学习更多</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+                    
+
+        <!-- 新增：快速工具-->
+        <section class="quick-tools">
+            <div class="container">
+                <h2 class="section-title">快速工具</h2>
+                <div class="tools-grid">
+                    <div class="tool-card" onclick="openTranslator()">
+                        <div class="tool-icon">🌐</div>
+                        <h3>快速翻译</h3>
+                        <p>中文与琳凯蒂亚语互译</p>
+                    </div>
+                    <div class="tool-card" onclick="openPronunciation()">
+                        <div class="tool-icon">🔊</div>
+                        <h3>发音指南</h3>
+                        <p>学习标准的字母发音</p>
+                    </div>
+                    <div class="tool-card" onclick="openCalendar()">
+                        <div class="tool-icon">📅</div>
+                        <h3>田历转换</h3>
+                        <p>公历与田历日期转换</p>
+                    </div>
+                    <div class="tool-card" onclick="openRandomWord()">
+                        <div class="tool-icon">🎲</div>
+                        <h3>随机词汇</h3>
+                        <p>每次获取随机词汇学习</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 新增：学习资源 -->
+        <section class="learning-resources">
+            <div class="container">
+                <h2 class="section-title">学习资源</h2>
+                <p class="section-subtitle">丰富的学习材料助你快速掌握琳凯蒂亚语</p>
+                <div class="resources-grid">
+                    <div class="resource-card">
+                        <div class="resource-icon">📖</div>
+                        <h3>电子书籍</h3>
+                        <p>精选的琳凯蒂亚语学习教材和参考书籍</p>
+                        <a href="business.html" class="btn btn-outline btn-small">查看详情</a>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon">🎵</div>
+                        <h3>音频资料</h3>
+                        <p>标准发音音频和对话练习材料</p>
+                        <a href="Rincatian.html" class="btn btn-outline btn-small">查看详情</a>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon">🎥</div>
+                        <h3>视频教程</h3>
+                        <p>生动有趣的视频课程和讲解</p>
+                        <a href="community.html" class="btn btn-outline btn-small">查看详情</a>
+                    </div>
+                    <div class="resource-card">
+                        <div class="resource-icon">📝</div>
+                        <h3>练习题库</h3>
+                        <p>丰富的练习题帮助巩固所学知识</p>
+                        <a href="world.html" class="btn btn-outline btn-small">查看详情</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>琳凯蒂亚星球</h3>
+                <p>探索奇幻语言的魅力</p>
+                <p>基于《光线传奇》小说世界观</p>
+            </div>
+            <div class="footer-section">
+                <h4>快速链接</h4>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="Rincatian.html">田语</a></li>
+                    <li><a href="world.html">世界</a></li>
+                    <li><a href="business.html">商务</a></li>
+                    <li><a href="community.html">社区</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>联系我们</h4>
+                <p>📧 邮箱：1778181360@qq.com</p>
+                <p>👥 QQ群：515385616</p>
+                <div class="institution">
+                    <h5>华田中央大学田语学院</h5>
+                    <p>专业的琳凯蒂亚语研究与教学机构</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 琳凯蒂亚星球. 版权所有.</p>
+            <p>华田中央大学田语学院 版权所有</p>
+        </div>
+    </footer>
+
+    <!-- Supabase CDN支持 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase配置 -->
+    <script src="config/supabase.js"></script>
+    <!-- GitHub Pages兼容的认证和内容管理系统 -->
+    <script src="github-pages-auth-system.js"></script>
+    <script src="github-pages-content-manager-optimized.js"></script>
+    <!-- 其他系统 -->
+    <script src="community-system.js"></script>
+    <!-- 日历系统 -->
+    <script src="tian-calendar.js"></script>
+    <script src="flag-navigation.js"></script>
+    <!-- 主脚本 -->
+    <script src="script.js"></script>
+</body>
+</html>

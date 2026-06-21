@@ -1,0 +1,219 @@
+<template>
+  <div class="sub-page">
+    <div class="page-header">
+      <h2 class="sub-page-title">世界观</h2>
+      <p class="sub-page-desc">琳凯蒂亚星球的宏大世界设定，涵盖地理、种族、社会制度、魔法体系与历史线</p>
+    </div>
+
+    <!-- 页面内子导航 -->
+    <div class="sub-nav-tabs">
+      <button class="sub-nav-tab" :class="{ active: activeTab === 'geography' }" @click="activeTab = 'geography'">地理</button>
+      <button class="sub-nav-tab" :class="{ active: activeTab === 'race' }" @click="activeTab = 'race'">种族</button>
+      <button class="sub-nav-tab" :class="{ active: activeTab === 'society' }" @click="activeTab = 'society'">社会制度</button>
+      <button class="sub-nav-tab" :class="{ active: activeTab === 'magic' }" @click="activeTab = 'magic'">魔法体系</button>
+      <button class="sub-nav-tab" :class="{ active: activeTab === 'timeline' }" @click="activeTab = 'timeline'">历史线</button>
+    </div>
+
+    <!-- 地理 -->
+    <section v-if="activeTab === 'geography'" class="section-card">
+      <h3>🌍 琳凯蒂亚星球地理</h3>
+      <div class="world-card">
+        <h3>天体参数与时间流速</h3>
+        <p>琳凯蒂亚位于宇宙中某恒星系统内，是一颗围绕主序星稳定公转的类地行星。其所在恒星系统紧邻一个超大质量克尔黑洞，强引力场引发显著的引力时间膨胀效应，形成固定时间流速比例：<span class="em-text">1琳凯蒂亚年 ≈ 7547.8地球年</span>（即69琳凯蒂亚年 = 520798地球年）。</p>
+        <p>该星球拥有两颗天然卫星，拥有远强于地球的行星磁场，主序星辐射具备维持灵质粒子相干性的特定波段，是灵质生态与魔法文明得以存续的核心环境基础。</p>
+      </div>
+      <div class="world-card">
+        <h3>大陆格局</h3>
+        <p>琳凯蒂亚本地时间500万年前，星球为一块完整的泛大陆（后人称为灵质大陆）。伴随板块运动与多次星际战争的地质影响，在琳凯蒂亚本地时间约800年前（星陨之战后期），泛大陆完全分裂为七块大陆，各大陆因战争中诞生的七大党派分别占据，每块大陆具备差异化的地理风貌与生态环境。核心大陆为<span class="em-text">特尔其大陆</span>，是琳凯蒂亚文明的核心发源地，后来成为全球的政治中心。</p>
+      </div>
+      <div class="geography-grid">
+        <div class="geography-card">
+          <div class="card-icon">🏰</div>
+          <h3>特兰森堡（妙可）</h3>
+          <p>琳凯蒂亚政治中心，后更名为"妙可"，以召归大帝小女儿地球名命名。</p>
+        </div>
+        <div class="geography-card">
+          <div class="card-icon">🌲</div>
+          <h3>哈弗森林</h3>
+          <p>密集生长着半植半动的哈弗獭，当有人闯入，它们就会走动，是个神秘且危险的地方。</p>
+        </div>
+        <div class="geography-card">
+          <div class="card-icon">🖤</div>
+          <h3>黑灵湖</h3>
+          <p>被灵质+黑科技污染的湖泊，是琳帕尔发明魔卡时的实验废弃物。生物误入会变异成危险怪物。</p>
+        </div>
+        <div class="geography-card">
+          <div class="card-icon">🌋</div>
+          <h3>绝望火山</h3>
+          <p>受到意识形水晶的污染，导致人们靠近之后情绪崩溃。</p>
+        </div>
+        <div class="geography-card">
+          <div class="card-icon">💧</div>
+          <h3>净灵瀑布</h3>
+          <p>有黑灵就有净灵，这也是人为创造的地方。</p>
+        </div>
+        <div class="geography-card">
+          <div class="card-icon">🏘️</div>
+          <h3>坦法司城</h3>
+          <p>兽人的聚集地。</p>
+        </div>
+      </div>
+      <div class="world-card">
+        <h3>地球——纽洛库大陆</h3>
+        <p>地球时间约650万年前，第22次琳凯蒂亚文明的星陨之战后琳帕尔残军意外逃往地球对原始非洲大陆的命名，意为「新的起点」，是残军抵达地球的首个降落点与文明启蒙地方。</p>
+        <h4>核心关联地点</h4>
+        <p><strong>帕尔都之城：</strong>琳帕尔在非洲早期建立的文明都城，因环境战争等原因，后转至地下成为地底人。</p>
+        <p><strong>合肥大蜀山：</strong>魔卡的封印地，守护神米奥的驻守地。</p>
+        <p><strong>合肥巢湖：</strong>巢国文明与琳帕尔残军主力的封印地，守护神无昂的驻守地。巢湖地下拥有一座超级地下大陆，是地下文明的入口。</p>
+        <p><strong>百慕大：</strong>百慕大地区的琳帕尔后裔演化成水人一直潜伏在水底。</p>
+      </div>
+    </section>
+
+    <!-- 种族 -->
+    <section v-if="activeTab === 'race'" class="section-card">
+      <h3>👥 种族</h3>
+      <div class="race-card">
+        <h4>琳凯蒂亚人</h4>
+        <p>琳凯蒂亚星球的智慧种族，具有操控灵质粒子的能力。根据《星裔法典》的规定，琳凯蒂亚人分为不同阶层：连续五代具备灵质操控能力的个体为纯正琳凯蒂亚人。琳凯蒂亚文明历经22次魔法-物理文明循环，其社会结构在每次循环中不断演变。</p>
+      </div>
+      <div class="race-card">
+        <h4>百慕大水人</h4>
+        <p>琳帕尔后裔在地球百慕大地区演化而成的水栖种族。他们是琳帕尔残军在地球上留下的分支，长期潜伏于水底，与琳凯蒂亚母星失去了联系，形成了独特的文明形态。</p>
+      </div>
+      <div class="race-card">
+        <h4>地球人</h4>
+        <p>琳帕尔残军抵达地球（约650万年前）后，对地球古猿种群进行了轻微的基因编辑，加速了古猿大脑的发育与演化，推动了人类祖先的文明启蒙。地球人是琳凯蒂亚文明在地球上的延续与演化结果。</p>
+      </div>
+    </section>
+
+    <!-- 社会制度 -->
+    <section v-if="activeTab === 'society'" class="section-card">
+      <h3>⚖️ 社会制度——依据《星裔法典》</h3>
+      <p class="sub-page-desc">琳帕尔派公布的《星裔法典》将琳凯蒂亚社会划分为严格的阶层体系。</p>
+      <div class="race-card">
+        <h4>圣光者</h4>
+        <p>连续五代具备灵质操控能力，且可以与灵质结合的纯正琳凯蒂亚人。他们是社会的顶层，掌握着灵质技术的核心使用权，是琳帕尔派系所推崇的血统纯净论的核心群体。</p>
+      </div>
+      <div class="race-card">
+        <h4>污泥人（无光者）</h4>
+        <p>不具备灵质操控能力或灵质操控能力不足五代的琳凯蒂亚人。在《星裔法典》中被视为低等阶层，灵质使用权利受到严格限制。在星陨之战中，无光者组建了立新会，要求彻底废除皇室，成为对抗皇室的重要力量。</p>
+      </div>
+      <div class="world-card">
+        <h3>重要机构</h3>
+        <p><strong>星帝宫殿：</strong>用月光石砌成，有云霞鸟衔朝霞装饰，周围栖息着变色星蝶。</p>
+        <p><strong>星法塔：</strong>星球的力量源泉，内藏彩虹核心，是维护星球魔法平衡的关键。</p>
+        <p><strong>星门：</strong>连接不同世界的神秘门户，流淌着彩色糖浆般的光芒。</p>
+      </div>
+    </section>
+
+    <!-- 魔法体系 -->
+    <section v-if="activeTab === 'magic'" class="section-card">
+      <h3>💎 魔法体系——七色彩虹水晶</h3>
+      <p class="sub-page-desc">七种拥有自生能力的核心灵质被封存于彩虹水晶中，按强弱排序，从天花板到最基础。</p>
+      <div class="magic-crystal-grid">
+        <div class="magic-crystal-card purple">
+          <h3>紫色水晶 · 规则本源类</h3>
+          <div class="magic-rank">排名 1 | 天花板</div>
+          <p>唯一能修改宇宙底层运行规则的终极魔法，凌驾于所有魔法之上。可自定义物理法则与存在逻辑。能力：创世术、灭世术、宇宙物理常数篡改、存在性抹除、规则级魔法豁免。</p>
+        </div>
+        <div class="magic-crystal-card cyan">
+          <h3>青色水晶 · 信息因果类</h3>
+          <div class="magic-rank">排名 2</div>
+          <p>操控宇宙底层信息、事件因果链条与发生概率。能力：全知占卜、言灵术、因果反噬诅咒、符文魔法、牢不可破的誓言、破法术。</p>
+        </div>
+        <div class="magic-crystal-card blue">
+          <h3>蓝色水晶 · 时空连续统类</h3>
+          <div class="magic-rank">排名 3</div>
+          <p>对四维时空的拓扑结构、坐标体系、时序流速进行整体干预。能力：瞬移术、时间停止/回溯、空间折叠、时空护盾、虫洞构建。</p>
+        </div>
+        <div class="magic-crystal-card green">
+          <h3>绿色水晶 · 量子态操控类</h3>
+          <div class="magic-rank">排名 4</div>
+          <p>干预微观粒子的量子行为，操控波函数坍缩、叠加、纠缠、隧穿效应。能力：宏观叠加态分身、量子隧穿穿墙术、超距通信、量子绝对隐身术。</p>
+        </div>
+        <div class="magic-crystal-card orange">
+          <h3>橙色水晶 · 熵变操控类</h3>
+          <div class="magic-rank">排名 5</div>
+          <p>直接干预系统熵值，打破局部熵增定律。能力：熵增爆破术、万物腐朽术、熵减固化术、伤害转嫁术、永动机构建。</p>
+        </div>
+        <div class="magic-crystal-card red">
+          <h3>红色水晶 · 质能守恒类</h3>
+          <div class="magic-rank">排名 6</div>
+          <p>严格遵循质能守恒定律，对宏观物质、能量、碳基生命进行操控。能力：断肢再生、起死回生、火球术、冰霜新星、炼金塑形、光学隐身术。</p>
+        </div>
+        <div class="magic-crystal-card yellow">
+          <h3>黄色水晶 · 心灵意识类</h3>
+          <div class="magic-rank">排名 7 | 最基础</div>
+          <p>针对意识这一神经系统涌现现象进行干预。能力：意识潜入、夺舍转生、魅惑术、催眠术、读心术、记忆修改、心灵防护术。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 历史线 -->
+    <section v-if="activeTab === 'timeline'" class="section-card">
+      <h3>📜 历史线</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-era">地时2126年</div>
+          <div class="timeline-title">第三文明介入 · 归零审判</div>
+          <div class="timeline-desc">第三个文明介入双文明体系，打破现有平衡，引来归零者的熵重置机制，文明面临终极存续考验。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">地时2016年</div>
+          <div class="timeline-title">风尘使者觉醒 · 全面争夺</div>
+          <div class="timeline-desc">风尘使者蔡啸林正式觉醒，守护者群体与对立群体围绕光镜、彩虹水晶、魔卡展开全面争夺。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">地时2015年10月</div>
+          <div class="timeline-title">魔卡封印松动</div>
+          <div class="timeline-desc">手杖解封至巢湖地震发生，魔卡封印松动、大量魔卡逃逸，守护神米奥苏醒。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">地时2015年8月-9月</div>
+          <div class="timeline-title">七位守护者先后觉醒</div>
+          <div class="timeline-desc">韩斌、俊伟、妙可、丽丽、梦雪等七位彩虹水晶守护者先后觉醒，第一部《彩虹水晶》故事正式拉开序幕。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">地时2009年</div>
+          <div class="timeline-title">日全食 · 月光使者意识被困</div>
+          <div class="timeline-desc">日全食发生，月光使者梦雪意识被困，进入半觉醒状态。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">地时2008年</div>
+          <div class="timeline-title">中国南方雪灾 · 电磁使者首次觉醒</div>
+          <div class="timeline-desc">以电磁之力保障受灾区域输电、通讯稳定，未暴露自身能力。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">地时1990年</div>
+          <div class="timeline-title">电磁使者转世降临</div>
+          <div class="timeline-desc">第一位彩虹水晶守护者以人类身份降临地球，开启守护者转世序列。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">地时1300年 ~ 1990年</div>
+          <div class="timeline-title">神隐时代</div>
+          <div class="timeline-desc">陈先朝家族世代守护封印，地球无琳凯蒂亚人公开活动，封印量子势垒缓慢衰减。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">地时650万年前 ~ 地时1300年前（唐朝）</div>
+          <div class="timeline-title">琳帕尔内部内战与地球封印</div>
+          <div class="timeline-desc">琳帕尔残军在地球留下大量史前文明遗迹；内部派系内战爆发，琳帕尔反对派联合唐朝凡人陈先朝，将巢国文明与琳帕尔残军封印于巢湖水底。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">琳时800年前 / 地时650万年前</div>
+          <div class="timeline-title">星陨之战结束，琳帕尔残军逃亡地球</div>
+          <div class="timeline-desc">琳帕尔战败，残军携带魔卡等逃亡地球，降落非洲大陆并命名为「纽洛库大陆」，开启地球物理文明发展。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-era">琳时500万年前</div>
+          <div class="timeline-title">未来高阶物理文明抵达原始琳凯蒂亚</div>
+          <div class="timeline-desc">琳凯蒂亚星际舰队经闭合类时曲线抵达原始琳凯蒂亚星球，发现灵质粒子与原生生物异能兽，开启第1次魔法文明，形成时间闭环。</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+const activeTab = ref('geography')
+</script>

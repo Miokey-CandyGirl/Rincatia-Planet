@@ -1,0 +1,105 @@
+<template>
+  <div class="sub-page">
+    <div class="page-header">
+      <h2 class="sub-page-title">归零审判</h2>
+      <p class="sub-page-desc">《光线传奇》第三部——文明存续的终极考验，宇宙底层法则的审判</p>
+    </div>
+
+    <!-- 页面内子导航 -->
+    <div class="sub-nav-tabs">
+      <button class="sub-nav-tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">故事概述</button>
+      <button class="sub-nav-tab" :class="{ active: activeTab === 'episodes' }" @click="activeTab = 'episodes'">分集概述</button>
+      <button class="sub-nav-tab" :class="{ active: activeTab === 'characters' }" @click="activeTab = 'characters'">人物志</button>
+    </div>
+
+    <!-- 故事概述 -->
+    <section v-if="activeTab === 'overview'">
+      <div class="section-card">
+        <h3>⚖️ 第三部《归零审判》概要</h3>
+        <div class="story-overview">
+          <p>第三部《光线传奇之归零审判》（Light Legend: The Judgment of Zero），也被称之为《2026》。这部作品的核心议题是<span class="highlight">「看见（See）」</span>，致敬了刘慈欣的《三体》。</p>
+          <p>第三部将冲突推至宇宙尺度的终极审判。时间锚点位于2027年妙可再次成年之后，一个被归零者追杀的第三文明——电子生命——循着水晶的能量涟漪逃亡至太阳系。它们的到来，直接踢翻了琳凯蒂亚与地球之间本就脆弱的双文明平衡体系，触发了宇宙底层法则「归零者」的启动条件。</p>
+          <p><span class="highlight">归零者并非神祇，亦非生物或物质，而是与万有引力、热力学定律一样的客观宇宙铁律——熵增平衡规则。</span>当文明的无效熵增突破临界阈值，陷入永恒的循环禁锢且无法自主停止内耗时，归零机制将自动启动，对该文明所在的时空进行量子态退相干重置，将所有物质回归至低熵原始态。</p>
+          <p>琳凯蒂亚文明历经22次魔法—物理文明的循环，本质是始终无法突破「掠夺性发展」的内核，不断打破自身的平衡。而第三文明的介入，使得琳凯蒂亚、地球与第三方文明同时被纳入重置范围。</p>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🎯 跷跷板平衡原理</h3>
+        <div class="story-overview">
+          <p>当多个文明共存时，必须通过合理的资源分配与理念兼容维持体系的整体平衡；若有文明选择以掠夺与破坏的方式「踢翻跷跷板」，整个体系要么重新达成新的平衡，要么彻底崩塌，所有文明共同走向灭亡。</p>
+          <p>面对这位从不谈判、只问「你们凭什么存续」的古老审判者，文明必须给出他们的答案。文明的使命从来不是「打赢战争」——归零者不战斗、不威胁，只降临，然后审判。文明必须证明：文明自身具备自我修正、有序发展的能力，能够在归零者启动熵重置前，修正掠夺性的发展内核，实现资源的共生而非掠夺，将无效熵增降至临界阈值以下。</p>
+          <p><span class="highlight">审判的核心，不在于力量与古老，而在于文明是否还有救。</span></p>
+        </div>
+      </div>
+
+      <div class="quote-block">
+        「文明如这跷板，弱与强各执一端。唯有力量在摇摆中学会平衡，水面才不会泛起吞没一切的巨浪。否则，轻的那一侧会粉身碎骨，重的那一侧会坠入深渊——我们谁也无法在偏执的轮回中幸免。呵呵，谁又能知道会不会有人来踢我们一脚呢？」
+        <div class="quote-author">——索罗，第三部第一章《跷跷板》</div>
+      </div>
+    </section>
+
+    <!-- 分集概述 -->
+    <section v-if="activeTab === 'episodes'">
+      <div class="section-card">
+        <h3>📺 核心设定</h3>
+        <div class="world-card">
+          <h3>归零者</h3>
+          <p>宇宙底层的熵增平衡法则，客观宇宙铁律。当文明的无效熵增突破临界阈值，陷入永恒的循环禁锢且无法自主停止内耗时，归零机制自动启动。归零者不战斗、不威胁，只降临，然后审判。文明必须证明自身具备自我修正、有序发展的能力。</p>
+        </div>
+        <div class="world-card">
+          <h3>第三文明——电子生命</h3>
+          <p>被归零者追杀的文明形态，循着水晶的能量涟漪逃亡至太阳系。它们的到来打破了琳凯蒂亚与地球之间的双文明平衡体系，触发了归零者的启动条件。</p>
+        </div>
+        <div class="world-card">
+          <h3>文明存续条件</h3>
+          <p>文明必须在归零者启动熵重置前：修正掠夺性的发展内核，实现资源的共生而非掠夺，将无效熵增降至临界阈值以下。唯有如此，才能让文明被宇宙的平衡规则「看见」，获得存续的资格。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 人物志 -->
+    <section v-if="activeTab === 'characters'">
+      <div class="section-card">
+        <h3>👤 核心人物</h3>
+        <div class="character-grid">
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar hero">☀️</div>
+              <div>
+                <div class="character-name">田妙可</div>
+                <div class="character-role">太阳光线使者 · 文明存续的核心</div>
+              </div>
+            </div>
+            <div class="character-info">2027年再次成年后，面对的不再是家族内战或星际战争，而是「文明凭什么存续」的终极拷问。作为彩虹水晶守护者的核心，她必须带领文明通过归零者的审判。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">⚖️</div>
+              <div>
+                <div class="character-name">索罗</div>
+                <div class="character-role">跷跷板隐喻的提出者</div>
+              </div>
+            </div>
+            <div class="character-info">第三部第一章《跷跷板》中提出跷跷板平衡原理的智者，揭示了文明共存的终极法则。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🤖</div>
+              <div>
+                <div class="character-name">电子生命</div>
+                <div class="character-role">第三文明</div>
+              </div>
+            </div>
+            <div class="character-info">被归零者追杀的文明形态，循着水晶能量涟漪逃亡至太阳系，成为触发归零审判的直接导火索。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+const activeTab = ref('overview')
+</script>

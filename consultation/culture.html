@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>琳凯蒂亚文化 - 琳凯蒂亚语社区</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="culture.css">
+    <link rel="icon" href="logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 新增：阅读进度条 -->
+    <div class="reading-progress">
+        <div class="reading-progress-bar" id="readingProgressBar"></div>
+    </div>
+    
+    <div class="stars"></div>
+    <div class="floating-particles"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="rincatian-flag">
+                    <img src="rincatian-flag.png" alt="琳凯蒂亚国旗" class="flag-icon">
+                </div>
+                <div class="planet-icon"></div>
+                <div class="logo-text">
+                    <span class="logo-chinese">琳凯蒂亚语社区</span>
+                    <span class="logo-english">Rincatian Community</span>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="grammar.html">语法</a></li>
+                <li><a href="dictionary.html">词典</a></li>
+                <li><a href="culture.html" class="active">文化</a></li>
+                <li><a href="community.html">社区</a></li>
+            </ul>
+            <div class="nav-extras">
+                <!-- 新增：搜索框 -->
+                <div class="culture-search-container">
+                    <input type="text" id="cultureSearchInput" class="culture-search-input" placeholder="🔍 搜索人物、地点、魔法...">
+                    <div id="cultureSearchResults" class="culture-search-results"></div>
+                </div>
+                
+                <!-- 新增：夜间模式切换 -->
+                <button id="themeToggle" class="theme-toggle-btn" title="切换主题">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                
+                <div class="tian-calendar">
+                    <span class="calendar-icon">📅</span>
+                    <span class="tian-date" id="tianDate">载入中...</span>
+                </div>
+                <div class="auth-buttons">
+                    <button class="btn btn-primary btn-small" id="authBtn">进入星球</button>
+                </div>
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <span class="user-name" id="userName"></span>
+                    <div class="user-dropdown">
+                        <a href="#" id="profileLink">个人中心</a>
+                        <a href="#" id="logoutLink">退出登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="culture-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">琳凯蒂亚文化世界</h1>
+            <p class="hero-subtitle">探索《光线传奇》中的奇幻星球</p>
+            <p class="hero-subtitle-bottom">《光线传奇之彩虹水晶》 作者：琳倾雨</p>
+            <div class="crystal-decoration">
+                <div class="crystal red"></div>
+                <div class="crystal orange"></div>
+                <div class="crystal yellow"></div>
+                <div class="crystal green"></div>
+                <div class="crystal blue"></div>
+                <div class="crystal indigo"></div>
+                <div class="crystal purple"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="culture-main">
+        <div class="culture-nav">
+            <ul class="culture-tabs">
+                <li><a href="#geography" class="tab-link active" data-tab="geography">星球地理</a></li>
+                <li><a href="#society" class="tab-link" data-tab="society">社会制度</a></li>
+                <li><a href="#magic" class="tab-link" data-tab="magic">魔法体系</a></li>
+                <li><a href="#legends" class="tab-link" data-tab="legends">传说故事</a></li>
+                <li><a href="#characters" class="tab-link" data-tab="characters">人物志</a></li>
+                <li><a href="#timeline" class="tab-link" data-tab="timeline">历史年表</a></li>
+                <li><a href="#calendar" class="tab-link" data-tab="calendar">田历历法</a></li>
+                <li><a href="#spinoff" class="tab-link spinoff-tab" data-tab="spinoff">✨ 番外篇</a></li>
+            </ul>
+        </div>
+
+        <div class="culture-content">
+            <!-- 星球地理 -->
+            <section id="geography" class="culture-section active">
+                <h2>琳凯蒂亚星球地理</h2>
+                
+                <div class="geography-grid">
+                    <div class="geography-card">
+                        <div class="card-icon">🌙</div>
+                        <h3>双月奇观</h3>
+                        <p>琳凯蒂亚星球拥有银月和金月两轮月亮，每当十五交叠时会形成绚烂的彩虹光环，照亮整个星球。</p>
+                        <div class="linkaitiya-text">nim mun: geŋmun hâ jinmun</div>
+                    </div>
+
+                    <div class="geography-card">
+                        <div class="card-icon">🌳</div>
+                        <h3>银蓝色铃铛树</h3>
+                        <p>神奇的银蓝色铃铛树林遍布星球，它们的果实会唱出优美的歌声，如天籁般动听。</p>
+                        <div class="linkaitiya-text">geŋlâŋi belero</div>
+                    </div>
+
+                    <div class="geography-card">
+                        <div class="card-icon">✨</div>
+                        <h3>星光河</h3>
+                        <p>蜂蜜色的星光河缓缓流淌，河中生长着发光的莲花，透明的小鱼在其中游弋。</p>
+                        <div class="linkaitiya-text">ĉuēguaŋ rivo</div>
+                    </div>
+
+                    <div class="geography-card">
+                        <div class="card-icon">⛰️</div>
+                        <h3>星晶山脉</h3>
+                        <p>半透明的星晶山脉矗立天际，山上生长着会发光的神奇蘑菇，点亮夜空。</p>
+                        <div class="linkaitiya-text">ĉuējiŋ montetaro</div>
+                    </div>
+
+                    <div class="geography-card">
+                        <div class="card-icon">☁️</div>
+                        <h3>流光云</h3>
+                        <p>天空中飘浮着会变色的流光云，随着时间变化色彩，偶尔掉落光球奇观。</p>
+                        <div class="linkaitiya-text">fluguaŋ nubo</div>
+                    </div>
+
+                    <div class="geography-card">
+                        <div class="card-icon">🌲</div>
+                        <h3>迷雾森林</h3>
+                        <p>神秘的迷雾森林中有会走路的树木和会眨眼睛的古老巨木，充满魔法气息。</p>
+                        <div class="linkaitiya-text">nebula arbaro</div>
+                    </div>
+
+                    <div class="geography-card">
+                        <div class="card-icon">🌸</div>
+                        <h3>回声花田</h3>
+                        <p>奇特的回声花田能够储存并重放声音，记录着星球上最美好的旋律。</p>
+                        <div class="linkaitiya-text">eĥo florĉampo</div>
+                    </div>
+
+                    <div class="geography-card">
+                        <div class="card-icon">🌱</div>
+                        <h3>悬浮草甸</h3>
+                        <p>漂浮在空中的草甸，长满能奏出童谣的叮咚草，是星球上最浪漫的景观。</p>
+                        <div class="linkaitiya-text">flusanta herbejo</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 社会制度 -->
+            <section id="society" class="culture-section">
+                <h2>琳凯蒂亚社会制度</h2>
+                
+                <!-- 国旗展示 -->
+                <div class="flag-display">
+                    <div class="flag-container">
+                        <img data-src="rincatian-flag.png" alt="琳凯蒂亚国旗" class="rincatian-flag-img lazy-load" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 267'%3E%3Crect fill='%231a1a2e' width='400' height='267'/%3E%3C/svg%3E">
+                        <div class="flag-caption">琳凯蒂亚国旗</div>
+                    </div>
+                </div>
+                
+                <div class="society-grid">
+                    <!-- 国旗元素象征介绍 -->
+                    <div class="society-card flag-symbolism">
+                        <h3>国旗元素象征</h3>
+                        <div class="flag-description">
+                            <div class="flag-element">
+                                <h4>1. 蓝色背景</h4>
+                                <p>蓝色背景象征着广阔的天空和深邃的海洋，代表着国家的宽广视野和深远影响。它传达了一种平静与稳定的感觉，体现了国家的宁静与和谐。</p>
+                            </div>
+                            <div class="flag-element">
+                                <h4>2. 红色区域</h4>
+                                <p>红色区域象征着革命的精神和人民的勇气。红色也是烈士鲜血的颜色，纪念那些为国家独立和自由而奋斗的人们。它表达了国家的热烈情感和坚定意志。</p>
+                            </div>
+                            <div class="flag-element">
+                                <h4>3. 白色波浪线</h4>
+                                <p>白色波浪线象征着国家的河流或海岸线，代表着丰富的自然资源和美丽的自然景观。它也象征着生命的流动和国家的持续发展，寓意着国家的繁荣与进步。</p>
+                            </div>
+                            <div class="flag-element">
+                                <h4>4. 黄色星星</h4>
+                                <p>黄色星星象征着光明、希望和指引。每颗星星可能代表一个重要的地区、城市或历史事件，指引着国家前进的方向。它们也象征着国家的成就和未来的发展目标。</p>
+                            </div>
+                            <div class="flag-element">
+                                <h4>5. 中央图案（星月、圆形标志）</h4>
+                                <p>中央图案是一个复杂的象征符号，包含星月、圆形和其他元素：</p>
+                                <p><strong>星月：</strong>星月图案常见于伊斯兰文化中，象征着信仰和精神指引。</p>
+                                <p><strong>圆形标志：</strong>圆形内部的红色星星和绿色部分可能代表国家的核心价值观或重要机构。绿色通常象征着生命、和平与繁荣。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 文化社会制度中的介绍 -->
+                    <div class="society-card cultural-introduction">
+                        <h3>文化社会制度中的介绍</h3>
+                        <div class="cultural-description">
+                            <p>在文化社会制度中添加国旗元素象征的介绍，可以增强公民对国家象征的理解和认同感。具体可以在以下几个方面进行介绍：</p>
+                            
+                            <div class="cultural-section">
+                                <h4>教育体系</h4>
+                                <div class="cultural-item">
+                                    <h5>学校教育</h5>
+                                    <p>在历史和文化课程中加入国旗象征意义的教学内容，让学生从小了解国旗的深刻含义。</p>
+                                </div>
+                                <div class="cultural-item">
+                                    <h5>教材编写</h5>
+                                    <p>编写相关教材和读物，详细解释国旗每个元素的象征意义及其历史渊源。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="cultural-section">
+                                <h4>公共宣传</h4>
+                                <div class="cultural-item">
+                                    <h5>媒体传播</h5>
+                                    <p>通过电视、广播和网络媒体定期播放国旗象征意义的宣传片，提高公众的认知度。</p>
+                                </div>
+                                <div class="cultural-item">
+                                    <h5>公共标识</h5>
+                                    <p>在公共场所设置国旗象征意义的解说牌，如公园、博物馆和政府机构等。</p>
+                                </div>
+                            </div>
+                            
+                            <div class="cultural-section">
+                                <h4>社会活动</h4>
+                                <div class="cultural-item">
+                                    <h5>国庆庆典</h5>
+                                    <p>在国庆日等重要节日活动中，举办国旗象征意义的专题展览和讲座。</p>
+                                </div>
+                                <div class="cultural-item">
+                                    <h5>社区教育</h5>
+                                    <p>组织社区活动，邀请专家讲解国旗的历史和象征意义，增进居民的国家认同感。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="society-card royal">
+                        <h3>王室结构</h3>
+                        <div class="character-list">
+                            <div class="character">
+                                <div class="character-icon emperor">👑</div>
+                                <div class="character-info">
+                                    <h4>星帝 (Ĉuēdai)</h4>
+                                    <p>最高统治者，银胡子中藏着发光的小星，拥有神秘而强大的力量，统治整个琳凯蒂亚星球。</p>
+                                </div>
+                            </div>
+                            <div class="character">
+                                <div class="character-icon empress">👸</div>
+                                <div class="character-info">
+                                    <h4>星母 (Ĉuēpatrino)</h4>
+                                    <p>慈爱的统治者，裙摆绣有星系图案，走过之处会生出荧光草，极其宠爱女儿妙可公主。</p>
+                                </div>
+                            </div>
+                            <div class="character">
+                                <div class="character-icon princess">✨</div>
+                                <div class="character-info">
+                                    <h4>妙可公主 (Miaokel)</h4>
+                                    <p>太阳光线使者，金发蓝眼，拥有太阳手杖，能掌握太阳魔法，散发铃兰柑橘阳光的独特香气。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="society-card guardians">
+                        <h3>光线使者体系</h3>
+                        <div class="guardian-grid">
+                            <div class="guardian">
+                                <div class="guardian-icon sun">☀️</div>
+                                <h4>太阳使者</h4>
+                                <p>掌握太阳魔法，武器为太阳手杖</p>
+                            </div>
+                            <div class="guardian">
+                                <div class="guardian-icon star">⭐</div>
+                                <h4>星星使者</h4>
+                                <p>操控星辰之力，武器为星辰法杖</p>
+                            </div>
+                            <div class="guardian">
+                                <div class="guardian-icon moon">🌙</div>
+                                <h4>月亮使者</h4>
+                                <p>驾驭月光之力，拥有月华魔法</p>
+                            </div>
+                            <div class="guardian">
+                                <div class="guardian-icon cloud">☁️</div>
+                                <h4>云雨使者</h4>
+                                <p>控制云雨天气，掌握水元素魔法</p>
+                            </div>
+                            <div class="guardian">
+                                <div class="guardian-icon thunder">⚡</div>
+                                <h4>雷电使者</h4>
+                                <p>召唤雷电风暴，掌握雷电之力</p>
+                            </div>
+                            <div class="guardian">
+                                <div class="guardian-icon space">🌌</div>
+                                <h4>时空使者</h4>
+                                <p>操控时空虫洞，拥有时空魔法</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="society-card institutions">
+                        <h3>重要机构</h3>
+                        <div class="institution-list">
+                            <div class="institution">
+                                <div class="institution-icon">🏰</div>
+                                <div class="institution-info">
+                                    <h4>星帝宫殿</h4>
+                                    <p>用月光石砌成，有云霞鸟衔朝霞装饰，周围栖息着变色星蝶。</p>
+                                </div>
+                            </div>
+                            <div class="institution">
+                                <div class="institution-icon">🗼</div>
+                                <div class="institution-info">
+                                    <h4>星法塔</h4>
+                                    <p>星球的力量源泉，内藏彩虹核心，是维护星球魔法平衡的关键。</p>
+                                </div>
+                            </div>
+                            <div class="institution">
+                                <div class="institution-icon">🌟</div>
+                                <div class="institution-info">
+                                    <h4>星门</h4>
+                                    <p>连接不同世界的神秘门户，流淌着彩色糖浆般的光芒。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 魔法体系 -->
+            <section id="magic" class="culture-section">
+                <h2>魔法体系</h2>
+                
+                <!-- 第三阶段：音效控制面板 -->
+                <div class="magic-audio-controls">
+                    <button class="audio-control-btn" id="bgMusicToggle">
+                        <span class="audio-icon">🎵</span> 背景音乐
+                    </button>
+                    <button class="audio-control-btn" id="sfxToggle">
+                        <span class="audio-icon">🔊</span> 音效
+                    </button>
+                    <div class="volume-control">
+                        <span class="volume-icon">🔊</span>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="50" class="volume-slider">
+                        <span class="volume-value" id="volumeValue">50%</span>
+                    </div>
+                </div>
+                
+                <div class="magic-grid">
+                    <div class="magic-card rainbow-crystal">
+                        <h3>彩虹水晶系统</h3>
+                        
+                        <!-- 第三阶段：3D水晶展示 -->
+                        <div class="crystal-3d-container" id="crystal3DContainer">
+                            <div class="crystal-3d-scene">
+                                <div class="crystal-3d-item red" data-crystal="red">
+                                    <div class="crystal-3d-gem"></div>
+                                    <div class="crystal-particles"></div>
+                                </div>
+                                <div class="crystal-3d-item orange" data-crystal="orange">
+                                    <div class="crystal-3d-gem"></div>
+                                    <div class="crystal-particles"></div>
+                                </div>
+                                <div class="crystal-3d-item yellow" data-crystal="yellow">
+                                    <div class="crystal-3d-gem"></div>
+                                    <div class="crystal-particles"></div>
+                                </div>
+                                <div class="crystal-3d-item green" data-crystal="green">
+                                    <div class="crystal-3d-gem"></div>
+                                    <div class="crystal-particles"></div>
+                                </div>
+                                <div class="crystal-3d-item blue" data-crystal="blue">
+                                    <div class="crystal-3d-gem"></div>
+                                    <div class="crystal-particles"></div>
+                                </div>
+                                <div class="crystal-3d-item indigo" data-crystal="indigo">
+                                    <div class="crystal-3d-gem"></div>
+                                    <div class="crystal-particles"></div>
+                                </div>
+                                <div class="crystal-3d-item purple" data-crystal="purple">
+                                    <div class="crystal-3d-gem"></div>
+                                    <div class="crystal-particles"></div>
+                                </div>
+                            </div>
+                            <div class="crystal-3d-hint">👆 点击水晶激活魔法特效</div>
+                        </div>
+                        
+                        <div class="crystal-system">
+                            <div class="crystal-row">
+                                <div class="crystal-item red">
+                                    <div class="crystal-gem"></div>
+                                    <span>赤红水晶</span>
+                                </div>
+                                <div class="crystal-item orange">
+                                    <div class="crystal-gem"></div>
+                                    <span>橙黄水晶</span>
+                                </div>
+                                <div class="crystal-item yellow">
+                                    <div class="crystal-gem"></div>
+                                    <span>明黄水晶</span>
+                                </div>
+                                <div class="crystal-item green">
+                                    <div class="crystal-gem"></div>
+                                    <span>翠绿水晶</span>
+                                </div>
+                            </div>
+                            <div class="crystal-row">
+                                <div class="crystal-item blue">
+                                    <div class="crystal-gem"></div>
+                                    <span>湛蓝水晶</span>
+                                </div>
+                                <div class="crystal-item indigo">
+                                    <div class="crystal-gem"></div>
+                                    <span>靛蓝水晶</span>
+                                </div>
+                                <div class="crystal-item purple">
+                                    <div class="crystal-gem"></div>
+                                    <span>紫晶水晶</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p>七颗彩虹水晶蕴含着星球的核心力量，是光线使者魔法的源泉。</p>
+                    </div>
+
+                    <div class="magic-card weapons">
+                        <h3>魔法道具</h3>
+                        <div class="weapon-list">
+                            <div class="weapon">
+                                <div class="weapon-icon sun-staff">🔆</div>
+                                <h4>太阳手杖</h4>
+                                <p>妙可公主的专属武器，可化为翅膀项链，释放太阳光线和恒星黑离子。</p>
+                            </div>
+                            <div class="weapon">
+                                <div class="weapon-icon star-staff">⭐</div>
+                                <h4>星辰法杖</h4>
+                                <p>丽丽的武器，杖身流转星河光晕，杖头镶嵌自转深蓝星核。</p>
+                            </div>
+                            <div class="weapon">
+                                <div class="weapon-icon magic-disc">🌀</div>
+                                <h4>星魔盘</h4>
+                                <p>云雨和时空使用的探测工具，能感应彩虹水晶的位置。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="magic-card spells">
+                        <h3>魔法法则</h3>
+                        <div class="spell-categories">
+                            <div class="spell-category">
+                                <h4>太阳魔法</h4>
+                                <ul>
+                                    <li>普通技能：太阳光线</li>
+                                    <li>中等技能：太阳光圈</li>
+                                    <li>最大技能：恒星黑离子</li>
+                                </ul>
+                            </div>
+                            <div class="spell-category">
+                                <h4>星辰魔法</h4>
+                                <ul>
+                                    <li>星环防御</li>
+                                    <li>星尘裁决</li>
+                                    <li>星图寻踪</li>
+                                </ul>
+                            </div>
+                            <div class="spell-category">
+                                <h4>云雨魔法</h4>
+                                <ul>
+                                    <li>乌云吞噬</li>
+                                    <li>冰箭射击</li>
+                                    <li>抑郁孢子</li>
+                                </ul>
+                            </div>
+                            <div class="spell-category">
+                                <h4>时空魔法</h4>
+                                <ul>
+                                    <li>虫洞传送</li>
+                                    <li>时间倒流</li>
+                                    <li>空间扭曲</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 传说故事 -->
+            <section id="legends" class="culture-section">
+                <h2>《光线传奇》故事</h2>
+                
+                <div class="story-navigation">
+                    <div class="story-tabs">
+                        <button class="story-tab active" data-story="prequel">前传：琳凯蒂亚的星光</button>
+                        <button class="story-tab" data-story="episode1">第一集：彩虹落地的瞬间</button>
+                        <button class="story-tab" data-story="episode2">第二集：微光里的适应</button>
+                        <button class="story-tab" data-story="episode3">第三集：学籍簿上的金发小公主</button>
+                        <button class="story-tab" data-story="episode4">第四集：儿时伙伴的重逢</button>
+                        <button class="story-tab" data-story="episode5">第五集：在暴风雨中的少女</button>
+                        <button class="story-tab" data-story="episode6">第六集：雨中的寻找</button>
+                        <button class="story-tab" data-story="continuation">未完待续...</button>
+                    </div>
+                    
+                    <div class="reading-promotion">
+                        <div class="promotion-content">
+                            <div class="promotion-icon">
+                                <span class="douban-icon">📖</span>
+                            </div>
+                            <div class="promotion-text">
+                                <h4>想要阅读完整版故事？</h4>
+                                <p>以下仅为故事概要，完整版《光线传奇之彩虹水晶》现已在<strong>豆瓣阅读</strong>平台发布！</p>
+                                <div class="promotion-features">
+                                    <span class="feature-tag">✨ 详细人物刻画</span>
+                                    <span class="feature-tag">🌈 精彩战斗场面</span>
+                                    <span class="feature-tag">💫 丰富情感描写</span>
+                                </div>
+                            </div>
+                            <div class="promotion-action">
+                                <a href="#" class="douban-reading-btn" id="doubanReadingBtn">
+                                    <span class="btn-icon">📚</span>
+                                    <span class="btn-text">前往豆瓣阅读</span>
+                                    <span class="btn-arrow">→</span>
+                                </a>
+                                <p class="promotion-note">点击即可跳转到豆瓣阅读查看完整版小说</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 前传故事 -->
+                <div id="prequel" class="story-content active">
+                    <div class="story-header">
+                        <h3>前传：琳凯蒂亚的星光（18年前）</h3>
+                        <div class="story-time">时间：琳凯蒂亚历法，18年前</div>
+                    </div>
+                    
+                    <div class="story-section">
+                        <h4>🌟 奇幻星球琳凯蒂亚</h4>
+                        <div class="story-description">
+                            <p>在被彩虹恒久包裹的琳凯蒂亚星球上，银蓝色的铃铛树轻抚着流光云，双月在星法塔顶交织成彩虹光环。</p>
+                            <div class="story-details">
+                                <div class="detail-item">
+                                    <strong>星帝宫殿：</strong>月光石砌成，云霞鸟衔朝霞装饰，周围有变色星蝶栖息的花丛
+                                </div>
+                                <div class="detail-item">
+                                    <strong>妙可公主：</strong>5岁太阳光线使者，金发蓝眼，武器太阳手杖，散发铃兰+柑橘+阳光的独特香气
+                                </div>
+                                <div class="detail-item">
+                                    <strong>云雨时空：</strong>星帝弟弟的孩子，内心充满对力量的贪婪和不满
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>⚔️ 冲突爆发</h4>
+                        <div class="story-description">
+                            <p>云雨和时空觊觎星法塔内的彩虹核心，深夜潜入练习破坏，被星使爷爷发现后与星帝对峙。</p>
+                            <div class="story-highlight">
+                                云雨放乌云吞没宫殿星光，时空开虫洞吸走水晶椅，并向星法塔发射雨箭，随后跳入虫洞逃离。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🔒 大战与镇压</h4>
+                        <div class="story-description">
+                            <p>激战数日后，星帝用金色锁链制服云雨时空，将其关入星光石牢狱。</p>
+                            <div class="story-quote">
+                                "时空在牢中发现符文弱点，并探知18年后逃脱的'天命'，预示着未来的危机。"
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🚪 星门离别</h4>
+                        <div class="story-description">
+                            <p>星帝知晓天命，决定将妙可和其他光线使者送往地球历练。</p>
+                            <div class="story-emotion">
+                                星母给妙可绣太阳手帕，抹泪送别。妙可懵懂不舍，抱住星母腿。使者们依次走进流淌彩色糖浆般的星门...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第一集故事 -->
+                <div id="episode1" class="story-content">
+                    <div class="story-header">
+                        <h3>第一集：彩虹落地的瞬间</h3>
+                        <div class="story-time">时间：2015年8月25日，田野18岁生日</div>
+                    </div>
+                    
+                    <div class="story-section">
+                        <h4>🎂 十八岁生日的黑暗降临</h4>
+                        <div class="story-description">
+                            <p>田野18岁生日当天，正在天鹅湖畔与好友聚会。突然，天空出现诡异的时空裂缝，黑暗势力降临。</p>
+                            <div class="story-details">
+                                <div class="detail-item">
+                                    <strong>云雨附身：</strong>17岁少年韩斌被云雨光线使者附身，眼中闪烁邪恶光芒
+                                </div>
+                                <div class="detail-item">
+                                    <strong>时空附身：</strong>18岁少年俊伟被时空光线使者附身，获得虫洞传送能力
+                                </div>
+                                <div class="detail-item">
+                                    <strong>袭击开始：</strong>云雨放出乌云吞噬现场，时空开启虫洞进行围攻
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>⚡ 激烈战斗与觉醒</h4>
+                        <div class="story-description">
+                            <p>面对强敌，田野体内的太阳印记开始发光发热，18年前的记忆片段闪现。</p>
+                            <div class="story-highlight">
+                                田野变回6岁女孩妙可公主的模样，太阳手杖化为翅膀项链重新出现，散发出铃兰柑橘阳光的独特香气。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>💎 彩虹水晶散落</h4>
+                        <div class="story-description">
+                            <p>激战中，七颗彩虹水晶从妙可体内被震出，如流星般散落合肥各地。</p>
+                            <div class="story-quote">
+                                "赤橙黄绿蓝靛紫，七道光芒划过天际，每一颗水晶都承载着星球的神圣力量。"
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🌟 星使爷爷的指引</h4>
+                        <div class="story-description">
+                            <p>危急时刻，星使爷爷的投影出现，银袍星辰闪烁，白胡子掉落金粉。</p>
+                            <div class="story-emotion">
+                                "妙可，你必须找回散落的彩虹水晶，重新找到太阳手杖，这是你的使命。"温暖的声音在心中回响...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第二集故事 -->
+                <div id="episode2" class="story-content">
+                    <div class="story-header">
+                        <h3>第二集：微光里的适应</h3>
+                        <div class="story-time">时间：2015年8月26日-9月初，袭击后的适应期</div>
+                    </div>
+                    
+                    <div class="story-section">
+                        <h4>🏠 变化中的日常</h4>
+                        <div class="story-description">
+                            <p>妙可以6岁女孩的形态回到田家，面临身份认知的巨大挑战。</p>
+                            <div class="story-details">
+                                <div class="detail-item">
+                                    <strong>身体变化：</strong>从18岁少年变成6岁女孩，需要重新适应身体协调
+                                </div>
+                                <div class="detail-item">
+                                    <strong>记忆融合：</strong>田野18年的地球记忆与妙可的琳凯蒂亚记忆交融
+                                </div>
+                                <div class="detail-item">
+                                    <strong>家人困惑：</strong>田父田母对孩子突然的变化感到迷茫和担忧
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🔍 太阳手杖的寻找</h4>
+                        <div class="story-description">
+                            <p>妙可开始在合肥城中寻找失落的太阳手杖，但线索渺茫。</p>
+                            <div class="story-highlight">
+                                翅膀项链偶尔会发出微弱光芒，指向某个方向，但手杖似乎被某种力量隐藏了起来。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🌙 夜晚的练习</h4>
+                        <div class="story-description">
+                            <p>每当夜深人静时，妙可会偷偷练习太阳魔法，努力恢复力量。</p>
+                            <div class="story-quote">
+                                "即使没有太阳手杖，我也要保护这个世界。"小小的身影在月光下发出坚定的誓言。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🎯 敌人的暗中观察</h4>
+                        <div class="story-description">
+                            <p>云雨和时空也在暗中寻找彩虹水晶，同时密切监视着妙可的一举一动。</p>
+                            <div class="story-emotion">
+                                街角的阴影中，韩斌和俊伟的眼中闪烁着邪恶的光芒，计划着下一次行动...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第三集故事 -->
+                <div id="episode3" class="story-content">
+                    <div class="story-header">
+                        <h3>第三集：学籍簿上的金发小公主</h3>
+                        <div class="story-time">时间：2015年9月，新学期开始</div>
+                    </div>
+                    
+                    <div class="story-section">
+                        <h4>🏫 星虹中学的新开始</h4>
+                        <div class="story-description">
+                            <p>以特殊情况进入星虹中学，妙可成为了学校里最引人注目的小女孩。</p>
+                            <div class="story-details">
+                                <div class="detail-item">
+                                    <strong>特殊安排：</strong>学校为这个特殊的6岁"高中生"做了特别安排
+                                </div>
+                                <div class="detail-item">
+                                    <strong>同学反应：</strong>金发蓝眼的外貌引起同学们的好奇和议论
+                                </div>
+                                <div class="detail-item">
+                                    <strong>学习挑战：</strong>小小身体要适应高中的学习节奏和内容
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🎭 身份的秘密</h4>
+                        <div class="story-description">
+                            <p>妙可努力隐藏自己光线使者的身份，但独特的香气时常泄露秘密。</p>
+                            <div class="story-highlight">
+                                铃兰+柑橘+阳光的复合香气让周围的人不由自主地感到温暖和安心。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>👥 新的友谊萌芽</h4>
+                        <div class="story-description">
+                            <p>在学校里，妙可遇到了一些真心的朋友，也察觉到了一些可疑的目光。</p>
+                            <div class="story-quote">
+                                "这个小女孩有些不同寻常..."一个熟悉的声音在人群中响起。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>📚 知识的力量</h4>
+                        <div class="story-description">
+                            <p>妙可发现地球的知识对理解琳凯蒂亚魔法有意想不到的帮助。</p>
+                            <div class="story-emotion">
+                                物理课上的光学原理让她对太阳魔法有了新的认识，化学课的元素周期表似乎与彩虹水晶的能量频率有着神秘的联系...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第四集故事 -->
+                <div id="episode4" class="story-content">
+                    <div class="story-header">
+                        <h3>第四集：儿时伙伴的重逢</h3>
+                        <div class="story-time">时间：2015年9月中下旬，学校生活中</div>
+                    </div>
+                    
+                    <div class="story-section">
+                        <h4>🌟 星星使者丽丽</h4>
+                        <div class="story-description">
+                            <p>在星虹中学，妙可遇到了同班同学丽丽，一个看似普通的高一女生。</p>
+                            <div class="story-details">
+                                <div class="detail-item">
+                                    <strong>初次相遇：</strong>丽丽对妙可的特殊身份并不惊讶，反而显得很亲切
+                                </div>
+                                <div class="detail-item">
+                                    <strong>疑似熊猫：</strong>丽丽随身携带着一只可爱的小熊猫玩具
+                                </div>
+                                <div class="detail-item">
+                                    <strong>神秘反应：</strong>当妙可靠近时，熊猫玩具的眼睛会发出微弱的蓝光
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>✨ 记忆的复苏</h4>
+                        <div class="story-description">
+                            <p>在一次意外事件中，丽丽为了保护妙可而觉醒了星星使者的力量。</p>
+                            <div class="story-highlight">
+                                熊猫玩具变成了星辰法杖，杖身流转星河光晕，杖头镶嵌自转深蓝星核。丽丽的眼中闪烁着星辰的光芒。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🤝 幼年时光的回忆</h4>
+                        <div class="story-description">
+                            <p>两人的记忆彼此交融，18年前在琳凯蒂亚的幼年时光重现。</p>
+                            <div class="story-quote">
+                                "妙可公主，我终于找到你了。我们曾经在银蓝色的铃铛树下一起玩耶，你还记得吗？"
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>⚔️ 合作作战</h4>
+                        <div class="story-description">
+                            <p>面对突然出现的小型敌人攻击，两位光线使者第一次合作作战。</p>
+                            <div class="story-emotion">
+                                太阳光线与星辰防御交织成网，金色的温暖与蓝色的宁静完美融合，就像18年前那些美好的日子一样...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第五集故事 -->
+                <div id="episode5" class="story-content">
+                    <div class="story-header">
+                        <h3>第五集：在暴风雨中的少女</h3>
+                        <div class="story-time">时间：2015年9月下旬，秋雨绵绵的季节</div>
+                    </div>
+                    
+                    <div class="story-section">
+                        <h4>🌧️ 梦云的出现</h4>
+                        <div class="story-description">
+                            <p>在一个雨夜，妙可在公园里遇到了一个淘气在雨中的少女——梦云。</p>
+                            <div class="story-details">
+                                <div class="detail-item">
+                                    <strong>首次相遇：</strong>梦云独自一人在雨中漫步，似乎对淋雨毫不在意
+                                </div>
+                                <div class="detail-item">
+                                    <strong>特殊能力：</strong>雨滴在她身边自动避开，就像有隐形的保护罩
+                                </div>
+                                <div class="detail-item">
+                                    <strong>内心状态：</strong>眼中有着深深的迷茫和不安，似乎承受着巨大的心理压力
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>💔 心灵的交流</h4>
+                        <div class="story-description">
+                            <p>妙可主动上前关心，两个少女在雨中开始了第一次真诚的对话。</p>
+                            <div class="story-highlight">
+                                梦云讲述了自己中考失利后的沉迷和迷茫，对未来的无助和对现实的逃避。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>⚡ 暗中的操控</h4>
+                        <div class="story-description">
+                            <p>在对话过程中，妙可发现梦云的情绪变化中有着不寻常的规律。</p>
+                            <div class="story-quote">
+                                "不对，这不是她自然的情绪波动...有人在操控她的心智！"妙可心中警铃大作。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🌊 小云雨使者的觉醒</h4>
+                        <div class="story-description">
+                            <p>在妙可的关心和鼓励下，梦云短暂的觉醒了自己小云雨光线使者的身份。</p>
+                            <div class="story-emotion">
+                                河水在她身边温顺地流淌，雨滴在她手中凝聚成晶莹的水珠。那一瞬间，她的眼中闪现了清晰和希望的光芒...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第六集故事 -->
+                <div id="episode6" class="story-content">
+                    <div class="story-header">
+                        <h3>第六集：雨中的寻找</h3>
+                        <div class="story-time">时间：2015年10月初，一个雨夜</div>
+                    </div>
+                    
+                    <div class="story-section">
+                        <h4>🔮 神秘的线索</h4>
+                        <div class="story-description">
+                            <p>妙可和丽丽收到了来自星使爷爷的特殊信息，指向了一个神秘的地点。</p>
+                            <div class="story-details">
+                                <div class="detail-item">
+                                    <strong>星魔盘反应：</strong>丽丽的星魔盘捕捉到了彩虹水晶的微弱信号
+                                </div>
+                                <div class="detail-item">
+                                    <strong>方向指引：</strong>翅膀项链在某个方向上发出持续的光芒
+                                </div>
+                                <div class="detail-item">
+                                    <strong>时间紧迫：</strong>信号不断弱化，必须在信号消失前找到水晶
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🌧️ 雨夜行动</h4>
+                        <div class="story-description">
+                            <p>在一个雨夜，三个女孩踏上了寻找第一颗彩虹水晶的旅程。</p>
+                            <div class="story-highlight">
+                                梦云在网吧里被云雨的意志再次控制，成为了不情愿的内应。她的眼中闪烁着矛盾的光芒——一边是对妙可的真心关心，一边是被强加的敌意。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>⚔️ 三人的对决</h4>
+                        <div class="story-description">
+                            <p>在一个废弃的工厂里，三人遇到了云雨和时空的伏击。</p>
+                            <div class="story-quote">
+                                "云雨，放开梦云！她只是一个无辜的少女！"妙可的声音在雨夜中回荡。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>💎 第一颗水晶的密秘</h4>
+                        <div class="story-description">
+                            <p>在激战的关键时刻，一颗翰绿色的水晶在废弃机器中闪现光芒。</p>
+                            <div class="story-emotion">
+                                那是一颗绿色的彩虹水晶，象征着生命和希望的力量。当妙可的手触及水晶的瞬间，一阵温暖的绿光在雨夜中绚放，照亮了每个人的脸庞...
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-section">
+                        <h4>🌌 新的开始</h4>
+                        <div class="story-description">
+                            <p>第一颗彩虹水晶的回归不仅增强了妙可的力量，也为接下来的冒险拉开了序幕。</p>
+                            <div class="story-highlight">
+                                但是，云雨和时空并没有放弃，他们的计划只是刚刚开始。而梦云的内心斗争也将面临更大的考验...
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- 继续阅读钩子 -->
+                <div id="continuation" class="story-continuation-hook">
+                    <div class="hook-content">
+                        <div class="hook-icon">✨</div>
+                        <h3 class="hook-title">未完待续...</h3>
+                        <p class="hook-description">光线传奇第二部《光线传奇之星月之战》正在制作中...</p>
+                        <div class="hook-teaser">
+                            <p>在即将到来的篇章中，妙可和伙伴们将面临更大的挑战：</p>
+                            <ul class="hook-list">
+                                <li>🌟 星月之战即将爆发</li>
+                                <li>⚔️ 新的敌人与盟友登场</li>
+                                <li>💎 剩余彩虹水晶的秘密</li>
+                                <li>🌌 更广阔的宇宙冒险</li>
+                            </ul>
+                        </div>
+                        <div class="hook-cta">
+                            <p>敬请期待更多精彩内容！</p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- 人物志 -->
+            <section id="characters" class="culture-section">
+                <h2>人物志</h2>
+                
+                <div class="character-profiles">
+                    <div class="character-profile hero">
+                        <div class="profile-avatar sun-princess"></div>
+                        <div class="profile-info">
+                            <h3>妙可公主 / 田野</h3>
+                            <div class="character-details">
+                                <p><strong>身份：</strong>太阳光线使者，琳凯蒂亚小公主</p>
+                                <p><strong>特征：</strong>金发蓝眼，散发铃兰柑橘阳光香气</p>
+                                <p><strong>能力：</strong>太阳魔法，太阳手杖，恒星黑离子</p>
+                                <p><strong>双重身份：</strong>在地球转世为18岁少年田野，遭袭击后变回6岁女孩形态</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-profile ally">
+                        <div class="profile-avatar star-guardian"></div>
+                        <div class="profile-info">
+                            <h3>丽丽</h3>
+                            <div class="character-details">
+                                <p><strong>身份：</strong>星星光线使者</p>
+                                <p><strong>武器：</strong>星辰法杖</p>
+                                <p><strong>能力：</strong>星环防御，星尘裁决，记忆清除</p>
+                                <p><strong>地球身份：</strong>星虹中学高一学生，妙可的童年伙伴</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-profile neutral">
+                        <div class="profile-avatar cloud-user"></div>
+                        <div class="profile-info">
+                            <h3>梦云</h3>
+                            <div class="character-details">
+                                <p><strong>身份：</strong>小云雨光线使者</p>
+                                <p><strong>能力：</strong>控水魔法，避水，冰冻</p>
+                                <p><strong>现状：</strong>被云雨控制，成为内奸棋子</p>
+                                <p><strong>地球身份：</strong>迷茫少女，中考失利后沉迷虚拟世界</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-profile villain">
+                        <div class="profile-avatar cloud-rain"></div>
+                        <div class="profile-info">
+                            <h3>云雨</h3>
+                            <div class="character-details">
+                                <p><strong>身份：</strong>叛逃的云雨光线使者</p>
+                                <p><strong>附身：</strong>地球少年韩斌（17岁）</p>
+                                <p><strong>能力：</strong>乌云吞噬，冰箭攻击，抑郁孢子</p>
+                                <p><strong>目标：</strong>夺取彩虹水晶和星法塔力量</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-profile villain">
+                        <div class="profile-avatar space-time"></div>
+                        <div class="profile-info">
+                            <h3>时空</h3>
+                            <div class="character-details">
+                                <p><strong>身份：</strong>叛逃的时空光线使者</p>
+                                <p><strong>附身：</strong>地球少年俊伟（18岁）</p>
+                                <p><strong>能力：</strong>虫洞传送，时空扭曲，精神操控</p>
+                                <p><strong>特点：</strong>冷静狡猾，擅长谋略和心理战</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="character-profile sage">
+                        <div class="profile-avatar star-sage"></div>
+                        <div class="profile-info">
+                            <h3>星使爷爷</h3>
+                            <div class="character-details">
+                                <p><strong>身份：</strong>琳凯蒂亚智者，光线使者导师</p>
+                                <p><strong>能力：</strong>预知天命，治愈魔法，星门传送</p>
+                                <p><strong>使命：</strong>指引妙可找回水晶，对抗邪恶势力</p>
+                                <p><strong>形象：</strong>银袍星辰，白胡子掉金粉，温暖声音</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 历史年表 -->
+            <section id="timeline" class="culture-section">
+                <h2>历史年表</h2>
+                
+                <!-- 第三阶段：时间线控制面板（已移除所有控制元素） -->
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">远古时代</div>
+                        <div class="timeline-content">
+                            <h3>琳凯蒂亚星球诞生</h3>
+                            <p>彩虹中心诞生的魔法星球，双月照耀，银蓝铃铛树开始歌唱。</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">18年前</div>
+                        <div class="timeline-content">
+                            <h3>云雨时空叛乱</h3>
+                            <p>云雨和时空觊觎星法塔力量，发动叛乱，攻击彩虹核心，被星帝镇压关押。</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">18年前</div>
+                        <div class="timeline-content">
+                            <h3>光线使者启程</h3>
+                            <p>星帝知晓天命，将5岁的妙可公主和其他光线使者送往地球历练。</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">1997年</div>
+                        <div class="timeline-content">
+                            <h3>田野诞生</h3>
+                            <p>地球合肥，七只光蝴蝶融入田母腹中，田野带着太阳印记降生。</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">2015年8月25日</div>
+                        <div class="timeline-content">
+                            <h3>彩虹水晶散落</h3>
+                            <p>云雨时空附身韩斌俊伟，袭击田野，七颗彩虹水晶散落合肥各处。</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">2015年9月</div>
+                        <div class="timeline-content">
+                            <h3>使者觉醒</h3>
+                            <p>丽丽在守护妙可时觉醒星星使者力量，梦云被云雨控制成为内奸。</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">未来</div>
+                        <div class="timeline-content">
+                            <h3>光线传奇续写</h3>
+                            <p>妙可需要找回太阳手杖，集齐七颗彩虹水晶，与伙伴们共同对抗黑暗势力...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 番外篇：妙可的小学生活 -->
+            <section id="spinoff" class="culture-section">
+                <div class="spinoff-wrapper">
+
+                    <!-- Hero 区域：标题图 + 定位标签 -->
+                    <div class="spinoff-hero">
+                        <div class="spinoff-hero-bg"></div>
+                        <!-- 剧照海报区 -->
+                        <div class="spinoff-hero-layout">
+                            <div class="spinoff-poster-wrap">
+                                <img src="spinoff-poster.png" alt="妙可的小学生活剧照" class="spinoff-poster-img">
+                            </div>
+                            <div class="spinoff-hero-content">
+                                <div class="spinoff-title-logo-wrap">
+                                    <img src="spinoff-title.png" alt="妙可的小学生活" class="spinoff-title-logo">
+                                    <span class="title-sparkle sp-a">✶</span>
+                                    <span class="title-sparkle sp-b">★</span>
+                                    <span class="title-sparkle sp-c">✶</span>
+                                    <span class="title-sparkle sp-d">✩</span>
+                                    <span class="title-sparkle sp-e">★</span>
+                                </div>
+                                <div class="spinoff-badge-row">
+                                    <span class="spinoff-badge">📖 日常向</span>
+                                    <span class="spinoff-badge">🌸 治愈向</span>
+                                    <span class="spinoff-badge">✨ 光线传奇衍生</span>
+                                </div>
+                                <p class="spinoff-subtitle">青竹区第一小学 · 五年级(2)班 · 2026年</p>
+                                <p class="spinoff-tagline">如果没有那道光箭——她的童年，会是什么样？</p>
+                                <p class="spinoff-director">导演：田野 &nbsp;·&nbsp; 华田中央大学艺术传媒学院</p>
+                            </div>
+                        </div>
+                        <!-- 漂浮装饰元素 -->
+                        <div class="spinoff-float-deco deco-1">🌈</div>
+                        <div class="spinoff-float-deco deco-2">⭐</div>
+                        <div class="spinoff-float-deco deco-3">🍡</div>
+                        <div class="spinoff-float-deco deco-4">📒</div>
+                        <div class="spinoff-float-deco deco-5">🎒</div>
+                    </div>
+
+                    <!-- 故事定位 -->
+                    <div class="spinoff-intro">
+                        <!-- 设定卡片 - 移至标题上方 -->
+                        <div class="spinoff-setting-row-horizontal">
+                            <div class="spinoff-setting-card">
+                                <div class="setting-emoji">🏫</div>
+                                <div class="setting-label">华田市青竹区</div>
+                                <div class="setting-value">第一小学</div>
+                            </div>
+                            <div class="spinoff-setting-card">
+                                <div class="setting-emoji">🎒</div>
+                                <div class="setting-label">五年级 (2) 班</div>
+                                <div class="setting-value">最普通的班级</div>
+                            </div>
+                            <div class="spinoff-setting-card">
+                                <div class="setting-emoji">📅</div>
+                                <div class="setting-label">2026 年</div>
+                                <div class="setting-value">日记式叙事</div>
+                            </div>
+                            <div class="spinoff-setting-card">
+                                <div class="setting-emoji">👁️</div>
+                                <div class="setting-label">核心命题</div>
+                                <div class="setting-value">被看见的瞬间</div>
+                            </div>
+                        </div>
+                    
+                        <div class="spinoff-intro-text">
+                            <div class="spinoff-chalk-title">关于这个故事</div>
+                            <p>这是《光线传奇》主角<strong>田妙可</strong>的衍生番外篇。遵循「弱关联、强独立」原则——这里只有华田市青竹区第一小学五（2）班的日常，没有星光，没有宿命，只有课间的零食、放学的小路、排练的闹剧，和一群不会离开的人。</p>
+                            <blockquote class="spinoff-blockquote">
+                                「普通班的普通孩子，过着普通的日子，但每一件小事都被认真对待。」
+                            </blockquote>
+                        </div>
+                    </div>
+
+                    <!-- 人物档案 -->
+                    <div class="spinoff-characters">
+                        <div class="spinoff-section-header">
+                            <span class="section-dot dot-orange"></span>
+                            <h3>班级成员档案</h3>
+                            <span class="section-line"></span>
+                        </div>
+
+                        <div class="spinoff-char-grid">
+                            <!-- 田妙可 -->
+                            <div class="spinoff-char-card" data-color="pink">
+                                <div class="char-photo-area char-photo-dark">
+                                    <img src="spinoff-tianmiaoke.png" alt="田妙可" class="char-photo">
+                                </div>
+                                <div class="char-top">
+                                    <div class="char-meta">
+                                        <div class="char-role-tag" style="background: #FF85A1">班长 · 主角</div>
+                                        <h4 class="char-name">田妙可</h4>
+                                        <span class="char-age">9岁</span>
+                                    </div>
+                                </div>
+                                <p class="char-trait">表面靠谱班长，内心疯狂吐槽役。嘴硬心软，扎高马尾，生气会叉腰。</p>
+                                <div class="char-quote-bubble" style="border-color: #FF85A1">
+                                    <span class="quote-mark">「</span>我上辈子是造了什么孽<span class="quote-mark">」</span>
+                                </div>
+                                <div class="char-keywords">
+                                    <span class="kw-tag" style="background: rgba(255,133,161,0.15); color: #FF85A1">圆心</span>
+                                    <span class="kw-tag" style="background: rgba(255,133,161,0.15); color: #FF85A1">护短</span>
+                                    <span class="kw-tag" style="background: rgba(255,133,161,0.15); color: #FF85A1">有原则</span>
+                                </div>
+                            </div>
+
+                            <!-- 林梓耀 -->
+                            <div class="spinoff-char-card" data-color="orange">
+                                <div class="char-photo-area char-photo-dark">
+                                    <img src="spinoff-linziyao.png" alt="林梓耀" class="char-photo">
+                                </div>
+                                <div class="char-top">
+                                    <div class="char-meta">
+                                        <div class="char-role-tag" style="background: #FF9F43">体育委员</div>
+                                        <h4 class="char-name">林梓耀</h4>
+                                        <span class="char-age">10岁</span>
+                                    </div>
+                                </div>
+                                <p class="char-trait">爱装酷必翻车，懂所有热梗，装酷3秒必社死。校服领口永远敞着。</p>
+                                <div class="char-quote-bubble" style="border-color: #FF9F43">
+                                    <span class="quote-mark">「</span>家人们谁懂啊<span class="quote-mark">」</span>
+                                </div>
+                                <div class="char-keywords">
+                                    <span class="kw-tag" style="background: rgba(255,159,67,0.15); color: #FF9F43">显眼包</span>
+                                    <span class="kw-tag" style="background: rgba(255,159,67,0.15); color: #FF9F43">热梗</span>
+                                    <span class="kw-tag" style="background: rgba(255,159,67,0.15); color: #FF9F43">关键靠谱</span>
+                                </div>
+                            </div>
+
+                            <!-- 周敦敦 -->
+                            <div class="spinoff-char-card" data-color="yellow">
+                                <div class="char-photo-area char-photo-light">
+                                    <img src="spinoff-zhoudundun.png" alt="周敦敦" class="char-photo">
+                                </div>
+                                <div class="char-top">
+                                    <div class="char-meta">
+                                        <div class="char-role-tag" style="background: #FFC530; color: #333">开心果</div>
+                                        <h4 class="char-name">周敦敦</h4>
+                                        <span class="char-age">9岁</span>
+                                    </div>
+                                </div>
+                                <p class="char-trait">吃货梗王，人间清醒。书包永远有吃的，兜里能掏出任何零食。</p>
+                                <div class="char-quote-bubble" style="border-color: #FFC530">
+                                    <span class="quote-mark">「</span>春游主打一个碳水爆炸<span class="quote-mark">」</span>
+                                </div>
+                                <div class="char-keywords">
+                                    <span class="kw-tag" style="background: rgba(255,197,48,0.15); color: #c98a00">吃货</span>
+                                    <span class="kw-tag" style="background: rgba(255,197,48,0.15); color: #c98a00">暖</span>
+                                    <span class="kw-tag" style="background: rgba(255,197,48,0.15); color: #c98a00">清醒</span>
+                                </div>
+                            </div>
+
+                            <!-- 慕容云雪 -->
+                            <div class="spinoff-char-card" data-color="blue">
+                                <div class="char-photo-area char-photo-light">
+                                    <img src="spinoff-muyunxue.png" alt="慕容云雪" class="char-photo">
+                                </div>
+                                <div class="char-top">
+                                    <div class="char-meta">
+                                        <div class="char-role-tag" style="background: #74B9FF; color: #fff">温柔闺蜜</div>
+                                        <h4 class="char-name">慕容云雪</h4>
+                                        <span class="char-age">10岁</span>
+                                    </div>
+                                </div>
+                                <p class="char-trait">文静毒舌，一击必杀。话极少，却一开口就是精准吐槽。手里捏着星星纸。</p>
+                                <div class="char-quote-bubble" style="border-color: #74B9FF">
+                                    <span class="quote-mark">「</span>你们俩的刀盾，就是一包薯片和半瓶可乐<span class="quote-mark">」</span>
+                                </div>
+                                <div class="char-keywords">
+                                    <span class="kw-tag" style="background: rgba(116,185,255,0.15); color: #0984E3">静</span>
+                                    <span class="kw-tag" style="background: rgba(116,185,255,0.15); color: #0984E3">毒舌</span>
+                                    <span class="kw-tag" style="background: rgba(116,185,255,0.15); color: #0984E3">洞察</span>
+                                </div>
+                            </div>
+
+                            <!-- 茹仙娜尔 -->
+                            <div class="spinoff-char-card" data-color="green">
+                                <div class="char-photo-area char-photo-light">
+                                    <img src="spinoff-ruxiannaer.png" alt="茹仙娜尔" class="char-photo">
+                                </div>
+                                <div class="char-top">
+                                    <div class="char-meta">
+                                        <div class="char-role-tag" style="background: #00B894">班主任</div>
+                                        <h4 class="char-name">茹仙娜尔·哈米提</h4>
+                                        <span class="char-age">26岁</span>
+                                    </div>
+                                </div>
+                                <p class="char-trait">温柔但专治各种不服。带新疆口音，能精准拿捏所有学生和夏雨老师。</p>
+                                <div class="char-quote-bubble" style="border-color: #00B894">
+                                    <span class="quote-mark">「</span>敦敦，你书包里的自热火锅，是给我当春游礼的？<span class="quote-mark">」</span>
+                                </div>
+                                <div class="char-keywords">
+                                    <span class="kw-tag" style="background: rgba(0,184,148,0.15); color: #00766e">托</span>
+                                    <span class="kw-tag" style="background: rgba(0,184,148,0.15); color: #00766e">安全感</span>
+                                    <span class="kw-tag" style="background: rgba(0,184,148,0.15); color: #00766e">顶端</span>
+                                </div>
+                            </div>
+
+                            <!-- 夏雨 -->
+                            <div class="spinoff-char-card" data-color="sky">
+                                <div class="char-top">
+                                    <div class="char-emoji-wrap" style="background: linear-gradient(135deg, #55EFC4, #00B894)">
+                                        <span class="char-emoji">🚴</span>
+                                    </div>
+                                    <div class="char-meta">
+                                        <div class="char-role-tag" style="background: #55EFC4; color: #333">体育老师</div>
+                                        <h4 class="char-name">夏雨</h4>
+                                        <span class="char-age">30岁</span>
+                                    </div>
+                                </div>
+                                <p class="char-trait">骑破自行车叮当响，爱摸鱼，跟学生互怼，玩梗比学生还溜，就怕茹老师。</p>
+                                <div class="char-quote-bubble" style="border-color: #55EFC4">
+                                    <span class="quote-mark">「</span>要是下雨，我当场把这自行车吃了<span class="quote-mark">」</span>
+                                </div>
+                                <div class="char-keywords">
+                                    <span class="kw-tag" style="background: rgba(85,239,196,0.15); color: #00766e">乐</span>
+                                    <span class="kw-tag" style="background: rgba(85,239,196,0.15); color: #00766e">损友</span>
+                                    <span class="kw-tag" style="background: rgba(85,239,196,0.15); color: #00766e">怕茹老师</span>
+                                </div>
+                            </div>
+
+                            <!-- 翟博 -->
+                            <div class="spinoff-char-card" data-color="purple">
+                                <div class="char-top">
+                                    <div class="char-emoji-wrap" style="background: linear-gradient(135deg, #A29BFE, #6C5CE7)">
+                                        <span class="char-emoji">🔬</span>
+                                    </div>
+                                    <div class="char-meta">
+                                        <div class="char-role-tag" style="background: #A29BFE">转校生</div>
+                                        <h4 class="char-name">翟博</h4>
+                                        <span class="char-age">10岁</span>
+                                    </div>
+                                </div>
+                                <p class="char-trait">内向腼腆，戴细框圆眼镜。理论满级，小发明家，发明经常翻车。待压轴登场。</p>
+                                <div class="char-quote-bubble" style="border-color: #A29BFE">
+                                    <span class="quote-mark" style="opacity:0.5">「</span><em style="opacity:0.6">台词创作中...</em><span class="quote-mark" style="opacity:0.5">」</span>
+                                </div>
+                                <div class="char-keywords">
+                                    <span class="kw-tag" style="background: rgba(162,155,254,0.15); color: #6C5CE7">理</span>
+                                    <span class="kw-tag" style="background: rgba(162,155,254,0.15); color: #6C5CE7">发明</span>
+                                    <span class="kw-tag" style="background: rgba(162,155,254,0.15); color: #6C5CE7">待登场</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 人物关系网 -->
+                    <div class="spinoff-relations">
+                        <div class="spinoff-section-header">
+                            <span class="section-dot dot-pink"></span>
+                            <h3>班级化学反应</h3>
+                            <span class="section-line"></span>
+                        </div>
+                        <div class="relations-grid">
+                            <div class="relation-card">
+                                <div class="rel-pair">
+                                    <span class="rel-name" style="color: #FF85A1">妙可</span>
+                                    <span class="rel-arrow">↔</span>
+                                    <span class="rel-name" style="color: #FF9F43">梓耀</span>
+                                </div>
+                                <div class="rel-label">「管与被管」</div>
+                                <p class="rel-desc">妙可管梓耀，梓耀怕妙可，但关键时刻互相撑腰</p>
+                            </div>
+                            <div class="relation-card">
+                                <div class="rel-pair">
+                                    <span class="rel-name" style="color: #FF85A1">妙可</span>
+                                    <span class="rel-arrow">↔</span>
+                                    <span class="rel-name" style="color: #FFC530">敦敦</span>
+                                </div>
+                                <div class="rel-label">「守护与吃货」</div>
+                                <p class="rel-desc">妙可护敦敦，敦敦用零食和吐槽回报</p>
+                            </div>
+                            <div class="relation-card">
+                                <div class="rel-pair">
+                                    <span class="rel-name" style="color: #FF85A1">妙可</span>
+                                    <span class="rel-arrow">↔</span>
+                                    <span class="rel-name" style="color: #74B9FF">云雪</span>
+                                </div>
+                                <div class="rel-label">「看见与被看见」</div>
+                                <p class="rel-desc">妙可是唯一走进云雪世界的人，云雪让妙可卸下伪装</p>
+                            </div>
+                            <div class="relation-card">
+                                <div class="rel-pair">
+                                    <span class="rel-name" style="color: #FF9F43">梓耀</span>
+                                    <span class="rel-arrow">↔</span>
+                                    <span class="rel-name" style="color: #FFC530">敦敦</span>
+                                </div>
+                                <div class="rel-label">「最佳损友」</div>
+                                <p class="rel-desc">一个负责惹事，一个负责拆台，但永远在一起</p>
+                            </div>
+                            <div class="relation-card">
+                                <div class="rel-pair">
+                                    <span class="rel-name" style="color: #FF9F43">梓耀</span>
+                                    <span class="rel-arrow">↔</span>
+                                    <span class="rel-name" style="color: #55EFC4">夏老师</span>
+                                </div>
+                                <div class="rel-label">「最佳搭档」</div>
+                                <p class="rel-desc">显眼包与摸鱼王，双向奔赴的不守规矩</p>
+                            </div>
+                            <div class="relation-card">
+                                <div class="rel-pair">
+                                    <span class="rel-name" style="color: #00B894">茹老师</span>
+                                    <span class="rel-arrow">→</span>
+                                    <span class="rel-name" style="opacity: 0.8">所有人</span>
+                                </div>
+                                <div class="rel-label">「食物链顶端」</div>
+                                <p class="rel-desc">温柔但专治各种不服，连夏老师都怕她</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 校园场景 -->
+                    <div class="spinoff-scenes">
+                        <div class="spinoff-section-header">
+                            <span class="section-dot dot-yellow"></span>
+                            <h3>校园角落</h3>
+                            <span class="section-line"></span>
+                        </div>
+                        <div class="scenes-aerial-banner">
+                            <img src="spinoff-school-aerial.png" alt="青竹区第一小学平面图" class="scenes-aerial-img">
+                            <div class="scenes-aerial-overlay">
+                                <div class="scenes-aerial-text">
+                                    <span class="aerial-tag">🎫 AI 刀冒风格</span>
+                                    <h4>青竹区第一小学 · 全景</h4>
+                                    <p>橙黄色局、红色跑道、开阔操场——这里的每天都是普通的，所以每天都是特别的</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="scenes-grid">
+                            <div class="scene-card scene-photo-card">
+                                <div class="scene-photo-wrap">
+                                    <img src="spinoff-school-sign.jpg" alt="青竹区第一小学校牌" class="scene-photo-bg">
+                                    <div class="scene-photo-fade"></div>
+                                </div>
+                                <div class="scene-photo-info">
+                                    <h4>校门口</h4>
+                                    <p>金字校牌伫立校门旁，早上7:20値周老师站岗，对面是小摊一条街。</p>
+                                </div>
+                            </div>
+                            <div class="scene-card">
+                                <div class="scene-icon">🏫</div>
+                                <h4>三楼 五(2)班</h4>
+                                <p>橙黄色教学楼，外墙爬山虎。云雪靠窗第三排，阳光最好；敦敦储物柜全是零食；黑板报妙可帮忙出。</p>
+                            </div>
+                            <div class="scene-card">
+                                <div class="scene-icon">🌳</div>
+                                <h4>操场梧桐树</h4>
+                                <p>200米跑道旁，沙坑、篮球架，梧桐树下的长椅。秋天落叶满地，云雪喜欢慢慢走。</p>
+                            </div>
+                            <div class="scene-card">
+                                <div class="scene-icon">🍜</div>
+                                <h4>食堂</h4>
+                                <p>教学楼后面平房。敦敦打饭说「多打点」，夏雨忘带饭卡在这里蹭饭。</p>
+                            </div>
+                            <div class="scene-card">
+                                <div class="scene-icon">🛒</div>
+                                <h4>校门口小摊街</h4>
+                                <p>炸串（王阿姨）、烤肠（李大爷）、糖葫芦、棉花糖、文具摊。放学后的黄金地带。</p>
+                            </div>
+                            <div class="scene-card">
+                                <div class="scene-icon">🍂</div>
+                                <h4>梧桐道</h4>
+                                <p>校门口主路，两边梧桐。秋天落叶满地，云雪喜欢放学后慢慢走，看落叶。</p>
+                            </div>
+                            <div class="scene-card">
+                                <div class="scene-icon">🚲</div>
+                                <h4>青竹街</h4>
+                                <p>学校后面小路，窄而幽静。夏雨每天骑破自行车穿行，路口修车大爷早已认识了他。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 情感锚点 -->
+                    <div class="spinoff-moments">
+                        <div class="spinoff-section-header">
+                            <span class="section-dot dot-blue"></span>
+                            <h3>被看见的瞬间</h3>
+                            <span class="section-line"></span>
+                        </div>
+                        <p class="moments-subtitle">每一集的情感核心——那个「被看见」的小瞬间</p>
+                        <div class="moments-list">
+                            <div class="moment-item">
+                                <div class="moment-ep">EP.01</div>
+                                <div class="moment-body">
+                                    <div class="moment-title">🌧️ 烤肠与泥水</div>
+                                    <p>梓耀闯了祸，但妙可看见了他手里的烤肠——知道他是怕烤肠凉了才跑那么快，而不是不在乎。</p>
+                                </div>
+                            </div>
+                            <div class="moment-item">
+                                <div class="moment-ep">EP.02</div>
+                                <div class="moment-body">
+                                    <div class="moment-title">⭐ 云雪的星星</div>
+                                    <p>妙可看见了云雪折的星星，看见了她的沉默，看见了她没有说出口的话。</p>
+                                </div>
+                            </div>
+                            <div class="moment-item">
+                                <div class="moment-ep">EP.03</div>
+                                <div class="moment-body">
+                                    <div class="moment-title">🌸 春游的一天</div>
+                                    <p>一天过去了。云雪看见了所有人，然后把这一天画了下来。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 日常生活写真集 -->
+                    <div class="spinoff-gallery">
+                        <div class="spinoff-section-header">
+                            <span class="section-dot dot-pink"></span>
+                            <h3>日常生活写真集</h3>
+                            <span class="section-line"></span>
+                        </div>
+                        <p class="moments-subtitle">光线之外的小日子——普通就是最好看的样子</p>
+                        <div class="gallery-scroll-track">
+                            <div class="gallery-item">
+                                <div class="gallery-photo-wrap">
+                                    <img src="spinoff-life1.png" alt="河边醣鱼" class="gallery-photo">
+                                    <div class="gallery-overlay">
+                                        <div class="gallery-tag">🌿 周末醣鱼</div>
+                                        <p>好了，你负责盗多少我就盗多少。<br><span style="opacity:0.6">妙可 · 梓耀</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-item">
+                                <div class="gallery-photo-wrap">
+                                    <img src="spinoff-life2.png" alt="雨天行走" class="gallery-photo">
+                                    <div class="gallery-overlay">
+                                        <div class="gallery-tag">🌧️ 梧桐道的雨</div>
+                                        <p>下雨天也没关系，反正我有一只手。<br><span style="opacity:0.6">梓耀 · 妙可</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 故事短视频 -->
+                    <div class="spinoff-videos">
+                        <div class="spinoff-section-header">
+                            <span class="section-dot dot-orange"></span>
+                            <h3>故事短视频</h3>
+                            <span class="section-line"></span>
+                        </div>
+                        <p class="moments-subtitle">五(2)班的日常小剧射——那些被记下来的普通瞬间</p>
+                        <div class="videos-scroll-track">
+                            <div class="video-card">
+                                <div class="video-wrap">
+                                    <video controls preload="metadata" class="story-video" playsinline>
+                                        <source src="culture/故事1.mp4" type="video/mp4">
+                                    </video>
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-ep-tag">EP.01</div>
+                                    <h4>故事一</h4>
+                                    <p>五(2)班的日常小剧情，那些小瞬间被记下来了。</p>
+                                </div>
+                            </div>
+                            <div class="video-card">
+                                <div class="video-wrap">
+                                    <video controls preload="metadata" class="story-video" playsinline>
+                                        <source src="culture/故事2.mp4" type="video/mp4">
+                                    </video>
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-ep-tag">EP.02</div>
+                                    <h4>故事二</h4>
+                                    <p>人与人之间的小事情，有些人是真的在乎。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 底部创作理念 -->
+                    <div class="spinoff-philosophy">
+                        <div class="philosophy-inner">
+                            <div class="philosophy-icon">🎁</div>
+                            <h3>写给妙可的礼物</h3>
+                            <p>这个番外是给妙可的礼物——让她在一个没有星光宿命的世界里，过一段完整的、平凡的、被好好爱着的童年。也是给所有人的礼物——让你想起那个放学后不急着回家的自己。</p>
+                            <div class="philosophy-tags">
+                                <span>慢慢来，不着急</span>
+                                <span>小事里的大情感</span>
+                                <span>普通也可以发光</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 田历历法 -->
+            <section id="calendar" class="culture-section">
+                <h2>琳凯蒂亚新星历（田历）</h2>
+                
+                <div class="calendar-intro">
+                    <div class="calendar-description">
+                        <h3>历法由来</h3>
+                        <p>为了纪念光线使者们地球任务的开启，星帝和星王倡导了历法改革，创立了结合地球公转的新星历。以公元2015年3月21日为华田元年1月1日，此日恰好是春分，象征着新的开始。</p>
+                        
+                        <div class="calendar-rules">
+                            <h4>历法规则</h4>
+                            <ul>
+                                <li><strong>月份设置：</strong>全年12个月，每月天数分别为：30、31、31、32、31、31、30、30、30、29、30、30</li>
+                                <li><strong>闰年规则：</strong>闰年时1月增加一个31号，即变31天</li>
+                                <li><strong>年始日：</strong>每年的第一天必须是春分（以北京时间为准）</li>
+                                <li><strong>纪元起点：</strong>2015年3月21日 = 华田元年1月1日</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav prev" id="prevMonth">◀</button>
+                        <div class="calendar-title">
+                            <h3 id="calendarTitle"></h3>
+                            <p class="calendar-subtitle" id="calendarSubtitle"></p>
+                        </div>
+                        <button class="calendar-nav next" id="nextMonth">▶</button>
+                    </div>
+                    
+                    <div class="calendar-controls">
+                        <div class="integrated-control-bar">
+                            <!-- 年份控制组 -->
+                            <div class="control-group year-controls">
+                                <button class="control-btn year-nav prev-year" id="prevYear" title="上一年 (W)">
+                                    <span class="control-icon">◀</span>
+                                </button>
+                                <div class="current-year-display" id="currentYearDisplay">
+                                    <span class="year-value" id="currentYearValue">华田元年</span>
+                                </div>
+                                <button class="control-btn year-nav next-year" id="nextYear" title="下一年 (S)">
+                                    <span class="control-icon">▶</span>
+                                </button>
+                            </div>
+                            
+                            <!-- 分隔线 -->
+                            <div class="control-divider"></div>
+                            
+                            <!-- 操作按钮组 -->
+                            <div class="control-group action-controls">
+                                <button class="control-btn today-btn" id="todayBtn" title="回到今天 (T)">
+                                    <span class="control-icon">📅</span>
+                                    <span class="control-text">今天</span>
+                                </button>
+                            </div>
+                            
+                            <!-- 分隔线 -->
+                            <div class="control-divider"></div>
+                            
+                            <!-- 快捷键提示组 -->
+                            <div class="control-group shortcuts-display">
+                                <div class="shortcuts-compact">
+                                    <span class="shortcuts-label">快捷键:</span>
+                                    <div class="shortcuts-items">
+                                        <span class="shortcut-hint"><kbd>WS</kbd>年份</span>
+                                        <span class="shortcut-hint"><kbd>AD</kbd>月份</span>
+                                        <span class="shortcut-hint"><kbd>T</kbd>今天</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 分隔线 -->
+                            <div class="control-divider"></div>
+
+                            <!-- 今日信息 -->
+                            <div class="control-group today-info">
+                                <div class="calendar-info">
+                                    <span id="todayInfo"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calendar-grid">
+                        <div class="calendar-weekdays">
+                            <div class="weekday">日</div>
+                            <div class="weekday">一</div>
+                            <div class="weekday">二</div>
+                            <div class="weekday">三</div>
+                            <div class="weekday">四</div>
+                            <div class="weekday">五</div>
+                            <div class="weekday">六</div>
+                        </div>
+                        <div class="calendar-days" id="calendarDays">
+                            <!-- 日期将由JavaScript动态生成 -->
+                        </div>
+                    </div>
+                    
+                    <div class="calendar-legend">
+                        <div class="legend-item">
+                            <div class="legend-color today"></div>
+                            <span>今天</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color current-month"></div>
+                            <span>当月</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color other-month"></div>
+                            <span>其他月</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color festival"></div>
+                            <span>田历节日</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calendar-festivals">
+                    <!-- 注意与js文件保持一致-->
+                    <h3>田历特殊日期</h3>
+                    <div class="festivals-grid">
+                        <div class="festival-item">
+                            <div class="festival-date">1月1日</div>
+                            <div class="festival-name">春元节</div>
+                            <div class="festival-desc">象征着万物新生新的朝气</div>
+                        </div>
+                        <div class="festival-item">
+                            <div class="festival-date">4月32日</div>
+                            <div class="festival-name">星法节</div>
+                            <div class="festival-desc">纪念星法塔的神圣力量，也是琳凯蒂亚最重要的活动</div>
+                        </div>
+                        <div class="festival-item">
+                            <div class="festival-date">6月3日</div>
+                            <div class="festival-name">彩虹日</div>
+                            <div class="festival-desc">纪念光线使者地球任务开启（20150825）</div>
+                        </div>
+                        <div class="festival-item">
+                            <div class="festival-date">8月16日</div>
+                            <div class="festival-name">妙可生日</div>
+                            <div class="festival-desc">琳凯蒂亚小公主诞辰，这天全球庆贺</div>
+                        </div>
+                        <div class="festival-item">
+                            <div class="festival-date">12月30日</div>
+                            <div class="festival-name">夜夕节</div>
+                            <div class="festival-desc">全球欢迎新年的到来！</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>琳凯蒂亚语社区</h3>
+                <p>探索奇幻语言的魅力</p>
+                <p>基于《光线传奇》小说世界</p>
+            </div>
+            <div class="footer-section">
+                <h4>快速链接</h4>
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="grammar.html">语法</a></li>
+                    <li><a href="dictionary.html">词典</a></li>
+                    <li><a href="culture.html">文化</a></li>
+                    <li><a href="community.html">社区</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>联系我们</h4>
+                <p>📧 邮箱：1778181360@qq.com</p>
+                <p>👥 QQ群：515385616</p>
+                <div class="institution">
+                    <h5>华田中央大学田语学院</h5>
+                    <p>专业的琳凯蒂亚语研究与教学机构</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 琳凯蒂亚语社区. 版权所有.</p>
+            <p>华田中央大学田语学院 版权所有</p>
+        </div>
+    </footer>
+
+    <script src="tian-calendar.js"></script>
+    <script src="auth-system.js"></script>
+    <script src="content-manager.js"></script>
+    <script src="script.js"></script>
+    <!-- 农历计算库：使用第三方 lunar-javascript 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.min.js"></script>
+    <script src="lunar-calendar-lib.js"></script>
+    <script src="lunar-calendar.js"></script>
+    <script src="culture.js"></script>
+    <script src="flag-navigation.js"></script>
+    
+    <!-- 视频播放调试脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 监控所有视频的加载和播放状态
+        document.querySelectorAll('.story-video').forEach((video, index) => {
+            console.log(`初始化视频 ${index + 1} 监控`);
+            
+            video.addEventListener('loadedmetadata', function() {
+                console.log(`视频 ${index + 1}: 元数据已加载`, {
+                    width: this.videoWidth,
+                    height: this.videoHeight,
+                    duration: this.duration
+                });
+            });
+            
+            video.addEventListener('loadeddata', function() {
+                console.log(`视频 ${index + 1}: 首帧数据已加载`);
+            });
+            
+            video.addEventListener('canplay', function() {
+                console.log(`视频 ${index + 1}: 可以开始播放`);
+            });
+            
+            video.addEventListener('error', function(e) {
+                console.error(`视频 ${index + 1}: 加载错误`, this.error);
+            });
+            
+            video.addEventListener('play', function() {
+                console.log(`视频 ${index + 1}: 开始播放`);
+            });
+            
+            // 检查视频是否有画面
+            setTimeout(() => {
+                if (video.readyState >= 2) {
+                    console.log(`视频 ${index + 1}: 就绪状态良好`, {
+                        readyState: video.readyState,
+                        networkState: video.networkState,
+                        videoWidth: video.videoWidth,
+                        videoHeight: video.videoHeight
+                    });
+                } else {
+                    console.warn(`视频 ${index + 1}: 就绪状态不佳`, {
+                        readyState: video.readyState,
+                        networkState: video.networkState
+                    });
+                }
+            }, 3000);
+        });
+    });
+    </script>
+</body>
+</html>
