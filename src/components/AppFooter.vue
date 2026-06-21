@@ -27,8 +27,8 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2025 琳凯蒂亚星球. 版权所有.</p>
-      <p>华田中央大学 版权所有</p>
+      <p>&copy; 2025-2026 rincatian.top 琳凯蒂亚星球. 版权所有.</p>
+      <p>华田中央大学 - Central University of Rincatia 版权所有</p>
     </div>
   </footer>
 </template>

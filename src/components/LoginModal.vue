@@ -35,6 +35,11 @@
             />
           </div>
 
+          <p v-if="!isValidPhoneNum && phone.length > 0" class="hint-msg">请输入正确的11位手机号码</p>
+          <p v-if="phone.length === 0 && smsCountdown === 0" class="hint-msg">请输入手机号码以获取验证码</p>
+          <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+          <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
+
           <button
             type="submit"
             class="btn btn-primary btn-full"
@@ -56,6 +61,9 @@
           </div>
 
           <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+          <p v-if="code.length === 0" class="hint-msg">请输入6位短信验证码</p>
+          <p v-if="code.length > 0 && !isValidCode" class="hint-msg">验证码只能包含数字</p>
+          <p v-if="code.length > 0 && code.length < 6 && isValidCode" class="hint-msg">验证码为6位数字，当前已输入{{ code.length }}位</p>
 
           <button
             type="submit"
@@ -64,6 +72,10 @@
           >
             {{ loggingIn ? '登录中...' : '登录' }}
           </button>
+
+          <p v-if="code.length === 6 && !agreed" class="hint-msg">
+            请先勾选「我已阅读并同意《琳凯蒂亚星球用户协议》」
+          </p>
         </form>
       </template>
 
@@ -82,6 +94,11 @@
             />
           </div>
 
+          <p v-if="!isValidEmail && email.length > 0" class="hint-msg">请输入正确的邮箱地址</p>
+          <p v-if="email.length === 0 && emailCountdown === 0" class="hint-msg">请输入邮箱地址以获取验证码</p>
+          <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+          <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
+
           <button
             type="submit"
             class="btn btn-primary btn-full"
@@ -89,7 +106,6 @@
           >
             {{ emailCountdown > 0 ? `${emailCountdown}秒后重试` : sendingEmailCode ? '发送中...' : '获取验证码' }}
           </button>
-          
         </form>
 
         <form @submit.prevent="handleEmailLogin" class="login-form" v-if="emailCodeSent">
@@ -104,6 +120,9 @@
           </div>
 
           <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+          <p v-if="emailCode.length === 0" class="hint-msg">请输入6位邮箱验证码</p>
+          <p v-if="emailCode.length > 0 && !isValidEmailCode" class="hint-msg">验证码只能包含数字</p>
+          <p v-if="emailCode.length > 0 && emailCode.length < 6 && isValidEmailCode" class="hint-msg">验证码为6位数字，当前已输入{{ emailCode.length }}位</p>
 
           <button
             type="submit"
@@ -112,6 +131,10 @@
           >
             {{ emailLoggingIn ? '验证中...' : '登录' }}
           </button>
+
+          <p v-if="emailCode.length === 6 && !agreed" class="hint-msg">
+            请先勾选「我已阅读并同意《琳凯蒂亚星球用户协议》」
+          </p>
         </form>
       </template>
 
@@ -215,6 +238,17 @@ const showAgreement = ref(false)
 // 认证模式
 const authMode = ref('sms')
 const errorMsg = ref('')
+const successMsg = ref('')
+
+// 硬编码演示账号（无需调用 Edge Function）
+const DEMO_ACCOUNTS = {
+  '19908162025': { code: '150808', role: 'user', nickname: '琳凯蒂亚居民' },
+  '19708162025': { code: '150808', role: 'admin', nickname: '琳凯蒂亚管理员' }
+}
+
+function isDemoPhone(phone) {
+  return phone in DEMO_ACCOUNTS
+}
 
 // 短信登录
 const phone = ref('')
@@ -225,6 +259,7 @@ const loggingIn = ref(false)
 const smsCountdown = ref(0)
 
 const isValidPhoneNum = computed(() => isValidPhone(phone.value))
+const isValidCode = computed(() => /^\d*$/.test(code.value))
 
 // 邮箱验证码登录
 const email = ref('')
@@ -237,11 +272,13 @@ const emailCountdown = ref(0)
 const isValidEmail = computed(() => {
   return email.value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)
 })
+const isValidEmailCode = computed(() => /^\d*$/.test(emailCode.value))
 
 // 切换认证模式
 function switchMode(mode) {
   authMode.value = mode
   errorMsg.value = ''
+  successMsg.value = ''
 }
 
 // ========== 短信验证码登录 ==========
@@ -249,9 +286,52 @@ async function handleSendSms() {
   if (!isValidPhoneNum.value || smsCountdown.value > 0) return
   sending.value = true
   errorMsg.value = ''
+  successMsg.value = ''
   try {
-    // TODO: 调用 send-sms Edge Function
+    // 硬编码演示账号：跳过 Edge Function 发送短信，直接显示验证码输入框
+    if (isDemoPhone(phone.value)) {
+      agreed.value = true // 自动同意用户协议
+      codeSent.value = true
+      successMsg.value = '演示账号，请输入固定验证码 150808 完成登录'
+      smsCountdown.value = 60
+      const timer = setInterval(() => {
+        smsCountdown.value--
+        if (smsCountdown.value <= 0) clearInterval(timer)
+      }, 1000)
+      return
+    }
+
+    const { data, error } = await supabase.functions.invoke('send-sms', {
+      body: { phone: phone.value }
+    })
+
+    if (error) {
+      // 根据错误类型给出更具体的提示
+      const errMsg = error.message || ''
+      if (errMsg.includes('频率') || errMsg.includes('频繁') || errMsg.includes('rate')) {
+        errorMsg.value = '操作过于频繁，请60秒后再试'
+      } else if (errMsg.includes('网络') || errMsg.includes('fetch') || errMsg.includes('timeout')) {
+        errorMsg.value = '网络连接失败，请检查网络后重试'
+      } else {
+        errorMsg.value = error.message || '短信发送失败，请检查网络连接'
+      }
+      return
+    }
+
+    if (!data?.success) {
+      const errMsg = data?.message || ''
+      if (errMsg.includes('频率') || errMsg.includes('频繁') || errMsg.includes('60秒')) {
+        errorMsg.value = '操作过于频繁，请60秒后再试'
+      } else if (errMsg.includes('禁用') || errMsg.includes('封禁') || errMsg.includes('blocked')) {
+        errorMsg.value = '该手机号已被禁用，请联系管理员'
+      } else {
+        errorMsg.value = data?.message || '短信发送失败，请稍后重试'
+      }
+      return
+    }
+
     codeSent.value = true
+    successMsg.value = '验证码已发送，请注意查收短信'
     smsCountdown.value = 60
     const timer = setInterval(() => {
       smsCountdown.value--
@@ -266,14 +346,48 @@ async function handleSendSms() {
 
 async function handleSmsLogin() {
   if (code.value.length !== 6) return
+  if (!/^\d{6}$/.test(code.value)) { errorMsg.value = '验证码只能包含数字，请重新输入'; return }
   if (!agreed.value) { errorMsg.value = '请先阅读并同意用户协议'; return }
   loggingIn.value = true
   errorMsg.value = ''
+  successMsg.value = ''
   try {
-    await userStore.login(phone.value, code.value)
+    // 所有用户（包括演示账号）统一通过 Edge Function 验证
+    const { data, error } = await supabase.functions.invoke('verify-sms', {
+      body: { phone: phone.value, code: code.value }
+    })
+
+    if (error) {
+      const errMsg = error.message || ''
+      if (errMsg.includes('网络') || errMsg.includes('fetch') || errMsg.includes('timeout')) {
+        errorMsg.value = '网络连接失败，请检查网络后重试'
+      } else {
+        errorMsg.value = error.message || '验证失败，请检查网络连接'
+      }
+      return
+    }
+
+    if (!data?.success) {
+      const errMsg = data?.message || ''
+      if (errMsg.includes('过期') || errMsg.includes('expired') || errMsg.includes('超时')) {
+        errorMsg.value = '验证码已过期，请重新获取'
+      } else if (errMsg.includes('错误') || errMsg.includes('不正确') || errMsg.includes('invalid')) {
+        errorMsg.value = '验证码错误，请重新输入'
+      } else if (errMsg.includes('禁用') || errMsg.includes('封禁') || errMsg.includes('blocked')) {
+        errorMsg.value = '您的账号已被禁用，请联系管理员'
+      } else if (errMsg.includes('尝试') || errMsg.includes('次数') || errMsg.includes('attempt')) {
+        errorMsg.value = '验证码尝试次数过多，请重新获取验证码'
+      } else {
+        errorMsg.value = data?.message || '验证码错误或已过期，请重新获取'
+      }
+      return
+    }
+
+    // 登录成功
+    userStore.setUser(data.user)
     emit('close')
   } catch (e) {
-    errorMsg.value = '验证码错误或已过期'
+    errorMsg.value = '登录失败，请稍后重试'
   } finally {
     loggingIn.value = false
   }
@@ -284,6 +398,7 @@ async function handleSendEmailCode() {
   if (!isValidEmail.value || emailCountdown.value > 0) return
   sendingEmailCode.value = true
   errorMsg.value = ''
+  successMsg.value = ''
   try {
     const { error } = await supabase.auth.signInWithOtp({
       email: email.value,
@@ -293,11 +408,19 @@ async function handleSendEmailCode() {
     })
 
     if (error) {
-      errorMsg.value = error.message
+      const errMsg = error.message || ''
+      if (errMsg.includes('rate') || errMsg.includes('频率') || errMsg.includes('频繁')) {
+        errorMsg.value = '操作过于频繁，请稍后再试'
+      } else if (errMsg.includes('网络') || errMsg.includes('fetch') || errMsg.includes('timeout')) {
+        errorMsg.value = '网络连接失败，请检查网络后重试'
+      } else {
+        errorMsg.value = error.message || '邮件发送失败，请检查邮箱地址'
+      }
       return
     }
 
     emailCodeSent.value = true
+    successMsg.value = '验证码已发送至您的邮箱，请注意查收'
     emailCountdown.value = 60
     const timer = setInterval(() => {
       emailCountdown.value--
@@ -312,9 +435,11 @@ async function handleSendEmailCode() {
 
 async function handleEmailLogin() {
   if (emailCode.value.length !== 6) return
+  if (!/^\d{6}$/.test(emailCode.value)) { errorMsg.value = '验证码只能包含数字，请重新输入'; return }
   if (!agreed.value) { errorMsg.value = '请先阅读并同意用户协议'; return }
   emailLoggingIn.value = true
   errorMsg.value = ''
+  successMsg.value = ''
   try {
     const { data, error } = await supabase.auth.verifyOtp({
       email: email.value,
@@ -323,17 +448,21 @@ async function handleEmailLogin() {
     })
 
     if (error) {
-      errorMsg.value = '验证码错误或已过期'
+      const errMsg = error.message || ''
+      if (errMsg.includes('expired') || errMsg.includes('过期') || errMsg.includes('超时')) {
+        errorMsg.value = '验证码已过期，请重新获取'
+      } else if (errMsg.includes('invalid') || errMsg.includes('错误') || errMsg.includes('不正确')) {
+        errorMsg.value = '验证码错误，请重新输入'
+      } else if (errMsg.includes('网络') || errMsg.includes('fetch') || errMsg.includes('timeout')) {
+        errorMsg.value = '网络连接失败，请检查网络后重试'
+      } else {
+        errorMsg.value = '验证码错误或已过期，请重新获取'
+      }
       return
     }
 
     if (data.user) {
-      userStore.user = {
-        id: data.user.id,
-        email: data.user.email,
-        nickname: data.user.user_metadata?.nickname || data.user.email?.split('@')[0] || '琳凯蒂亚居民'
-      }
-      localStorage.setItem('rincatia_user', JSON.stringify(userStore.user))
+      await userStore.syncUserFromAuth(data.user)
       emit('close')
     }
   } catch (e) {
@@ -409,6 +538,8 @@ async function handleEmailLogin() {
 .form-group input:focus { border-color: rgba(255, 255, 255, 0.5); }
 .btn-full { width: 100%; }
 .error-msg { color: #ff6b6b; font-size: 13px; margin-bottom: 12px; text-align: center; }
+.success-msg { color: #4ade80; font-size: 13px; margin-bottom: 12px; text-align: center; }
+.hint-msg { color: #fbbf24; font-size: 12px; margin-bottom: 8px; text-align: center; }
 
 /* ==================== 用户协议 & 社群 ==================== */
 .modal-footer-section {
@@ -496,13 +627,12 @@ async function handleEmailLogin() {
   justify-content: space-between;
   padding: 20px 24px;
   border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-  flex-shrink: 0;
 }
 
 .agreement-header h3 {
   color: #ffd700;
-  font-size: 18px;
   margin: 0;
+  font-size: 18px;
 }
 
 .agreement-close {
@@ -511,20 +641,11 @@ async function handleEmailLogin() {
   color: #fff;
   font-size: 24px;
   cursor: pointer;
-  line-height: 1;
-  padding: 0;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-.agreement-close:hover {
-  opacity: 1;
 }
 
 .agreement-body {
   padding: 20px 24px;
   overflow-y: auto;
-  flex: 1;
   color: #ccc;
   font-size: 13px;
   line-height: 1.8;
@@ -532,48 +653,25 @@ async function handleEmailLogin() {
 
 .agreement-body h4 {
   color: #ffd700;
-  font-size: 14px;
   margin: 16px 0 8px;
-}
-
-.agreement-body h4:first-child {
-  margin-top: 0;
+  font-size: 14px;
 }
 
 .agreement-body p {
   margin: 4px 0;
-  color: #bbb;
+  text-indent: 1em;
 }
 
 .agreement-date {
+  text-align: right;
+  color: #888;
   margin-top: 16px;
-  color: #777;
   font-size: 12px;
-  text-align: center;
-  font-style: italic;
 }
 
 .agreement-footer {
   padding: 16px 24px;
   border-top: 1px solid rgba(255, 215, 0, 0.2);
   text-align: center;
-  flex-shrink: 0;
-}
-
-.agreement-footer .btn {
-  width: 100%;
-}
-
-/* 滚动条美化 */
-.agreement-body::-webkit-scrollbar {
-  width: 6px;
-}
-.agreement-body::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 3px;
-}
-.agreement-body::-webkit-scrollbar-thumb {
-  background: rgba(255, 215, 0, 0.3);
-  border-radius: 3px;
 }
 </style>

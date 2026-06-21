@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { useUserStore } from '@/store/user'
+import { checkIsAdmin } from '@/api'
 
 const routes = [
   {
@@ -117,6 +118,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import('@/views/Admin.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFound.vue')
@@ -131,14 +138,26 @@ const router = createRouter({
   }
 })
 
-// 导航守卫：需要登录的页面，未登录则跳转首页
-router.beforeEach((to, from, next) => {
+// 导航守卫：需要登录的页面，未登录则跳转首页；管理员页面额外检查角色
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
+  
+  // 需要登录但未登录
   if (to.meta.requiresAuth && !userStore.isLoggedIn) {
     next({ name: 'Home', query: { showLogin: 'true' } })
-  } else {
-    next()
+    return
   }
+  
+  // 需要管理员权限但不是管理员
+  if (to.meta.requiresAdmin && userStore.user?.id) {
+    const isAdmin = await checkIsAdmin(userStore.user.id)
+    if (!isAdmin) {
+      next({ name: 'Home' })
+      return
+    }
+  }
+  
+  next()
 })
 
 export default router

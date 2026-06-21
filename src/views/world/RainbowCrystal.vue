@@ -63,8 +63,8 @@
             <div class="character-header">
               <div class="character-avatar hero">☀️</div>
               <div>
-                <div class="character-name">田妙可（田野）</div>
-                <div class="character-role">太阳（光）使者 · 红色水晶守护者</div>
+                <div class="character-name">田妙可（索菲·琳）</div>
+                <div class="character-role">太阳使者 · 红色水晶守护者</div>
               </div>
             </div>
             <div class="character-info">预言中打破循环的核心人物，琳凯蒂亚公主。2015年8月25日正式觉醒。灵魂18岁，身体6岁，深金色卷曲长发，蓝色眼睛，额间有太阳印记。</div>
@@ -73,7 +73,7 @@
             <div class="character-header">
               <div class="character-avatar hero">⚡</div>
               <div>
-                <div class="character-name">刘俊（俊哥）</div>
+                <div class="character-name">俊哥（雷恩·斯塔尔）</div>
                 <div class="character-role">电磁使者 · 绿色水晶守护者</div>
               </div>
             </div>
@@ -83,8 +83,8 @@
             <div class="character-header">
               <div class="character-avatar hero">🌙</div>
               <div>
-                <div class="character-name">田梦雪（露娜）</div>
-                <div class="character-role">月光使者 · 黄色水晶守护者</div>
+                <div class="character-name">田梦雪（露娜·琳）</div>
+                <div class="character-role">金月使者 · 黄色水晶守护者</div>
               </div>
             </div>
             <div class="character-info">22岁，开朗体贴，田妙可的姐姐。2009年日全食觉醒被困，2015年中秋意识链接，唯一经历过长时间半觉醒状态的成员。</div>
@@ -93,18 +93,18 @@
             <div class="character-header">
               <div class="character-avatar hero">⭐</div>
               <div>
-                <div class="character-name">丽丽（黛拉）</div>
-                <div class="character-role">星星（星辰）使者 · 紫色水晶守护者</div>
+                <div class="character-name">丽丽（黛拉·琳）</div>
+                <div class="character-role">星辰使者 · 紫色水晶守护者</div>
               </div>
             </div>
-            <div class="character-info">15岁，星虹中学高一新生，妙可的童年挚友。2015年9月9日正式觉醒，觉醒后前往中国北方，是守护者阵营的核心成员。</div>
+            <div class="character-info">15岁，星虹中学高一新生，妙可的童年挚友。2015年9月2日正式觉醒，觉醒后前往中国北方，是守护者阵营的核心成员。</div>
           </div>
           <div class="character-card">
             <div class="character-header">
               <div class="character-avatar villain">💧</div>
               <div>
-                <div class="character-name">韩斌（云雨/古劳奇）</div>
-                <div class="character-role">水/气使者 · 青色水晶守护者</div>
+                <div class="character-name">韩斌（古劳奇·雷）</div>
+                <div class="character-role">云雨使者 · 青色水晶守护者</div>
               </div>
             </div>
             <div class="character-info">17岁，合肥一中高二学生。2015年8月被外星叛逆者「古劳奇」附身，走向与守护者对立，是「走错路的自己人」。</div>
@@ -113,7 +113,7 @@
             <div class="character-header">
               <div class="character-avatar villain">⏳</div>
               <div>
-                <div class="character-name">俊伟（时空/泰倍斯）</div>
+                <div class="character-name">俊伟（泰倍斯·锡）</div>
                 <div class="character-role">时空使者 · 蓝色水晶守护者</div>
               </div>
             </div>
@@ -123,7 +123,7 @@
             <div class="character-header">
               <div class="character-avatar hero">🌪️</div>
               <div>
-                <div class="character-name">蔡啸林</div>
+                <div class="character-name">笑林（科摩林·锡）</div>
                 <div class="character-role">风尘使者 · 橙色水晶守护者</div>
               </div>
             </div>
@@ -174,6 +174,226 @@
               </div>
             </div>
             <div class="character-info">18岁，大大咧咧，重情重义，球技好。和妙可约定一起考上南京大学，球场铁三角之一。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>👨‍👩‍👧 田家亲属</h3>
+        <div class="character-grid">
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">👨‍🌾</div>
+              <div>
+                <div class="character-name">田父</div>
+                <div class="character-role">农民 / 建筑工程师</div>
+              </div>
+            </div>
+            <div class="character-info">53岁，沉稳内敛、不善言辞但父爱深沉。出身合肥乡村，靠双手撑起家庭。1997年在老家门槛上为儿子取名"田野"，2015年以童年英语回忆为灵感，为变身的女儿取名"妙可"（取自milky way银河的谐音）。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">👩‍👦</div>
+              <div>
+                <div class="character-name">田母</div>
+                <div class="character-role">全职家庭主妇</div>
+              </div>
+            </div>
+            <div class="character-info">48岁，温柔坚韧、细心周到、共情力强。出身大兴安岭城镇，后嫁到合肥。是第一个目睹田野出生时光蝴蝶异象的人，全程陪伴田野变身前后的所有艰难时刻，是孩子最坚实的情绪后盾。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">👶</div>
+              <div>
+                <div class="character-name">昊辰</div>
+                <div class="character-role">梦雪与俊哥之子</div>
+              </div>
+            </div>
+            <div class="character-info">2岁，天真懵懂、嗅觉敏锐。梦雪和俊哥的儿子，嗅觉异常敏锐，只认"香香姐姐"，是第一个毫无芥蒂接纳变身的妙可的人。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🏪 七姑一家</h3>
+        <div class="character-grid">
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🔪</div>
+              <div>
+                <div class="character-name">七姑</div>
+                <div class="character-role">社区生鲜店店主</div>
+              </div>
+            </div>
+            <div class="character-info">40岁，大嗓门热心肠，急躁心软，行动力爆表。田父的妹妹，在新城小区一楼经营生鲜店。是第一个发现田野变身的亲属，变身事件后主动组织家庭聚会，给妙可买衣服和食物，是田家的"后勤部长"。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">👓</div>
+              <div>
+                <div class="character-name">姑爷</div>
+                <div class="character-role">社区生鲜店店主</div>
+              </div>
+            </div>
+            <div class="character-info">40岁，沉稳寡言，细心靠谱，按章办事，喜欢拿小本本记录一切。七姑的丈夫，戴单把眼镜，变身事件后默默帮忙处理杂事，是七姑的得力助手。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">👧</div>
+              <div>
+                <div class="character-name">梦云</div>
+                <div class="character-role">七姑长女</div>
+              </div>
+            </div>
+            <div class="character-info">16岁，内向少言。七姑的大女儿，变身事件后嘴上说不想来但全程牵挂。第五集因中考失利与家庭决裂，被外星叛逆者拉拢，在韩斌精心设计的虚荣中越陷越深。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🎀</div>
+              <div>
+                <div class="character-name">二瑞</div>
+                <div class="character-role">小学四年级学生</div>
+              </div>
+            </div>
+            <div class="character-info">10岁，活泼贴心，心眼强会说话，极度崇拜田野。七姑的二女儿，变身事件后主动送裙子和画画，是妙可的小迷妹。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">⚽</div>
+              <div>
+                <div class="character-name">三宝</div>
+                <div class="character-role">小学二年级学生</div>
+              </div>
+            </div>
+            <div class="character-info">8岁，好动天真，有点调皮但懂事，认人不认脸。七姑的小儿子，从喊"田野哥哥"无缝切换到"姐姐"，经常拉着妙可玩。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>👑 琳凯蒂亚皇族</h3>
+        <div class="character-grid">
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">✨</div>
+              <div>
+                <div class="character-name">琳凯蒂亚星后</div>
+                <div class="character-role">世宏天母</div>
+              </div>
+            </div>
+            <div class="character-info">身着白色长裙，浑身散发圣洁光芒。温柔圣洁，充满母爱。田妙可的异星生母，仅在光镜中出现，告知妙可"水晶守护者"的使命，以及她还有一位名叫丽丽的伙伴。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">👑</div>
+              <div>
+                <div class="character-name">琳凯蒂亚星帝</div>
+                <div class="character-role">召归大帝</div>
+              </div>
+            </div>
+            <div class="character-info">琳凯蒂亚星球的统治者，田妙可的异星生父。星帝星母在琳凯蒂亚水晶球中见证女儿归来，守护着琳凯蒂亚星球的命运。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🎓 同窗好友</h3>
+        <div class="character-grid">
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🏀</div>
+              <div>
+                <div class="character-name">李哲</div>
+                <div class="character-role">合肥一中高二学生</div>
+              </div>
+            </div>
+            <div class="character-info">18岁，性格内敛，球技精湛，观察力强。田野的同班同学，球场铁三角之一，第一个说出"她真的太像田野了"的人。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🎒</div>
+              <div>
+                <div class="character-name">郭清逸</div>
+                <div class="character-role">合肥一中高二学生</div>
+              </div>
+            </div>
+            <div class="character-info">田野的兄弟，球场伙伴，与昊天、李哲共同组成田野的好友圈，见证了田野变身前后的种种变化。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">📚</div>
+              <div>
+                <div class="character-name">袁玮</div>
+                <div class="character-role">合肥一中高二学生</div>
+              </div>
+            </div>
+            <div class="character-info">田野的兄弟之一，与昊天、李哲、郭清逸共同构成田野在合肥一中的核心社交圈。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>🏘️ 邻里与配角</h3>
+        <div class="character-grid">
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🍦</div>
+              <div>
+                <div class="character-name">张奶奶</div>
+                <div class="character-role">小区冰棍摊主</div>
+              </div>
+            </div>
+            <div class="character-info">60余岁，朴实憨厚，易吃惊。新城小区卖冰棍的老人，是第一个目睹田野变身的邻居，惊呼"仙女下凡"。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">👷</div>
+              <div>
+                <div class="character-name">张哥</div>
+                <div class="character-role">田父同事</div>
+              </div>
+            </div>
+            <div class="character-info">51岁，热情爽朗，嗓门洪亮。田父的同事，正在给大儿子筹备婚房。偶遇变身后的妙可，误以为是田家远房混血亲戚。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🤱</div>
+              <div>
+                <div class="character-name">张嫂</div>
+                <div class="character-role">张哥妻子</div>
+              </div>
+            </div>
+            <div class="character-info">49岁，热心肠，爱孩子。张哥的妻子，见了可爱的小姑娘就挪不开眼。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🔬</div>
+              <div>
+                <div class="character-name">物理老师</div>
+                <div class="character-role">合肥一中物理教师</div>
+              </div>
+            </div>
+            <div class="character-info">40余岁，认真负责，略带古板。第一集出场，韩斌被附身时正在讲凸透镜成像原理。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🤰</div>
+              <div>
+                <div class="character-name">接生婆</div>
+                <div class="character-role">乡村接生婆</div>
+              </div>
+            </div>
+            <div class="character-info">50余岁，经验丰富，嗓门洪亮。1997年在合肥乡村为田母接生，第一个发现田野额间的太阳胎记，预言"将来指定不是个凡人"。</div>
+          </div>
+          <div class="character-card">
+            <div class="character-header">
+              <div class="character-avatar neutral">🏠</div>
+              <div>
+                <div class="character-name">胖婶、瘦叔</div>
+                <div class="character-role">小区居民</div>
+              </div>
+            </div>
+            <div class="character-info">40余岁，热心好奇。新城小区邻居，见证了田野变身的全过程。</div>
           </div>
         </div>
       </div>

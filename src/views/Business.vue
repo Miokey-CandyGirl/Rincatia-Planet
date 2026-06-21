@@ -3,7 +3,7 @@
     <div class="container">
       <!-- 页面头部 -->
       <header class="page-header">
-        <h1 class="page-title">商务合作</h1>
+        <h1 class="page-title">商务往来与合作</h1>
         <p class="page-subtitle">琳凯蒂亚星球 IP 开放多种商业合作模式，携手共创奇幻世界</p>
         <p class="page-university" style="font-size: 20px; font-weight: bold;">华田中央大学艾米商学院</p>
       </header>

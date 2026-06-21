@@ -272,8 +272,8 @@ const products = [
 
 // 社区板块数据
 const communityStats = [
-  { value: '1,000+', label: '注册居民' },
-  { value: '500+', label: '讨论帖子' },
+  { value: '500+', label: '注册居民' },
+  { value: '1,000+', label: '讨论帖子' },
   { value: '200+', label: '学习资源' }
 ]
 
