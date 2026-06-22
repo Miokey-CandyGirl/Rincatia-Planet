@@ -48,3 +48,65 @@ WHERE id = 'b0000000-0000-4000-8000-000000000002';
 -- 4. 创建 Storage Bucket 用于头像上传（在 Supabase 控制台 Storage 中操作，或通过 API）
 -- Bucket 名称: avatars
 -- 权限: 公开读取，登录用户可上传
+
+-- 5. 确保 RLS 已启用并配置 users 表策略（允许用户更新自己的资料）
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+-- 允许用户读取所有用户的基本信息（公开资料）
+DROP POLICY IF EXISTS "Users are viewable by everyone" ON public.users;
+CREATE POLICY "Users are viewable by everyone"
+  ON public.users FOR SELECT
+  USING (true);
+
+-- 允许用户更新自己的资料
+DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
+CREATE POLICY "Users can update own profile"
+  ON public.users FOR UPDATE
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);
+
+-- 允许用户插入自己的记录（注册时）
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.users;
+CREATE POLICY "Users can insert own profile"
+  ON public.users FOR INSERT
+  WITH CHECK (auth.uid() = id);
+
+-- 6. 确保 posts 和 comments 表也有 RLS 策略
+ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Posts are viewable by everyone" ON public.posts;
+CREATE POLICY "Posts are viewable by everyone"
+  ON public.posts FOR SELECT
+  USING (true);
+
+DROP POLICY IF EXISTS "Authenticated users can create posts" ON public.posts;
+CREATE POLICY "Authenticated users can create posts"
+  ON public.posts FOR INSERT
+  WITH CHECK (auth.role() = 'authenticated' AND auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can update own posts" ON public.posts;
+CREATE POLICY "Users can update own posts"
+  ON public.posts FOR UPDATE
+  USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete own posts" ON public.posts;
+CREATE POLICY "Users can delete own posts"
+  ON public.posts FOR DELETE
+  USING (auth.uid() = user_id);
+
+ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Comments are viewable by everyone" ON public.comments;
+CREATE POLICY "Comments are viewable by everyone"
+  ON public.comments FOR SELECT
+  USING (true);
+
+DROP POLICY IF EXISTS "Authenticated users can create comments" ON public.comments;
+CREATE POLICY "Authenticated users can create comments"
+  ON public.comments FOR INSERT
+  WITH CHECK (auth.role() = 'authenticated' AND auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can delete own comments" ON public.comments;
+CREATE POLICY "Users can delete own comments"
+  ON public.comments FOR DELETE
+  USING (auth.uid() = user_id);

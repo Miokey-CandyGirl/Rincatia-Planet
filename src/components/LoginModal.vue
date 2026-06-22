@@ -21,7 +21,7 @@
 
       <!-- ========== 短信验证码登录 ========== -->
       <template v-if="authMode === 'sms'">
-        <p class="modal-subtitle">输入您的手机号码，获取验证码登录</p>
+      <!--  <p class="modal-subtitle">输入您的手机号码，获取验证码登录</p> -->
 
         <form @submit.prevent="handleSendSms" class="login-form">
           <div class="form-group">
@@ -29,7 +29,7 @@
             <input
               type="tel"
               v-model="phone"
-              placeholder="请输入手机号码"
+              placeholder="请输入手机号码   如：+8613800000000"
               maxlength="11"
               :disabled="smsCountdown > 0"
             />
@@ -81,7 +81,7 @@
 
       <!-- ========== 邮箱验证码登录 ========== -->
       <template v-if="authMode === 'email'">
-        <p class="modal-subtitle">输入您的邮箱地址，获取验证码登录</p>
+    <!--    <p class="modal-subtitle">输入您的邮箱地址，获取验证码登录</p>  -->
 
         <form @submit.prevent="handleSendEmailCode" class="login-form">
           <div class="form-group">
@@ -89,7 +89,7 @@
             <input
               type="email"
               v-model="email"
-              placeholder="请输入邮箱地址"
+              placeholder="请输入邮箱地址   如：example@xx.com"
               :disabled="emailCodeSent"
             />
           </div>
@@ -352,7 +352,32 @@ async function handleSmsLogin() {
   errorMsg.value = ''
   successMsg.value = ''
   try {
-    // 所有用户（包括演示账号）统一通过 Edge Function 验证
+    // 演示账号：使用 signInWithPassword 直接登录，无需 Edge Function
+    if (isDemoPhone(phone.value)) {
+      const demoEmail = `${phone.value}@phone.rincatia.local`
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: demoEmail,
+        password: code.value
+      })
+
+      if (authError) {
+        if (authError.message?.includes('Invalid login')) {
+          errorMsg.value = '演示账号登录失败，请确认数据库迁移已执行'
+        } else {
+          errorMsg.value = authError.message || '登录失败，请稍后重试'
+        }
+        return
+      }
+
+      // 登录成功，同步用户信息（onAuthStateChange 会自动触发 syncUserFromAuth）
+      if (authData?.user) {
+        await userStore.syncUserFromAuth(authData.user)
+      }
+      emit('close')
+      return
+    }
+
+    // 普通用户：通过 Edge Function 验证
     const { data, error } = await supabase.functions.invoke('verify-sms', {
       body: { phone: phone.value, code: code.value }
     })
@@ -388,6 +413,7 @@ async function handleSmsLogin() {
     emit('close')
   } catch (e) {
     errorMsg.value = '登录失败，请稍后重试'
+    console.error('登录异常:', e)
   } finally {
     loggingIn.value = false
   }

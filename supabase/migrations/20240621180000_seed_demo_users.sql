@@ -32,7 +32,7 @@ INSERT INTO auth.users (
   'authenticated',
   'authenticated',
   '19908162025@phone.rincatia.local',
-  '',
+  crypt('150808', gen_salt('bf')),
   now(),
   '19908162025',
   now(),
@@ -45,7 +45,7 @@ INSERT INTO auth.users (
   false,
   null
 )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET encrypted_password = crypt('150808', gen_salt('bf'));
 
 -- 管理员用户
 INSERT INTO auth.users (
@@ -72,7 +72,7 @@ INSERT INTO auth.users (
   'authenticated',
   'authenticated',
   '19708162025@phone.rincatia.local',
-  '',
+  crypt('150808', gen_salt('bf')),
   now(),
   '19708162025',
   now(),
@@ -85,7 +85,7 @@ INSERT INTO auth.users (
   false,
   null
 )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET encrypted_password = crypt('150808', gen_salt('bf'));
 
 -- ============================================================
 -- 2. 创建 public.users 记录（关联 auth.users）
