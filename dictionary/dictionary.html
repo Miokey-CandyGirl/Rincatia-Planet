@@ -1,0 +1,3589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>田语在线词典</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="icon" href="/flag_logo.png" type="image/png">
+<!-- PWA Meta Tags -->
+<link rel="manifest" href="/dictionary/manifest.json">
+<meta name="theme-color" content="#0f0f1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="田语词典">
+<link rel="apple-touch-icon" href="/flag_logo.png">
+<style>
+/* ==========================================
+   琳凯蒂亚语在线词典管理系统 — 全局样式
+   ========================================== */
+:root {
+  --bg-primary: #0f0f1a;
+  --bg-card: rgba(255,255,255,0.04);
+  --bg-card-hover: rgba(255,255,255,0.07);
+  --bg-input: rgba(255,255,255,0.06);
+  --accent: #7b9fff;
+  --accent-dim: rgba(123,159,255,0.15);
+  --gold: #ffd700;
+  --gold-dim: rgba(255,215,0,0.15);
+  --success: #4ade80;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --text: #e0e0e0;
+  --text-secondary: #8888aa;
+  --text-muted: #5a5a7a;
+  --border: rgba(255,255,255,0.08);
+  --border-focus: rgba(123,159,255,0.35);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --transition: 0.2s ease;
+  --font: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ===== 认证对话框（增删改时弹出，查询时不需要） ===== */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  backdrop-filter: blur(4px);
+}
+
+.auth-box {
+  position: relative;
+  background: #16162a;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.auth-box .auth-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 28px; height: 28px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.auth-box .auth-close:hover { color: var(--text); border-color: rgba(255,255,255,0.15); }
+
+.auth-box .auth-logo {
+  margin-bottom: 1rem;
+}
+
+.auth-box .auth-logo svg { width: 48px; height: 48px; }
+
+.auth-box h2 {
+  font-size: 1.15rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.auth-box .auth-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.auth-box .auth-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.auth-box .auth-input-group input {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.auth-box .auth-input-group input:focus { border-color: var(--border-focus); }
+
+.auth-box .auth-input-group input::placeholder { color: var(--text-muted); }
+
+.auth-box .auth-error {
+  color: var(--danger);
+  font-size: 0.8rem;
+  margin-top: 0.6rem;
+  min-height: 1.2em;
+}
+
+/* ===== 加载中覆盖层（小游戏） ===== */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 20, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+.loading-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  max-width: 460px;
+  width: 90%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.loading-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 1.1rem;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+.loading-hint {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-bottom: 0.8rem;
+}
+.loading-game-area {
+  background: #0d0f17;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: inline-block;
+  line-height: 0;
+}
+.loading-game-area canvas {
+  display: block;
+  cursor: crosshair;
+}
+.loading-game-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.8rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.loading-game-info strong {
+  color: var(--gold);
+}
+
+/* ===== 顶部导航 ===== */
+.app-header {
+  background: linear-gradient(180deg, rgba(123,159,255,0.12) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.header-logo svg { width: 28px; height: 28px; }
+
+.header-nav {
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(255,255,255,0.03);
+  border-radius: 10px;
+  padding: 0.25rem;
+}
+
+.nav-tab {
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.nav-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-tab.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ===== 主容器 ===== */
+.app-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* ===== 工具栏 ===== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.8rem;
+  flex: 1;
+  min-width: 200px;
+  transition: border-color var(--transition);
+}
+
+.search-box:focus-within { border-color: var(--border-focus); }
+
+.search-box svg { width: 16px; height: 16px; color: var(--text-muted); flex-shrink: 0; }
+
+.search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: var(--font);
+  outline: none;
+}
+
+.search-box input::placeholder { color: var(--text-muted); }
+
+.filter-select {
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--radius);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: var(--font);
+  cursor: pointer;
+  min-width: 120px;
+  transition: border-color var(--transition);
+}
+
+.filter-select:focus { border-color: var(--border-focus); outline: none; }
+.filter-select option { background: #1a1a2e; color: var(--text); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  font-family: var(--font);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--accent-dim);
+  border-color: var(--border-focus);
+  color: var(--accent);
+}
+
+.btn-primary:hover { background: rgba(123,159,255,0.25); }
+
+.btn-danger {
+  background: rgba(248,113,113,0.1);
+  border-color: rgba(248,113,113,0.2);
+  color: var(--danger);
+}
+
+.btn-danger:hover { background: rgba(248,113,113,0.2); }
+
+.btn-sm {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.78rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-icon {
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.btn-icon:hover { color: var(--text); border-color: var(--border-focus); background: var(--bg-card-hover); }
+.btn-icon.danger:hover { color: var(--danger); border-color: rgba(248,113,113,0.3); }
+
+/* ===== 数据表格 ===== */
+.table-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.table-scroll { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+thead { background: rgba(255,255,255,0.03); }
+
+th {
+  padding: 0.75rem 0.8rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+.cell-word { font-weight: 600; color: var(--gold); }
+.cell-ipa { color: var(--text-secondary); font-style: italic; font-size: 0.82rem; }
+.cell-actions { display: flex; gap: 0.3rem; }
+
+.pos-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* 词类融入释义后的内联样式 */
+.pos-inline {
+  display: inline;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-right: 0.15rem;
+}
+
+.pos-noun  { background: rgba(59,130,246,0.2);  color: #60a5fa; }
+.pos-verb  { background: rgba(34,197,94,0.2);   color: #4ade80; }
+.pos-adj   { background: rgba(168,85,247,0.2);  color: #c084fc; }
+.pos-adv   { background: rgba(251,146,60,0.2);  color: #fb923c; }
+.pos-pron  { background: rgba(45,212,191,0.2);  color: #2dd4bf; }
+.pos-conj  { background: rgba(244,114,182,0.2); color: #f472b6; }
+.pos-num   { background: rgba(239,68,68,0.2);   color: #f87171; }
+.pos-excl  { background: rgba(129,140,248,0.2); color: #818cf8; }
+.pos-int  { background: rgba(251,191,36,0.2);  color: #fbbf24; }
+.pos-exp   { background: rgba(251,113,133,0.2); color: #fb7185; }
+
+/* ===== 分页 ===== */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border);
+}
+
+.pagination-info { flex-shrink: 0; }
+
+.pagination-btns {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.pagination-btns button {
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.pagination-btns button:hover:not(:disabled) {
+  border-color: var(--border-focus);
+  color: var(--text);
+}
+
+.pagination-btns button:disabled { opacity: 0.3; cursor: default; }
+.pagination-btns button.active { background: var(--accent-dim); border-color: var(--border-focus); color: var(--accent); }
+
+/* ===== 语法编辑面板 ===== */
+.grammar-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.grammar-topbar .topbar-tip {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.grammar-topbar .btn-book {
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+/* 顶栏右侧链接组：百科入口 + 下载按钮 */
+.grammar-topbar .topbar-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.grammar-topbar .baike-link {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--transition);
+  white-space: nowrap;
+}
+
+.grammar-topbar .baike-link:hover {
+  color: var(--accent);
+}
+
+.grammar-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1rem;
+  min-height: 60vh;
+}
+
+.grammar-sidebar {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.grammar-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 50vh;
+}
+
+.grammar-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 0.15rem;
+}
+
+.grammar-item:hover { background: var(--bg-card-hover); color: var(--text); }
+.grammar-item.active { background: var(--accent-dim); color: var(--accent); font-weight: 600; }
+
+.grammar-item .del-icon {
+  opacity: 0;
+  transition: opacity var(--transition);
+  flex-shrink: 0;
+  margin-left: 0.3rem;
+}
+
+.grammar-item:hover .del-icon { opacity: 0.6; }
+.grammar-item .del-icon:hover { opacity: 1; color: var(--danger); }
+
+.grammar-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  min-height: 45vh;
+}
+
+.grammar-panel-header {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.grammar-panel-header input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: var(--font);
+  font-weight: 600;
+  outline: none;
+}
+
+.grammar-panel-header input::placeholder { color: var(--text-muted); }
+
+.grammar-editor {
+  flex: 1;
+  padding: 0;
+  display: flex;
+}
+
+.grammar-editor textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  line-height: 1.7;
+  padding: 1rem;
+  resize: none;
+  outline: none;
+}
+
+.grammar-preview {
+  grid-column: 1 / -1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+.grammar-preview h1, .grammar-preview h2, .grammar-preview h3 {
+  color: var(--gold);
+  margin: 0.8em 0 0.4em;
+}
+
+.grammar-preview h1:first-child, .grammar-preview h2:first-child, .grammar-preview h3:first-child { margin-top: 0; }
+
+.grammar-preview table {
+  border-collapse: collapse;
+  margin: 0.8em 0;
+}
+
+.grammar-preview th, .grammar-preview td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.grammar-preview th { background: rgba(255,255,255,0.05); }
+
+.grammar-preview code {
+  background: rgba(123,159,255,0.12);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: var(--accent);
+}
+
+.grammar-preview pre {
+  background: rgba(0,0,0,0.3);
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  margin: 0.6em 0;
+}
+
+.grammar-preview pre code { background: none; padding: 0; color: var(--text); }
+
+.grammar-preview blockquote {
+  border-left: 3px solid var(--gold);
+  padding-left: 1rem;
+  margin: 0.6em 0;
+  color: var(--text-secondary);
+}
+
+.grammar-preview ul, .grammar-preview ol { padding-left: 1.5rem; margin: 0.4em 0; }
+
+.grammar-actions {
+  padding: 0.6rem 0.8rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* 语法编辑格式工具栏 */
+.grammar-toolbar {
+  display: flex;
+  gap: 0.2rem;
+  padding: 0.4rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  background: rgba(255,255,255,0.02);
+}
+
+.grammar-toolbar button {
+  width: 30px; height: 30px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: var(--font);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  font-weight: 600;
+}
+
+.grammar-toolbar button:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.grammar-toolbar .tb-sep {
+  width: 1px;
+  background: var(--border);
+  margin: 0 0.3rem;
+}
+
+/* ===== 弹窗 ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: #16162a;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: 90%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 { font-size: 1.05rem; color: var(--gold); }
+
+.modal-close {
+  width: 32px; height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.modal-close:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+.modal-body { padding: 1.2rem; }
+
+.form-group { margin-bottom: 1rem; }
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.88rem;
+  font-family: var(--font);
+  transition: border-color var(--transition);
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--border-focus); }
+
+.form-group textarea { min-height: 80px; resize: vertical; }
+
+.form-group .field-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  padding: 0.8rem 1.2rem;
+  border-top: 1px solid var(--border);
+}
+
+/* ===== 派生词区域 ===== */
+.derivatives-section {
+  margin-top: 0.4rem;
+}
+
+.derivative-row {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+  align-items: center;
+}
+
+.derivative-row input,
+.derivative-row select {
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.derivative-row input:focus,
+.derivative-row select:focus { border-color: var(--border-focus); }
+
+/* 派生词输入框：宽度分配（词缩短50%，释义拉长，词类下拉固定） */
+.derivative-row .deriv-word  { flex: 0.75; }  /* 词输入框：缩短50% */
+.derivative-row .deriv-pos   { flex: 0.5; }   /* 词类下拉 */
+.derivative-row .deriv-meaning { flex: 1.5; }  /* 释义框：拉长 */
+
+/* ===== Toast ===== */
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toast {
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 500;
+  animation: slideIn 0.3s ease;
+  max-width: 360px;
+  box-shadow: var(--shadow);
+}
+
+@keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+.toast-success { background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); color: var(--success); }
+.toast-error { background: rgba(248,113,113,0.15); border: 1px solid rgba(248,113,113,0.3); color: var(--danger); }
+.toast-info { background: var(--accent-dim); border: 1px solid var(--border-focus); color: var(--accent); }
+
+/* ===== 确认对话框 ===== */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 250;
+  backdrop-filter: blur(2px);
+}
+
+.confirm-box {
+  background: #16162a;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.confirm-box p { margin-bottom: 1.2rem; color: var(--text-secondary); font-size: 0.9rem; }
+
+.confirm-box .confirm-btns {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+/* ===== 空状态 ===== */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-state svg { width: 48px; height: 48px; margin-bottom: 0.8rem; opacity: 0.3; }
+
+.empty-state p { font-size: 0.9rem; }
+
+/* ===== 统计卡片 ===== */
+.stats-bar {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.stat-card strong { color: var(--gold); font-size: 1.1rem; }
+
+/* ===== 底部 ===== */
+.app-footer {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-primary);
+  text-align: center;
+  padding: 1.2rem 1.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+  z-index: 50;
+}
+
+.app-footer .footer-school {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.app-footer .footer-time {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 1024px) {
+  .grammar-layout { grid-template-columns: 200px 1fr; }
+}
+
+@media (max-width: 768px) {
+  .app-header { padding: 0 0.8rem; }
+  .header-nav { overflow-x: auto; }
+  .app-main { padding: 1rem 0.8rem; }
+  .grammar-layout { grid-template-columns: 1fr; }
+  .grammar-sidebar { max-height: 200px; }
+  .grammar-list { max-height: 140px; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .search-box { min-width: auto; }
+  .modal { max-width: 95%; }
+  .stats-bar { flex-wrap: wrap; }
+  .header-logo { font-size: 0.9rem; }
+  .nav-tab { padding: 0.35rem 0.6rem; font-size: 0.78rem; }
+  .derivative-row { flex-wrap: wrap; }
+  .derivative-row .deriv-word { flex: 1 1 40%; }
+  .derivative-row .deriv-pos { flex: 0 0 65px; }
+  .derivative-row .deriv-meaning { flex: 1 1 50%; }
+}
+
+@media (max-width: 480px) {
+  .header-logo span { display: none; }
+  .nav-tab { padding: 0.35rem 0.5rem; font-size: 0.75rem; }
+  .pagination { flex-direction: column; gap: 0.5rem; }
+  .btn { font-size: 0.8rem; padding: 0.4rem 0.7rem; }
+  th, td { padding: 0.45rem 0.5rem; font-size: 0.78rem; }
+}
+
+/* ===== PWA 安装提示横幅 ===== */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #16162a;
+  border-top: 1px solid var(--border);
+  padding: 0.8rem 1.2rem;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  z-index: 400;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+  animation: slideUpBanner 0.3s ease;
+}
+@keyframes slideUpBanner { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.pwa-install-banner .banner-icon {
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.pwa-install-banner .banner-text {
+  flex: 1;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+.pwa-install-banner .banner-text small {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+.pwa-install-banner .banner-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.pwa-install-banner .banner-actions .btn-install {
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.pwa-install-banner .banner-actions .btn-install:hover { opacity: 0.85; }
+.pwa-install-banner .banner-actions .btn-dismiss {
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  line-height: 1;
+}
+.pwa-install-banner .banner-actions .btn-dismiss:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+/* iOS 安装引导提示 */
+.pwa-ios-guide {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a2e;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+  display: none;
+  z-index: 401;
+  font-size: 0.82rem;
+  color: var(--text);
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+  animation: fadeIn 0.3s ease;
+}
+.pwa-ios-guide::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px; height: 12px;
+  background: #1a1a2e;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* PWA 更新通知横幅 */
+.pwa-update-banner {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #16162a;
+  border: 1px solid var(--border-focus);
+  border-radius: 12px;
+  padding: 0.7rem 1.2rem;
+  display: none;
+  align-items: center;
+  gap: 0.8rem;
+  z-index: 350;
+  font-size: 0.85rem;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  animation: fadeIn 0.3s ease;
+  max-width: 90%;
+}
+.pwa-update-banner .btn-update {
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+}
+.pwa-update-banner .btn-update:hover { opacity: 0.85; }
+.pwa-update-banner .btn-close-update {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  line-height: 1;
+  transition: color var(--transition);
+}
+.pwa-update-banner .btn-close-update:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- ===== 认证对话框 ===== -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <button class="auth-close" onclick="authOverlay.style.display='none';if(window._authResolve){window._authResolve(false);window._authResolve=null}" title="关闭">&times;</button>
+    <div class="auth-logo">
+      <svg viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="20" stroke="#ffd700" stroke-width="1.5" fill="none"/>
+        <path d="M14 30 L24 12 L34 30" stroke="#ffd700" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="24" cy="12" r="3" fill="#ffd700"/>
+      </svg>
+    </div>
+    <h2>词典管理系统</h2>
+    <p class="auth-desc">请输入口令以进行编辑操作</p>
+    <div class="auth-input-group">
+      <input type="password" id="authPassword" placeholder="请输入口令" autocomplete="off">
+      <button class="btn btn-primary" id="authBtn" onclick="handleAuth()">验证</button>
+    </div>
+    <div class="auth-error" id="authError"></div>
+  </div>
+</div>
+
+<!-- ===== 加载中覆盖层（小游戏） ===== -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="loading-header">
+      <svg viewBox="0 0 32 32" fill="none" style="width:28px;height:28px">
+        <circle cx="16" cy="16" r="14" stroke="#ffd700" stroke-width="1.5" fill="none"/>
+        <path d="M10 22 L16 10 L22 22" stroke="#ffd700" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="16" cy="10" r="2" fill="#ffd700"/>
+      </svg>
+      <span>数据加载中...</span>
+    </div>
+    <p class="loading-hint">来玩个小游戏打发时间吧！点击掉落的词汇得分</p>
+    <div class="loading-game-area">
+      <canvas id="loadingCanvas" width="400" height="280"></canvas>
+    </div>
+    <div class="loading-game-info">
+      <span>得分：<strong id="gameScore">0</strong></span>
+      <span>生命：<span id="gameLives">❤️❤️❤️</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 顶部导航 ===== -->
+<header class="app-header" id="appHeader">
+  <div class="header-inner">
+    <div class="header-logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#ffd700" stroke-width="1.5" fill="none"/>
+        <path d="M10 22 L16 10 L22 22" stroke="#ffd700" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="16" cy="10" r="2" fill="#ffd700"/>
+      </svg>
+      <span>琳凯蒂亚语词典管理系统</span>
+    </div>
+    <nav class="header-nav" id="headerNav">
+      <button class="nav-tab active" data-tab="allwords">所有词表</button>
+      <button class="nav-tab" data-tab="finite">有限词表</button>
+      <button class="nav-tab" data-tab="roots">标准词根</button>
+      <button class="nav-tab" data-tab="classic">古典词表</button>
+      <button class="nav-tab" data-tab="borrowing">已收借词</button>
+      <button class="nav-tab" data-tab="grammar">语法编辑</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== 主内容区 ===== -->
+<main class="app-main" id="appMain"></main>
+
+<!-- ===== 底部信息 ===== -->
+<footer class="app-footer">
+  <div class="footer-school">华田中央大学田语学院</div>
+  <div class="footer-time" id="footerTime"></div>
+</footer>
+
+<!-- ===== Toast 容器 ===== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== 弹窗容器 ===== -->
+<div id="modalContainer"></div>
+
+<!-- ===== 确认对话框容器 ===== -->
+<div id="confirmContainer"></div>
+
+<!-- ===== PWA 安装提示横幅 ===== -->
+<div class="pwa-install-banner" id="pwaInstallBanner">
+  <img class="banner-icon" src="/flag_logo.png" alt="田语词典" width="40" height="40">
+  <div class="banner-text">
+    安装「田语词典」到桌面
+    <small>快速访问，支持离线使用</small>
+  </div>
+  <div class="banner-actions">
+    <button class="btn-install" id="btnInstallPwa">安装</button>
+    <button class="btn-dismiss" id="btnDismissInstall" title="关闭">&times;</button>
+  </div>
+</div>
+
+<!-- ===== iOS 安装引导提示 ===== -->
+<div class="pwa-ios-guide" id="pwaIosGuide">
+  点击下方 <span style="font-size:1.1rem">⎋</span> 分享按钮 →「添加到主屏幕」
+</div>
+
+<!-- ===== PWA 更新通知横幅 ===== -->
+<div class="pwa-update-banner" id="pwaUpdateBanner">
+  <span>🔄 有新版本可用</span>
+  <button class="btn-update" id="btnUpdatePwa">立即更新</button>
+  <button class="btn-close-update" id="btnCloseUpdate" title="关闭">&times;</button>
+</div>
+
+<script>
+/* ==========================================
+   琳凯蒂亚语在线词典管理系统 — JavaScript
+   ========================================== */
+
+// ---- Supabase 初始化 ----
+const SUPABASE_URL = 'https://kbbtsurqznyyqfoaoutt.supabase.co'
+const SUPABASE_ANON_KEY = 'sb_publishable_jngzsUY-WJ8FJEi86IOEqg_N-n40CC0'
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// ---- 认证：管理员邮箱（仅邮箱硬编码，口令由用户输入后通过 Supabase Auth 验证）----
+const ADMIN_EMAIL = 'admin@rincatian.local'
+
+// ---- 全局状态 ----
+const state = {
+  currentTab: 'allwords',
+  classicWords: [],
+  borrowingWords: [],
+  roots: [],
+  grammarList: [],
+  currentGrammar: null,
+  // 分页
+  classicPage: 1,
+  borrowingPage: 1,
+  rootsPage: 1,
+  // 搜索/筛选 (值由 DOM 事件直接读取并更新)
+  classicSearch: '',
+  classicFilterPOS: '',
+  borrowingSearch: '',
+  borrowingFilterPOS: '',
+  rootsSearch: '',
+  rootsFilterCategory: '',
+  // 所有词表
+  allwordsSearch: '',
+  allwordsPage: 1,
+  allwordsSort: 'default',   // default / code / word / meaning / source
+  allwordsSortDir: 'asc',    // asc / desc
+  allwordsFilter: 'all',     // all / finite / infinite
+  // 有限词表
+  finiteWords: [],
+  finiteSearch: '',
+  finitePage: 1,
+  // 语法编辑
+  grammarTitle: '',
+  grammarContent: '',
+  grammarDirty: false,
+  // 翻页回调
+  paginationCallback: null,
+  // 底部时间
+  lastModifiedTime: '',
+}
+
+const PAGE_SIZE = 100 // 每页显示的词数
+
+// ---- DOM 引用 ----
+const appMain = document.getElementById('appMain')
+const appHeader = document.getElementById('appHeader')
+const authOverlay = document.getElementById('authOverlay')
+const toastContainer = document.getElementById('toastContainer')
+const modalContainer = document.getElementById('modalContainer')
+const confirmContainer = document.getElementById('confirmContainer')
+
+// ---- 工具函数 ----
+function toast(msg, type = 'success') {
+  const el = document.createElement('div')
+  el.className = `toast toast-${type}`
+  el.textContent = msg
+  toastContainer.appendChild(el)
+  setTimeout(() => { el.remove() }, 2500)
+}
+
+function showConfirm(msg, onConfirm, btnText, btnClass) {
+  const text = btnText || '🗑️ 确认删除'
+  const cls = btnClass || 'btn-danger'
+  confirmContainer.innerHTML = `
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-box">
+        <p>${msg}</p>
+        <div class="confirm-btns">
+          <button class="btn" id="confirmCancel">取消</button>
+          <button class="btn ${cls}" id="confirmOk">${text}</button>
+        </div>
+      </div>
+    </div>
+  `
+  document.getElementById('confirmCancel').onclick = () => confirmContainer.innerHTML = ''
+  document.getElementById('confirmOk').onclick = () => { confirmContainer.innerHTML = ''; onConfirm() }
+  document.getElementById('confirmOverlay').onclick = (e) => { if (e.target.id === 'confirmOverlay') confirmContainer.innerHTML = '' }
+}
+
+function posClass(pos) {
+  const map = { '名词':'noun','动词':'verb','形容词':'adj','副词':'adv','代词':'pron','连词':'conj','数词':'num','声叹词':'excl','示词':'int','抒情词':'exp' }
+  return map[pos] || ''
+}
+
+const POS_OPTIONS = ['名词','动词','形容词','副词','代词','连词','数词','声叹词','示词','抒情词']
+
+// 派生词词类下拉选项（仅名、动、形、副）
+const DERIV_POS_OPTIONS = [
+  { value: 'n.', label: '名' },
+  { value: 'v.', label: '动' },
+  { value: 'adj.', label: '形' },
+  { value: 'adv.', label: '副' }
+]
+
+// 有限词表词性选项（中文 → 英文缩写）
+const FINITE_POS_OPTIONS = [
+  { value: 'pron.', label: '代（pron.）' },
+  { value: 'num.', label: '数（num.）' },
+  { value: 'conj.', label: '连（conj.）' },
+  { value: 'ind.', label: '示（ind.）' },
+  { value: 'exp.', label: '情（exp.）' },
+  { value: 'rel.', label: '相关词（rel.）' }
+]
+
+// ---- 认证（增删改时弹出，查询时不需要） ----
+async function ensureAuth() {
+  // 检查是否已有有效会话（暂不进行检查，后续若有需要，再将注释符号去除即可）
+//  const { data: { session } } = await db.auth.getSession()
+//  if (session) return true
+
+  // 显示认证对话框，等待用户输入口令
+  return new Promise((resolve) => {
+    authOverlay.style.display = 'flex'
+    const pwInput = document.getElementById('authPassword')
+    const errorEl = document.getElementById('authError')
+    const btnEl = document.getElementById('authBtn')
+    pwInput.value = ''
+    errorEl.textContent = ''
+    btnEl.disabled = false
+    btnEl.textContent = '验证'
+    pwInput.focus()
+
+    // 存储 resolve 回调，供 handleAuth 调用
+    window._authResolve = resolve
+  })
+}
+
+async function handleAuth() {
+  const password = document.getElementById('authPassword').value.trim()
+  const errorEl = document.getElementById('authError')
+  const btnEl = document.getElementById('authBtn')
+
+  if (!password) {
+    errorEl.textContent = '请输入口令'
+    return
+  }
+
+  btnEl.disabled = true
+  btnEl.textContent = '验证中...'
+  errorEl.textContent = ''
+
+  try {
+    // 使用 Supabase Auth 验证口令（邮箱固定，口令由用户输入）
+    const { error } = await db.auth.signInWithPassword({
+      email: ADMIN_EMAIL,
+      password: password
+    })
+
+    if (error) {
+      if (error.message.includes('Invalid login') || error.message.includes('invalid')) {
+        errorEl.textContent = '口令错误，请重试'
+      } else {
+        errorEl.textContent = '验证失败: ' + error.message
+      }
+      btnEl.disabled = false
+      btnEl.textContent = '验证'
+      return
+    }
+
+    // 验证成功：关闭认证对话框，并重新加载数据（确保认证后数据立即可见）
+    authOverlay.style.display = 'none'
+    // 重新加载所有数据，确保认证后数据可见
+    await initData()
+    if (window._authResolve) {
+      window._authResolve(true)
+      window._authResolve = null
+    }
+  } catch (e) {
+    errorEl.textContent = '网络错误，请检查连接'
+    btnEl.disabled = false
+    btnEl.textContent = '验证'
+  }
+}
+
+// 支持回车键提交
+document.getElementById('authPassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleAuth()
+})
+
+// ---- 数据加载 ----
+// Supabase 默认 select 限制 1000 条，使用 range 分批获取全部数据
+async function fetchAll(table, orderCol = 'code') {
+  const PAGE = 1000
+  let all = []
+  let from = 0
+  while (true) {
+    const to = from + PAGE - 1
+    const { data, error } = await db.from(table).select('*').order(orderCol).range(from, to)
+    if (error) throw error
+    if (!data || data.length === 0) break
+    all = all.concat(data)
+    if (data.length < PAGE) break
+    from += PAGE
+  }
+  return all
+}
+
+async function loadClassicWords() {
+  try {
+    state.classicWords = await fetchAll('classic_words')
+  } catch (e) { toast('加载古典词表失败: ' + e.message, 'error') }
+}
+
+async function loadBorrowingWords() {
+  try {
+    state.borrowingWords = await fetchAll('borrowing_words')
+  } catch (e) { toast('加载已收借词失败: ' + e.message, 'error') }
+}
+
+async function loadRoots() {
+  try {
+    state.roots = await fetchAll('roots')
+  } catch (e) { toast('加载标准词根失败: ' + e.message, 'error') }
+}
+
+async function loadGrammar() {
+  try {
+    state.grammarList = await fetchAll('grammar', 'sort_order')
+  } catch (e) { toast('加载语法失败: ' + e.message, 'error') }
+}
+
+async function loadFiniteWords() {
+  try {
+    state.finiteWords = await fetchAll('finite_words')
+  } catch (e) { toast('加载有限词表失败: ' + e.message, 'error') }
+}
+
+// ---- 加载中小游戏：词汇捕手 ----
+let gameRunning = false
+let gameScore = 0
+let gameLives = 3
+let gameWords = []
+let gameFrame = 0
+let gameAnimationId = null
+
+const GAME_WORDS = [
+'Milkēlio', 'Rincatian', 'Klasiklio', 'Klasika', 'Hvātian', 'Centra Universitato',
+'Tianparlo', 'Tian', 'perito', 'peritô', 'sose', 'libo', 'bela', 'pulo', 'ŝelo',
+'tabo', 'fiŝo', 'mide', 'solto', 'elo', 'windo', 'lātiŋ', 'sino', 'luno', 'sēgā',
+'mārio', 'tōlē', 'wi', 'ni', 'nim', 'ah', 'oh', 'eh', 'heh', 'wah', 'āh', 'kilāh',
+'fulāh', 'dolāh', 'xu', 'ka', 'hoh', 'uh', 'pēh', 'bajih', 'enh', 'yoh', 'hâ',
+'dāske', 'pense', 'dorme', 'kure', 'sōhu', 'bona', 'mubela', 'hapia', 'puti',
+'nomo', 'kabaho', 'famile', 'voyo', 'caŋ', 'parle', 'page', 'kû', 'pone',
+'povi', 'heroi', 'mōje', 'yunā', 'hōse', 'hamigo', 'maĉol', 'paĉol', 'ligno',
+'yō', 'mediko', 'sense', 'sensejiar', 'sensenio', 'amiko', 'unjo', 'lovo',
+'fēlāe', 'fēlākiŋ', 'pêlē', 'biga', 'hoŋda', 'hāga', 'nova', 'juna', 'deko',
+'danjo', 'danji', 'nedanji', 'familo', 'homo', 'bebo', 'lowo', 'piŋgō',
+'herbo', 'puto', 'orueno', 'bulo', 'bulō', 'buli', 'glanda', 'bêrdo',
+'milko', 'rivo', 'kabaha', 'selēna', 'reta', 'lotor', 'intersi', 'parlo',
+'eparlo', 'viaxe', 'saki', 'perite', 'mōji', 'parte', 'mono', 'ino',
+'aĉete', 'muaĉete', 'ezerce', 'ezerco', 'forgē', 'polte', 'pilko',
+'dormi', 'fōtō', 'holie', 'hapi', 'hapo', 'hape', 'suno', 'suni',
+'luni', 'dose', 'gioŋĉo', 'tenda', 'kimi', 'glina', 'baki', 'kalo',
+'doremo', 'linio', 'severa', 'mōla', 'sẑuaŋ', 'fimani', 'par', 'pon',
+'du', 'ku', 'peyoŋ', 'poroŋ', 'da', 'xa', 'wô', 'jio', 'lio', 'am',
+'li', 'yo', 'ga', 'ne', 'de', 'celoŋ', 'hepom', 'nuden', 'den', 'duhaden',
+'haden', 'nen', 'ce', 'θi', 'θin', 'te', 'me', 'le', 'mi', 'so', 'sē', 'cē',
+'he', 'nōn', 'cesioŋ', 'sēro', 'deθi', 'voli', 'gâhi', 'ginmō', 'xigan', 'wilian',
+'fine', 'gunün', 'ŝiet', 'ansa', 'telba', 'lē', 'zanhu', 'hajimi', 'lover', 'loverpiŋ',
+'ĉuâdiŝo', 'yami', 'supamaketo', 'ĉokolito', 'stikero', 'bonuso', 'problemo', 'baro',
+'listo', 'yōgero', 'pisâŋo', 'pano', 'ĉate', 'ĉato', 'bazo', 'miusiamo', 'natura',
+'woriso', 'injure', 'konvinke', 'yete', 'sajese', 'heŋ', 'celoe', 'anjē', 'finde', 'poliŝo',
+'medikejiar', 'sosejiar', 'konsejiar', 'fōtōjiar', 'ekzameni', 'ekzameno', 'traduke', 'letero',
+'nu', 'i', 'sâm', 'fōl', 'ven', 'lêm', 'qim', 'fa', 'jôl', 'ŝim', 'cen', 'kio', 'wan',
+'mion', 'yom', 'bion', 'ĉuē', 'kowe', 'ole', 'hada', 'kona', 'sedo', 'vakan', 'nega',
+'cedo', 'tamen', 'ses', 'qavi', 'gosi', 'silo', 'caŋli', 'kuni', 'doẑo', 'rugo', 'oli', 'mannii',
+ 'nejen', 'poron', 'poromu', 'yixoli', 'yixo', 'samhō', 'hi', 'ŝi', 'ji', 'xi', 'onin', 'win',
+  'nin', 'hin', 'ŝin', 'jin', 'xin', 'wia', 'nia', 'hia', 'ŝia', 'wina', 'nina', 'hina', 'wiẑi',
+   'niẑi', 'hiẑi', 'winẑi', 'ko', 'go', 'neko', 'nei', 'nexi', 'nelo', 'seeli', 'nānde', 'dosē',
+    'koi', 'goi', 'kolo', 'golo', 'koxi', 'goxi', 'koeli', 'goeli', 'kono', 'gono', 'nincâli', 'wicâli', 'izo'
+]
+
+function startLoadingGame() {
+  const canvas = document.getElementById('loadingCanvas')
+  if (!canvas) return
+  gameScore = 0
+  gameLives = 3
+  gameWords = []
+  gameFrame = 0
+  gameRunning = true
+  updateGameUI()
+  document.getElementById('loadingOverlay').style.display = 'flex'
+
+  canvas.addEventListener('click', onGameClick)
+  canvas.addEventListener('touchstart', onGameTouch, { passive: false })
+  gameLoop()
+}
+
+function stopLoadingGame() {
+  gameRunning = false
+  if (gameAnimationId) { cancelAnimationFrame(gameAnimationId); gameAnimationId = null }
+  const canvas = document.getElementById('loadingCanvas')
+  if (canvas) {
+    canvas.removeEventListener('click', onGameClick)
+    canvas.removeEventListener('touchstart', onGameTouch)
+  }
+  document.getElementById('loadingOverlay').style.display = 'none'
+}
+
+function onGameClick(e) {
+  if (!gameRunning) return
+  const canvas = document.getElementById('loadingCanvas')
+  const rect = canvas.getBoundingClientRect()
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
+  const mx = (e.clientX - rect.left) * scaleX
+  const my = (e.clientY - rect.top) * scaleY
+  checkHit(mx, my)
+}
+
+function onGameTouch(e) {
+  if (!gameRunning) return
+  e.preventDefault()
+  const canvas = document.getElementById('loadingCanvas')
+  const rect = canvas.getBoundingClientRect()
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
+  const touch = e.touches[0]
+  const mx = (touch.clientX - rect.left) * scaleX
+  const my = (touch.clientY - rect.top) * scaleY
+  checkHit(mx, my)
+}
+
+function checkHit(mx, my) {
+  for (let i = gameWords.length - 1; i >= 0; i--) {
+    const w = gameWords[i]
+    const ctx = document.getElementById('loadingCanvas').getContext('2d')
+    ctx.font = 'bold 16px "Noto Sans SC", sans-serif'
+    const metrics = ctx.measureText(w.text)
+    const tw = metrics.width + 16
+    const th = 28
+    const tx = w.x - tw / 2
+    const ty = w.y - th / 2
+    if (mx >= tx && mx <= tx + tw && my >= ty && my <= ty + th) {
+      gameWords.splice(i, 1)
+      gameScore += 10
+      updateGameUI()
+      return
+    }
+  }
+}
+
+function updateGameUI() {
+  document.getElementById('gameScore').textContent = gameScore
+  const livesEl = document.getElementById('gameLives')
+  let hearts = ''
+  for (let i = 0; i < 3; i++) hearts += i < gameLives ? '❤️' : '🖤'
+  livesEl.textContent = hearts
+}
+
+function gameLoop() {
+  if (!gameRunning) return
+  const canvas = document.getElementById('loadingCanvas')
+  const ctx = canvas.getContext('2d')
+  const W = canvas.width, H = canvas.height
+
+  // 背景
+  ctx.fillStyle = '#0d0f17'
+  ctx.fillRect(0, 0, W, H)
+
+  // 星空粒子
+  ctx.fillStyle = 'rgba(123,159,255,0.3)'
+  for (let i = 0; i < 30; i++) {
+    const sx = (i * 137 + gameFrame * (i % 3 + 1)) % W
+    const sy = (i * 73 + gameFrame * 0.3) % H
+    ctx.fillRect(sx, sy, 1.5, 1.5)
+  }
+
+  // 生成词汇
+  if (gameFrame % 50 === 0 && gameWords.length < 8) {
+    const text = GAME_WORDS[Math.floor(Math.random() * GAME_WORDS.length)]
+    gameWords.push({
+      text,
+      x: 30 + Math.random() * (W - 60),
+      y: -20,
+      speed: 0.5 + Math.random() * 1.2
+    })
+  }
+
+  // 绘制 & 移动词汇
+  ctx.font = 'bold 16px "Noto Sans SC", sans-serif'
+  for (let i = gameWords.length - 1; i >= 0; i--) {
+    const w = gameWords[i]
+    w.y += w.speed
+    const metrics = ctx.measureText(w.text)
+    const tw = metrics.width + 16, th = 28
+    const tx = w.x - tw / 2, ty = w.y - th / 2
+
+    // 绘制词汇气泡
+    ctx.fillStyle = 'rgba(255,215,0,0.15)'
+    ctx.strokeStyle = 'rgba(255,215,0,0.5)'
+    ctx.lineWidth = 1.5
+    ctx.beginPath()
+    ctx.roundRect(tx, ty, tw, th, 14)
+    ctx.fill()
+    ctx.stroke()
+
+    ctx.fillStyle = '#ffd700'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(w.text, w.x, w.y)
+
+    // 掉出底部
+    if (w.y > H + 20) {
+      gameWords.splice(i, 1)
+      gameLives--
+      updateGameUI()
+      if (gameLives <= 0) {
+        gameRunning = false
+        // 游戏结束画面
+        ctx.fillStyle = 'rgba(0,0,0,0.7)'
+        ctx.fillRect(0, 0, W, H)
+        ctx.fillStyle = '#ffd700'
+        ctx.font = 'bold 22px "Noto Sans SC", sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('游戏结束！', W / 2, H / 2 - 20)
+        ctx.fillStyle = '#fff'
+        ctx.font = '16px "Noto Sans SC", sans-serif'
+        ctx.fillText('得分：' + gameScore + '  数据加载完成后自动退出', W / 2, H / 2 + 20)
+        updateGameUI()
+        setTimeout(() => {
+          if (gameRunning) return
+          startLoadingGame()
+        }, 2000)
+        return
+      }
+    }
+  }
+
+  gameFrame++
+  gameAnimationId = requestAnimationFrame(gameLoop)
+}
+
+async function initData() {
+  startLoadingGame()
+  await Promise.all([loadClassicWords(), loadBorrowingWords(), loadRoots(), loadGrammar(), loadFiniteWords(), loadLastModifiedTime()])
+  stopLoadingGame()
+  render()
+}
+
+// ---- 过滤数据 ----
+function filteredClassic() {
+  let list = state.classicWords
+  if (state.classicSearch) {
+    const s = state.classicSearch.toLowerCase()
+    list = list.filter(w => (w.code || '').toLowerCase().includes(s) || (w.word || '').toLowerCase().includes(s) || (w.meaning || '').includes(s) || (w.pronunciation || '').includes(s) || (w.part_of_speech || '').includes(s))
+  }
+  return list
+}
+
+function filteredBorrowing() {
+  let list = state.borrowingWords
+  if (state.borrowingSearch) {
+    const s = state.borrowingSearch.toLowerCase()
+    list = list.filter(w => (w.code || '').toLowerCase().includes(s) || (w.word || '').toLowerCase().includes(s) || (w.meaning || '').includes(s) || (w.pronunciation || '').includes(s) || (w.part_of_speech || '').includes(s))
+  }
+  return list
+}
+
+function filteredFinite() {
+  let list = state.finiteWords
+  if (state.finiteSearch) {
+    const s = state.finiteSearch.toLowerCase()
+    list = list.filter(w =>
+      (w.code || '').toLowerCase().includes(s) ||
+      (w.word || '').toLowerCase().includes(s) ||
+      (w.meaning || '').includes(s) ||
+      (w.pronunciation || '').includes(s) ||
+      (w.notes || '').includes(s) ||
+      (w.part_of_speech || '').toLowerCase().includes(s) ||
+      (FINITE_POS_LABELS[w.part_of_speech] || '').includes(s)
+    )
+  }
+  return list
+}
+
+function filteredRoots() {
+  let list = state.roots
+  if (state.rootsFilterCategory) {
+    list = list.filter(r => (r.category || '') === state.rootsFilterCategory)
+  }
+  if (state.rootsSearch) {
+    const s = state.rootsSearch.toLowerCase()
+    list = list.filter(r => {
+      // 搜索编码、形读词根、音读词根、核心义
+      if ((r.code || '').toLowerCase().includes(s)) return true
+      if ((r.core_meaning || '').includes(s)) return true
+      if ((r.form_root || '').includes(s)) return true
+      if ((r.sound_root || '').includes(s)) return true
+      if ((r.category || '').includes(s)) return true
+      // 搜索派生词
+      let derivs = []
+      try { derivs = JSON.parse(r.derivatives || '[]') } catch {}
+      return derivs.some(d => (d.word || '').toLowerCase().includes(s) || (d.meaning || '').includes(s) || (d.pos || '').toLowerCase().includes(s))
+    })
+  }
+  return list
+}
+
+// ---- 分页工具 ----
+function paginate(list, page) {
+  const total = list.length
+  const totalPages = Math.ceil(total / PAGE_SIZE)
+  const start = (page - 1) * PAGE_SIZE
+  const pageData = list.slice(start, start + PAGE_SIZE)
+  return { total, totalPages, pageData, start }
+}
+
+function renderPagination(p, pageRef, onPageChange) {
+  // 存储回调供全局 handlePaginationClick 使用
+  state.paginationCallback = onPageChange
+  let html = `<div class="pagination">`
+  html += `<span class="pagination-info">共 ${p.total} 条，第 ${pageRef} / ${p.totalPages || 1} 页</span>`
+  html += `<div class="pagination-btns">`
+  html += `<button ${pageRef <= 1 ? 'disabled' : ''} onclick="handlePaginationClick(1)">首页</button>`
+  html += `<button ${pageRef <= 1 ? 'disabled' : ''} onclick="handlePaginationClick(${pageRef - 1})">上一页</button>`
+  for (let i = Math.max(1, pageRef - 2); i <= Math.min(p.totalPages, pageRef + 2); i++) {
+    html += `<button class="${i === pageRef ? 'active' : ''}" onclick="handlePaginationClick(${i})">${i}</button>`
+  }
+  html += `<button ${pageRef >= p.totalPages ? 'disabled' : ''} onclick="handlePaginationClick(${pageRef + 1})">下一页</button>`
+  html += `<button ${pageRef >= p.totalPages ? 'disabled' : ''} onclick="handlePaginationClick(${p.totalPages})">末页</button>`
+  html += `</div></div>`
+  return html
+}
+
+function handlePaginationClick(page) {
+  if (state.paginationCallback) state.paginationCallback(page)
+}
+
+// ---- 词汇表格渲染（仅渲染表格+分页，不包含工具栏，解决搜索时焦点丢失的 bug）----
+function renderWordTable(type) {
+  const isClassic = type === 'classic'
+  const words = isClassic ? filteredClassic() : filteredBorrowing()
+  const pageRef = isClassic ? state.classicPage : state.borrowingPage
+  const p = paginate(words, pageRef)
+
+  if (pageRef > p.totalPages && p.totalPages > 0) {
+    if (isClassic) state.classicPage = p.totalPages
+    else state.borrowingPage = p.totalPages
+    return renderWordTable(type)
+  }
+
+  let html = ''
+  if (p.pageData.length === 0) {
+    html += `<div class="empty-state">
+      <svg viewBox="0 0 48 48" fill="none"><rect x="6" y="8" width="36" height="32" rx="4" stroke="currentColor" stroke-width="2"/><line x1="14" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5"/><line x1="14" y1="26" x2="30" y2="26" stroke="currentColor" stroke-width="1.5"/></svg>
+      <p>暂无词条数据</p>
+    </div>`
+    const target = document.getElementById('tableArea' + type)
+    if (target) target.innerHTML = html
+    return
+  }
+
+  html += `<div class="table-wrap"><div class="table-scroll"><table>
+    <thead><tr>
+      <th>#</th><th>编码</th><th>词语</th><th>音标</th><th>释义</th><th>备注</th><th>操作</th>
+    </tr></thead><tbody>`
+
+  p.pageData.forEach((w, idx) => {
+    // 词类融入释义，格式如：n. 学习；v. 教
+    const posText = w.part_of_speech ? `<span class="pos-inline">${esc(w.part_of_speech)}</span> ` : ''
+    html += `<tr onclick="showWordDetail('${type}', ${w.id})" style="cursor:pointer">
+      <td style="color:var(--text-muted);font-size:0.8rem">${p.start + idx + 1}</td>
+      <td style="color:var(--accent);font-weight:600;font-size:0.82rem">${esc(w.code || '')}</td>
+      <td class="cell-word">${esc(w.word)}</td>
+      <td class="cell-ipa">${esc(w.pronunciation || '')}</td>
+      <td>${posText}${esc(w.meaning)}</td>
+      <td style="color:var(--text-muted);font-size:0.78rem;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(w.notes || '')}</td>
+      <td><div class="cell-actions">
+        <button class="btn-icon" title="编辑" onclick="event.stopPropagation();openWordModal('${type}', ${w.id})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="btn-icon danger" title="删除" onclick="event.stopPropagation();deleteWord('${type}', ${w.id})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+      </div></td>
+    </tr>`
+  })
+
+  html += `</tbody></table></div></div>`
+  html += renderPagination(p, pageRef, (newPage) => {
+    if (isClassic) state.classicPage = newPage
+    else state.borrowingPage = newPage
+    renderWordTable(type)
+  })
+
+  const target = document.getElementById('tableArea' + type)
+  if (target) target.innerHTML = html
+}
+
+// ---- 词根表格渲染（仅渲染表格+分页）----
+function renderRootsTable() {
+  const words = filteredRoots()
+  const p = paginate(words, state.rootsPage)
+  if (state.rootsPage > p.totalPages && p.totalPages > 0) { state.rootsPage = p.totalPages; return renderRootsTable() }
+
+  let html = ''
+
+  if (p.pageData.length === 0) {
+    html += `<div class="empty-state"><svg viewBox="0 0 48 48" fill="none"><rect x="6" y="8" width="36" height="32" rx="4" stroke="currentColor" stroke-width="2"/><line x1="14" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5"/></svg><p>暂无词根数据</p></div>`
+    const target = document.getElementById('tableAreaRoots')
+    if (target) target.innerHTML = html
+    return
+  }
+
+  html += `<div class="table-wrap"><div class="table-scroll"><table>
+    <thead><tr><th>#</th><th>编码</th><th>音读词根</th><th>形读词根</th><th>核心义</th><th>类别</th><th>音读派生词</th><th>操作</th></tr></thead><tbody>`
+
+  // 检测重复：音读词根、形读词根、核心义（同一值出现 ≥2 次时高亮）
+  const countMap = { sound: {}, form: {}, meaning: {} }
+  p.pageData.forEach(r => {
+    const s = (r.sound_root || '').toLowerCase()
+    const f = (r.form_root || '').toLowerCase()
+    const m = (r.core_meaning || '').toLowerCase()
+    if (s) countMap.sound[s] = (countMap.sound[s] || 0) + 1
+    if (f) countMap.form[f] = (countMap.form[f] || 0) + 1
+    if (m) countMap.meaning[m] = (countMap.meaning[m] || 0) + 1
+  })
+  const dupSounds = new Set(Object.keys(countMap.sound).filter(k => countMap.sound[k] > 1))
+  const dupForms = new Set(Object.keys(countMap.form).filter(k => countMap.form[k] > 1))
+  const dupMeanings = new Set(Object.keys(countMap.meaning).filter(k => countMap.meaning[k] > 1))
+
+  p.pageData.forEach((r, idx) => {
+    let derivs = []
+    try { derivs = JSON.parse(r.derivatives || '[]') } catch {}
+    const derivText = derivs.map(d => `${d.word} ${d.pos}${d.meaning}`).join(' | ')
+    const isSoundDup = dupSounds.has((r.sound_root || '').toLowerCase())
+    const isFormDup = dupForms.has((r.form_root || '').toLowerCase())
+    const isMeaningDup = dupMeanings.has((r.core_meaning || '').toLowerCase())
+    const isAnyDup = isSoundDup || isFormDup || isMeaningDup
+    html += `<tr onclick="showRootDetail(${r.id})" style="cursor:pointer${isAnyDup ? ';background:var(--gold-dim)' : ''}">
+      <td style="color:var(--text-muted);font-size:0.8rem">${p.start + idx + 1}</td>
+      <td style="color:var(--accent);font-weight:600">${esc(r.code)}</td>
+      <td class="cell-word"${isSoundDup ? ' style="color:var(--gold);font-weight:700"' : ''}>${esc(r.sound_root)}</td>
+      <td class="cell-ipa"${isFormDup ? ' style="color:var(--gold);font-weight:700"' : ''}>${esc(r.form_root || '')}</td>
+      <td${isMeaningDup ? ' style="color:var(--gold);font-weight:700"' : ''}>${esc(r.core_meaning)}</td>
+      <td style="color:var(--accent);font-size:0.85rem">${esc(r.category || '')}</td>
+      <td style="color:var(--text-secondary);font-size:0.8rem;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(derivText)}</td>
+      <td><div class="cell-actions">
+        <button class="btn-icon" title="编辑" onclick="event.stopPropagation();openRootModal(${r.id})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="btn-icon danger" title="删除" onclick="event.stopPropagation();deleteRoot(${r.id})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+      </div></td>
+    </tr>`
+  })
+
+  html += `</tbody></table></div></div>`
+  html += renderPagination(p, state.rootsPage, (newPage) => { state.rootsPage = newPage; renderRootsTable() })
+
+  const target = document.getElementById('tableAreaRoots')
+  if (target) target.innerHTML = html
+}
+
+// ---- Tab 渲染（工具栏 + 表格区域分开，解决搜索框重新渲染导致焦点丢失的 bug）----
+function renderWordTab(type) {
+  const isClassic = type === 'classic'
+  const label = isClassic ? '古典' : '借词'
+  const searchVal = isClassic ? state.classicSearch : state.borrowingSearch
+  const totalCount = isClassic ? state.classicWords.length : state.borrowingWords.length
+
+  let html = ''
+
+  // 工具栏：搜索框 + 新增按钮（词类下拉筛选已取消，词类融入释义中）
+  html += `<div class="toolbar" id="toolbar${type}">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="搜索编码、词语、音标、释义（含词性）..." id="search${type}" value="${esc(searchVal)}">
+    </div>
+    <div style="display:flex;gap:0.5rem">
+      <button class="btn" onclick="confirmExport('${type}')">📥 导出</button>
+      <button class="btn btn-primary" onclick="openWordModal('${type}', null)">+ 新增${label}词汇</button>
+    </div>
+  </div>`
+
+  // 表格区域（独立更新，不重新渲染工具栏）
+  html += `<div id="tableArea${type}"></div>`
+
+  const containerId = isClassic ? 'tabClassic' : 'tabBorrowing'
+  document.getElementById(containerId).innerHTML = html
+
+  // 绑定搜索事件（使用 addEventListener，不会因 re-render 丢失）
+  bindSearchEvents(type)
+
+  // 渲染表格
+  renderWordTable(type)
+}
+
+// 绑定搜索事件（只绑定一次，用 _bound 标记防止重复绑定）
+function bindSearchEvents(type) {
+  const searchInput = document.getElementById('search' + type)
+
+  if (searchInput && !searchInput._bound) {
+    searchInput._bound = true
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value
+      if (type === 'classic') { state.classicSearch = val; state.classicPage = 1 }
+      else { state.borrowingSearch = val; state.borrowingPage = 1 }
+      renderWordTable(type)  // 仅更新表格，不重新渲染工具栏
+    })
+  }
+}
+
+function renderRootsTab() {
+  // 收集所有不重复的类别
+  const categories = [...new Set(state.roots.map(r => r.category).filter(Boolean))].sort()
+
+  let html = `<div class="toolbar" id="toolbarRoots">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="搜索编码、音读词根、形读词根、核心义、类别、派生词（含词性）..." id="searchRoots" value="${esc(state.rootsSearch)}">
+    </div>
+    <select id="filterRootsCategory" style="background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 0.8rem;font-size:0.85rem">
+      <option value="">— 全部类别 —</option>
+      ${categories.map(c => `<option value="${esc(c)}" ${state.rootsFilterCategory === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}
+    </select>
+    <div style="display:flex;gap:0.5rem">
+      <button class="btn" onclick="confirmExport('roots')">📥 导出</button>
+      <button class="btn btn-primary" onclick="openRootModal(null)">+ 新增标准词根</button>
+    </div>
+  </div>`
+  html += `<div id="tableAreaRoots"></div>`
+  document.getElementById('tabRoots').innerHTML = html
+
+  // 绑定词根搜索事件
+  const searchInput = document.getElementById('searchRoots')
+  if (searchInput && !searchInput._bound) {
+    searchInput._bound = true
+    searchInput.addEventListener('input', (e) => {
+      state.rootsSearch = e.target.value
+      state.rootsPage = 1
+      renderRootsTable()
+    })
+  }
+
+  // 绑定类别筛选事件
+  const catFilter = document.getElementById('filterRootsCategory')
+  if (catFilter && !catFilter._bound) {
+    catFilter._bound = true
+    catFilter.addEventListener('change', (e) => {
+      state.rootsFilterCategory = e.target.value
+      state.rootsPage = 1
+      renderRootsTable()
+    })
+  }
+
+  renderRootsTable()
+}
+
+function renderGrammarTab() {
+  if (!state.currentGrammar && state.grammarList.length > 0) {
+    selectGrammar(state.grammarList[0])
+  }
+
+  // 顶栏：说明 + 百科入口 + 语法书下载（链接与主站田语页一致）
+  let html = `<div class="grammar-topbar">
+    <span class="topbar-tip">本页语法规则涵盖电子语法书的规则3（句式）~ 规则12（结语），完整语法请下载电子语法书查阅</span>
+    <div class="topbar-links">
+      <a href="https://baike.baidu.com/item/%E7%90%B3%E5%87%AF%E8%92%82%E4%BA%9A%E8%AF%AD/66751047"
+         target="_blank" rel="noopener noreferrer"
+         class="baike-link" title="在百度百科查看琳凯蒂亚语">📖 在百度百科查看琳凯蒂亚语 →</a>
+      <a href="https://kbbtsurqznyyqfoaoutt.supabase.co/storage/v1/object/public/Resources/EBook/Modern%20Rincatian%20v26.5-1.pdf"
+         target="_blank" rel="noopener noreferrer"
+         class="btn btn-primary btn-sm btn-book" title="下载电子版语法书v26.5">📥 下载电子语法书 v26.5</a>
+    </div>
+  </div>`
+
+  html += '<div class="grammar-layout">'
+
+  // 左侧列表
+  html += '<div class="grammar-sidebar"><div class="grammar-list">'
+  state.grammarList.forEach(g => {
+    html += `<div class="grammar-item${state.currentGrammar && state.currentGrammar.id === g.id ? ' active' : ''}" onclick="selectGrammarById(${g.id})">
+      <span>📝 ${esc(g.title)}</span>
+      <span class="del-icon" onclick="event.stopPropagation();deleteGrammar(${g.id})" title="删除">🗑️</span>
+    </div>`
+  })
+  html += '</div>'
+  html += '<button class="btn btn-primary btn-sm" style="margin:0.5rem" onclick="addGrammar()">+ 新增语法</button>'
+  html += '</div>'
+
+  // 编辑区
+  html += '<div class="grammar-panel"><div class="grammar-panel-header">'
+  html += `<input type="text" id="grammarTitleInput" placeholder="语法标题..." value="${esc(state.grammarTitle)}" oninput="onGrammarTitleChange(this.value)">`
+  html += '</div>'
+  // 格式工具栏
+  html += '<div class="grammar-toolbar">'
+  html += '<button title="粗体" onclick="insertFormat(\'**\',\'**\',\'粗体\')"><b>B</b></button>'
+  html += '<button title="斜体" onclick="insertFormat(\'*\',\'*\',\'斜体\')"><i>I</i></button>'
+  html += '<button title="删除线" onclick="insertFormat(\'~~\',\'~~\',\'删除线\')"><s>S</s></button>'
+  html += '<span class="tb-sep"></span>'
+  html += '<button title="标题1" onclick="insertLineStart(\'# \')">H1</button>'
+  html += '<button title="标题2" onclick="insertLineStart(\'## \')">H2</button>'
+  html += '<button title="标题3" onclick="insertLineStart(\'### \')">H3</button>'
+  html += '<span class="tb-sep"></span>'
+  html += '<button title="无序列表" onclick="insertLineStart(\'- \')">•</button>'
+  html += '<button title="有序列表" onclick="insertLineStart(\'1. \')">1.</button>'
+  html += '<button title="引用" onclick="insertLineStart(\'> \')">"</button>'
+  html += '<span class="tb-sep"></span>'
+  html += '<button title="行内代码" onclick="insertFormat(\'`\',\'`\',\'代码\')">&lt;/&gt;</button>'
+  html += '<button title="链接" onclick="insertLink()">🔗</button>'
+  html += '<button title="表格" onclick="insertTable()">⊞</button>'
+  html += '<button title="分割线" onclick="insertLineStart(\'---\')">—</button>'
+  html += '</div>'
+  html += '<div class="grammar-editor">'
+  html += `<textarea id="grammarEditor" placeholder="在此输入 Markdown 内容..." oninput="onGrammarContentChange(this.value)">${esc(state.grammarContent)}</textarea>`
+  html += '</div><div class="grammar-actions">'
+  html += `<button class="btn btn-primary" onclick="saveGrammar()">💾 保存</button>`
+  html += '</div></div>'
+
+  // 预览区
+  html += '<div class="grammar-preview" id="grammarPreview">'
+  html += state.grammarContent ? marked.parse(state.grammarContent, { breaks: true, gfm: true }) : '<p style="color:var(--text-muted)">预览区域</p>'
+  html += '</div>'
+
+  html += '</div>'
+  document.getElementById('tabGrammar').innerHTML = html
+}
+
+// ---- 页面渲染 ----
+function render() {
+  appMain.innerHTML = `
+    <div id="tabClassic" style="display:${state.currentTab === 'classic' ? 'block' : 'none'}"></div>
+    <div id="tabBorrowing" style="display:${state.currentTab === 'borrowing' ? 'block' : 'none'}"></div>
+    <div id="tabAllwords" style="display:${state.currentTab === 'allwords' ? 'block' : 'none'}"></div>
+    <div id="tabFinite" style="display:${state.currentTab === 'finite' ? 'block' : 'none'}"></div>
+    <div id="tabRoots" style="display:${state.currentTab === 'roots' ? 'block' : 'none'}"></div>
+    <div id="tabGrammar" style="display:${state.currentTab === 'grammar' ? 'block' : 'none'}"></div>
+  `
+
+  if (state.currentTab === 'classic') renderWordTab('classic')
+  else if (state.currentTab === 'borrowing') renderWordTab('borrowing')
+  else if (state.currentTab === 'allwords') renderAllwordsListTab()
+  else if (state.currentTab === 'finite') renderFiniteTab()
+  else if (state.currentTab === 'roots') renderRootsTab()
+  else if (state.currentTab === 'grammar') renderGrammarTab()
+}
+
+function switchTab(tab) {
+  state.currentTab = tab
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab))
+  render()
+}
+
+// ---- 重复检测工具 ----
+// 检测编码/词语/词根是否与已有数据重复（新增时检查全部，编辑时排除自身 id）
+function checkDuplicate(type, field, value, excludeId) {
+  let list
+  if (type === 'classic') list = state.classicWords
+  else if (type === 'borrowing') list = state.borrowingWords
+  else if (type === 'roots') list = state.roots
+  else if (type === 'finite') list = state.finiteWords
+  else return null
+
+  return list.find(item => {
+    if (excludeId && item.id === excludeId) return false
+    const itemVal = (item[field] || '').toString().toLowerCase()
+    return itemVal === value.toLowerCase()
+  })
+}
+
+// ---- 导出为 xlsx 表格 ----
+
+// ---- 所有词表 ----
+// 整合四类数据：标准词根派生词 + 古典词表 + 已收借词 + 有限词表
+function buildAllwordsList() {
+  const list = []
+
+  // 1. 标准词根的所有派生词（编码为词根编码）
+  state.roots.forEach(r => {
+    let derivs = []
+    try { derivs = JSON.parse(r.derivatives || '[]') } catch {}
+    derivs.forEach(d => {
+      if (d.word) {
+        list.push({
+          code: r.code || '',
+          word: d.word,
+          meaning: (d.pos ? d.pos + ' ' : '') + (d.meaning || ''),
+          source: 'roots'
+        })
+      }
+    })
+  })
+
+  // 2. 古典词表
+  state.classicWords.forEach(w => {
+    list.push({
+      code: w.code || '',
+      word: w.word || '',
+      meaning: (w.part_of_speech ? w.part_of_speech + ' ' : '') + (w.meaning || ''),
+      source: 'classic'
+    })
+  })
+
+  // 3. 已收借词
+  state.borrowingWords.forEach(w => {
+    list.push({
+      code: w.code || '',
+      word: w.word || '',
+      meaning: (w.part_of_speech ? w.part_of_speech + ' ' : '') + (w.meaning || ''),
+      source: 'borrowing'
+    })
+  })
+
+  // 4. 有限词表
+  state.finiteWords.forEach(w => {
+    list.push({
+      code: w.code || '',
+      word: w.word || '',
+      meaning: (w.part_of_speech ? w.part_of_speech + ' ' : '') + (w.meaning || ''),
+      source: 'finite'
+    })
+  })
+
+  // 在全量数据上预计算重复编码后缀，确保后缀固定不随筛选变化
+  const codeCount = {}
+  list.forEach(item => {
+    const c = (item.code || '').toLowerCase()
+    if (!codeCount[c]) { codeCount[c] = { count: 0, items: [] } }
+    codeCount[c].count++
+    codeCount[c].items.push(item)
+  })
+  Object.values(codeCount).forEach(group => {
+    if (group.count > 1) {
+      group.items.forEach((item, i) => {
+        item._codeDisplay = item.code + '-' + (i + 1)
+      })
+    }
+  })
+
+  return list
+}
+
+function renderAllwordsListTab() {
+  const sortOpts = [
+    { value: 'default', label: '默认顺序' },
+    { value: 'code', label: '按编码' },
+    { value: 'word', label: '按词语' },
+    { value: 'meaning', label: '按释义' },
+    { value: 'source', label: '按来源' },
+  ]
+  const dirOpts = [
+    { value: 'asc', label: '升序 ↑' },
+    { value: 'desc', label: '降序 ↓' },
+  ]
+  let html = `<div class="toolbar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="搜索编码、词语、释义（含词性）... n.名词; v.动词; adj.形容词; adv.副词; pron.代词; num.数词; conj.连词; exp.抒情词; ind.示词; rel.相关词" id="searchAllwords" value="${esc(state.allwordsSearch)}">
+    </div>
+    <select id="filterAllwords" style="background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 0.8rem;font-size:0.85rem">
+      <option value="all" ${state.allwordsFilter === 'all' ? 'selected' : ''}>全部词表</option>
+      <option value="finite" ${state.allwordsFilter === 'finite' ? 'selected' : ''}>有限词</option>
+      <option value="infinite" ${state.allwordsFilter === 'infinite' ? 'selected' : ''}>无限词</option>
+    </select>
+    <select id="sortAllwords" style="background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 0.8rem;font-size:0.85rem">
+      ${sortOpts.map(o => `<option value="${o.value}" ${state.allwordsSort === o.value ? 'selected' : ''}>${o.label}</option>`).join('')}
+    </select>
+    <select id="sortAllwordsDir" style="background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 0.8rem;font-size:0.85rem">
+      ${dirOpts.map(o => `<option value="${o.value}" ${state.allwordsSortDir === o.value ? 'selected' : ''}>${o.label}</option>`).join('')}
+    </select>
+    <div style="display:flex;gap:0.5rem">
+      <button class="btn" onclick="confirmExport('allwords')">📥 导出</button>
+    </div>
+  </div>`
+  html += `<div id="tableAreaAllwords"></div>`
+  document.getElementById('tabAllwords').innerHTML = html
+
+  const searchInput = document.getElementById('searchAllwords')
+  if (searchInput && !searchInput._bound) {
+    searchInput._bound = true
+    searchInput.addEventListener('input', (e) => {
+      state.allwordsSearch = e.target.value
+      state.allwordsPage = 1
+      renderAllwordsListTable()
+    })
+  }
+
+  const sortSel = document.getElementById('sortAllwords')
+  if (sortSel && !sortSel._bound) {
+    sortSel._bound = true
+    sortSel.addEventListener('change', (e) => {
+      state.allwordsSort = e.target.value
+      state.allwordsPage = 1
+      renderAllwordsListTable()
+    })
+  }
+
+  const sortDirSel = document.getElementById('sortAllwordsDir')
+  if (sortDirSel && !sortDirSel._bound) {
+    sortDirSel._bound = true
+    sortDirSel.addEventListener('change', (e) => {
+      state.allwordsSortDir = e.target.value
+      state.allwordsPage = 1
+      renderAllwordsListTable()
+    })
+  }
+
+  const filterSel = document.getElementById('filterAllwords')
+  if (filterSel && !filterSel._bound) {
+    filterSel._bound = true
+    filterSel.addEventListener('change', (e) => {
+      state.allwordsFilter = e.target.value
+      state.allwordsPage = 1
+      renderAllwordsListTable()
+    })
+  }
+
+  renderAllwordsListTable()
+}
+
+// 将释义中的词性部分转为斜体灰色 HTML
+function formatMeaningPOS(meaning) {
+  // 匹配已知词性前缀（英文缩写 + 中文）
+  const knownPOS = [
+    'n\\.', 'v\\.', 'adj\\.', 'adv\\.', 'pron\\.', 'num\\.', 'conj\\.', 'ind\\.', 'exp\\.', 'rel\\.',
+    '名词', '动词', '形容词', '副词', '代词', '连词', '数词', '声叹词', '示词', '抒情词'
+  ]
+  const pattern = new RegExp('^(' + knownPOS.join('|') + ')\\s+')
+  const match = meaning.match(pattern)
+  if (match) {
+    const pos = match[1]
+    const rest = meaning.slice(match[0].length)
+    return `<span style="font-style:italic;color:var(--text-muted)">${esc(pos)}</span> ${esc(rest)}`
+  }
+  return esc(meaning)
+}
+
+function renderAllwordsListTable() {
+  const allItems = buildAllwordsList()
+
+  // 搜索过滤
+  let filtered = allItems
+  if (state.allwordsSearch) {
+    const s = state.allwordsSearch.toLowerCase()
+    filtered = allItems.filter(item =>
+      (item.code || '').toLowerCase().includes(s) ||
+      (item.word || '').toLowerCase().includes(s) ||
+      (item.meaning || '').includes(s)
+    )
+  }
+
+  // 来源筛选：有限词 / 无限词
+  if (state.allwordsFilter === 'finite') {
+    filtered = filtered.filter(item => item.source === 'finite')
+  } else if (state.allwordsFilter === 'infinite') {
+    filtered = filtered.filter(item => item.source !== 'finite')
+  }
+
+  // 排序
+  const sourceOrder = { roots: 0, classic: 1, borrowing: 2, finite: 3 }
+  if (state.allwordsSort !== 'default') {
+    const col = state.allwordsSort
+    const dir = state.allwordsSortDir === 'asc' ? 1 : -1
+    filtered.sort((a, b) => {
+      let av, bv
+      if (col === 'source') {
+        av = sourceOrder[a.source] ?? 99
+        bv = sourceOrder[b.source] ?? 99
+        return (av - bv) * dir
+      } else {
+        av = (a[col] || '').toLowerCase()
+        bv = (b[col] || '').toLowerCase()
+        return av.localeCompare(bv, 'zh-CN') * dir
+      }
+    })
+  }
+
+  // 统计重复词语（仅对当前页做高亮，但统计范围是全部过滤后数据）
+  const wordCount = {}
+  filtered.forEach(item => {
+    const w = (item.word || '').toLowerCase()
+    wordCount[w] = (wordCount[w] || 0) + 1
+  })
+  const duplicateWords = new Set(Object.keys(wordCount).filter(w => wordCount[w] > 1))
+
+  // 重复编码后缀已在 buildAllwordsList 中基于全量数据预计算，此处不再重新计算
+
+  const p = paginate(filtered, state.allwordsPage)
+  if (state.allwordsPage > p.totalPages && p.totalPages > 0) {
+    state.allwordsPage = p.totalPages
+    return renderAllwordsListTable()
+  }
+
+  let html = ''
+  if (p.pageData.length === 0) {
+    html += `<div class="empty-state">
+      <svg viewBox="0 0 48 48" fill="none"><rect x="6" y="8" width="36" height="32" rx="4" stroke="currentColor" stroke-width="2"/><line x1="14" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5"/></svg>
+      <p>暂无数据/</p>
+    </div>`
+  } else {
+    html += `<div class="table-wrap"><div class="table-scroll"><table>
+      <thead><tr><th>#</th><th>所有词唯一编码</th><th>词语</th><th>释义</th></tr></thead><tbody>`
+
+    p.pageData.forEach((item, idx) => {
+      const isDup = duplicateWords.has((item.word || '').toLowerCase())
+      // 重复编码加后缀
+      const codeDisplay = esc(item._codeDisplay || item.code)
+      html += `<tr${isDup ? ' style="background:var(--gold-dim)"' : ''}>
+        <td style="color:var(--text-muted);font-size:0.8rem">${p.start + idx + 1}</td>
+        <td style="color:var(--accent);font-weight:600;font-size:0.82rem">${codeDisplay}</td>
+        <td class="cell-word"${isDup ? ' style="color:var(--gold);font-weight:700"' : ''}>${esc(item.word)}</td>
+        <td>${formatMeaningPOS(item.meaning)}</td>
+      </tr>`
+    })
+
+    html += `</tbody></table></div></div>`
+    html += renderPagination(p, state.allwordsPage, (newPage) => {
+      state.allwordsPage = newPage
+      renderAllwordsListTable()
+    })
+  }
+
+  const target = document.getElementById('tableAreaAllwords')
+  if (target) target.innerHTML = html
+}
+
+// ---- 有限词表 ----
+// 词性标签映射：存储的英文缩写 → 中文标签
+const FINITE_POS_LABELS = {
+  'pron.': 'pron.', 'num.': 'num.', 'conj.': 'conj.',
+  'ind.': 'ind.', 'exp.': 'exp.', 'rel.': 'rel.'
+}
+
+function renderFiniteTab() {
+  let html = `<div class="toolbar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="搜索编码、词语、音标、释义（含词性）..."  id="searchFinite" value="${esc(state.finiteSearch)}">
+    </div>
+    <div style="display:flex;gap:0.5rem">
+      <button class="btn" onclick="confirmExport('finite')">📥 导出</button>
+      <button class="btn btn-primary" onclick="openFiniteWordModal(null)">+ 新增有限词汇</button>
+    </div>
+  </div>`
+  html += `<div id="tableAreaFinite"></div>`
+  document.getElementById('tabFinite').innerHTML = html
+
+  const searchInput = document.getElementById('searchFinite')
+  if (searchInput && !searchInput._bound) {
+    searchInput._bound = true
+    searchInput.addEventListener('input', (e) => {
+      state.finiteSearch = e.target.value
+      state.finitePage = 1
+      renderFiniteTable()
+    })
+  }
+
+  renderFiniteTable()
+}
+
+function renderFiniteTable() {
+  const words = filteredFinite()
+  const p = paginate(words, state.finitePage)
+
+  if (state.finitePage > p.totalPages && p.totalPages > 0) {
+    state.finitePage = p.totalPages
+    return renderFiniteTable()
+  }
+
+  let html = ''
+  if (p.pageData.length === 0) {
+    html += `<div class="empty-state">
+      <svg viewBox="0 0 48 48" fill="none"><rect x="6" y="8" width="36" height="32" rx="4" stroke="currentColor" stroke-width="2"/><line x1="14" y1="20" x2="34" y2="20" stroke="currentColor" stroke-width="1.5"/><line x1="14" y1="26" x2="30" y2="26" stroke="currentColor" stroke-width="1.5"/></svg>
+      <p>暂无有限词条数据</p>
+    </div>`
+  } else {
+    html += `<div class="table-wrap"><div class="table-scroll"><table>
+      <thead><tr>
+        <th>#</th><th>编码</th><th>词语</th><th>音标</th><th>释义</th><th>备注</th><th>操作</th>
+      </tr></thead><tbody>`
+
+    p.pageData.forEach((w, idx) => {
+      const posLabel = w.part_of_speech ? `<span class="pos-inline">${esc(FINITE_POS_LABELS[w.part_of_speech] || w.part_of_speech)}</span> ` : ''
+      html += `<tr onclick="showFiniteWordDetail(${w.id})" style="cursor:pointer">
+        <td style="color:var(--text-muted);font-size:0.8rem">${p.start + idx + 1}</td>
+        <td style="color:var(--accent);font-weight:600;font-size:0.82rem">${esc(w.code || '')}</td>
+        <td class="cell-word">${esc(w.word)}</td>
+        <td class="cell-ipa">${esc(w.pronunciation || '')}</td>
+        <td>${posLabel}${esc(w.meaning)}</td>
+        <td style="color:var(--text-secondary);font-size:0.82rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(w.notes || '')}</td>
+        <td class="action-cell">
+          <button class="btn-icon" onclick="event.stopPropagation();openFiniteWordModal(${w.id})" title="编辑">✏️</button>
+          <button class="btn-icon danger" onclick="event.stopPropagation();deleteFiniteWord(${w.id})" title="删除">🗑️</button>
+        </td>
+      </tr>`
+    })
+
+    html += `</tbody></table></div></div>`
+    html += renderPagination(p, state.finitePage, (newPage) => {
+      state.finitePage = newPage
+      renderFiniteTable()
+    })
+  }
+
+  const target = document.getElementById('tableAreaFinite')
+  if (target) target.innerHTML = html
+}
+
+// ---- 有限词表 CRUD ----
+function openFiniteWordModal(id) {
+  const word = id ? state.finiteWords.find(w => w.id === id) : null
+  const title = word ? '编辑有限词汇' : '新增有限词汇'
+
+  modalContainer.innerHTML = `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>${title}</h3>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>词汇编码 *</label>
+            <input type="text" id="formCode" value="${esc(word?.code || '')}" placeholder="请输入唯一编码">
+          </div>
+          <div class="form-group">
+            <label>词语 *</label>
+            <input type="text" id="formWord" value="${esc(word?.word || '')}" placeholder="请输入田语有限词">
+          </div>
+          <div class="form-group">
+            <label>音标</label>
+            <input type="text" id="formPron" value="${esc(word?.pronunciation || '')}" placeholder="请输入音标（可选）">
+          </div>
+          <div class="form-group">
+            <label>释义 *</label>
+            <div style="display:flex;gap:0.5rem">
+              <select id="formPOS" style="background:var(--bg-input);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 0.8rem;font-size:0.85rem;width:20%;flex-shrink:0">
+                <option value="">— 词性 —</option>
+                ${FINITE_POS_OPTIONS.map(o => `<option value="${o.value}" ${word && word.part_of_speech === o.value ? 'selected' : ''}>${o.label}</option>`).join('')}
+              </select>
+              <input type="text" id="formMeaning" value="${esc(word?.meaning || '')}" placeholder="请输入释义" style="flex:1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>备注</label>
+            <input type="text" id="formNotes" value="${esc(word?.notes || '')}" placeholder="备注（可选）">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn btn-primary" onclick="saveFiniteWord(${word ? word.id : 'null'})">💾 保存</button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+async function saveFiniteWord(id) {
+  if (!await ensureAuth()) return
+
+  const code = document.getElementById('formCode').value.trim()
+  const wordVal = document.getElementById('formWord').value.trim()
+  const record = {
+    code: code,
+    word: wordVal,
+    pronunciation: document.getElementById('formPron').value.trim(),
+    part_of_speech: document.getElementById('formPOS').value,
+    meaning: document.getElementById('formMeaning').value.trim(),
+    notes: document.getElementById('formNotes').value.trim(),
+  }
+
+  if (!record.code || !record.word || !record.meaning) {
+    toast('词汇编码、词语和释义为必填项', 'error')
+    return
+  }
+
+  const dupCode = checkDuplicate('finite', 'code', record.code, id)
+  if (dupCode) { toast(`编码 "${record.code}" 已被词汇 "${dupCode.word}" 使用`, 'error'); return }
+
+  const dupWord = checkDuplicate('finite', 'word', record.word, id)
+  if (dupWord) { toast(`词语 "${record.word}" 已存在（编码: ${dupWord.code}）`, 'error'); return }
+
+  try {
+    if (id) {
+      const { error } = await db.from('finite_words').update(record).eq('id', id)
+      if (error) throw error
+      toast('有限词汇已更新')
+    } else {
+      const { error } = await db.from('finite_words').insert([record])
+      if (error) throw error
+      toast('有限词汇已添加')
+    }
+    closeModal()
+    updateFooterTime()
+    await loadFiniteWords()
+    renderFiniteTable()
+  } catch (e) {
+    toast('保存失败: ' + e.message, 'error')
+  }
+}
+
+function deleteFiniteWord(id) {
+  showConfirm('确定要删除这条有限词汇吗？此操作不可撤销。', async () => {
+    if (!await ensureAuth()) return
+    try {
+      const { error } = await db.from('finite_words').delete().eq('id', id)
+      if (error) throw error
+      toast('有限词汇已删除')
+      updateFooterTime()
+      await loadFiniteWords()
+      renderFiniteTable()
+    } catch (e) {
+      toast('删除失败: ' + e.message, 'error')
+    }
+  })
+}
+
+function showFiniteWordDetail(id) {
+  const w = state.finiteWords.find(w => w.id === id)
+  if (!w) return
+
+  const posLabel = w.part_of_speech ? FINITE_POS_LABELS[w.part_of_speech] || w.part_of_speech : ''
+
+  modalContainer.innerHTML = `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal" style="max-width:600px">
+        <div class="modal-header">
+          <h3>有限词表详情</h3>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="line-height:2">
+          <div style="display:grid;grid-template-columns:80px 1fr;gap:0.5rem 1rem">
+            <strong>编码：</strong><span>${esc(w.code || '')}</span>
+            <strong>词语：</strong><span class="cell-word" style="font-size:1.1rem">${esc(w.word)}</span>
+            <strong>音标：</strong><span class="cell-ipa">${esc(w.pronunciation || '')}</span>
+            <strong>释义：</strong><span>${posLabel ? `<span class="pos-inline">${posLabel}</span> ` : ''}${esc(w.meaning)}</span>
+            <strong>备注：</strong><span style="color:var(--text-secondary)">${esc(w.notes || '无')}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">关闭</button>
+          <button class="btn btn-primary" onclick="openFiniteWordModal(${w.id})">✏️ 编辑</button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+// ---- 导出为 xlsx 表格 ----
+function confirmExport(type) {
+  const labels = {
+    classic: '古典词表', borrowing: '已收借词', roots: '标准词根',
+    allwords: '所有词表', finite: '有限词表'
+  }
+  const label = labels[type] || '数据'
+  showConfirm(`确定要导出「${label}」为 xlsx 表格吗？`, () => {
+    exportXlsx(type)
+  }, '📥 确认导出', 'btn-primary')
+}
+
+function exportXlsx(type) {
+  if (typeof XLSX === 'undefined') { toast('xlsx 库加载中，请稍后再试', 'error'); return }
+
+  let headers = []
+  let rows = []
+  let fileName = ''
+
+  if (type === 'classic' || type === 'borrowing') {
+    const list = type === 'classic' ? state.classicWords : state.borrowingWords
+    headers = ['编码', '词语', '音标', '释义', '词类', '备注']
+    rows = list.map(w => [
+      w.code || '',
+      w.word || '',
+      w.pronunciation || '',
+      w.meaning || '',
+      w.part_of_speech || '',
+      w.notes || ''
+    ])
+    fileName = ('田语' + type === 'classic' ? '古典词表' : '已收借词') 
+                 + '_' + new Date().toISOString().replace('T', '_').slice(0, 16).replace(/:/g, '-') + '.xlsx'// 输出示例：古典词表_2026-07-08_06-30.xlsx（如果当前是北京时间14:30，这里会显示06-30）
+  } else if (type === 'roots') {
+    headers = ['编码', '音读词根', '形读词根', '核心义', '类别', '音读派生词', '备注']
+    rows = state.roots.map(r => {
+      let derivs = []
+      try { derivs = JSON.parse(r.derivatives || '[]') } catch {}
+      const derivStr = derivs.map(d => `${d.word}(${d.pos || ''})${d.meaning || ''}`).join('；')
+      return [
+        r.code || '',
+        r.sound_root || '',
+        r.form_root || '',
+        r.core_meaning || '',
+        r.category || '',
+        derivStr,
+        r.notes || ''
+      ]
+    })
+    fileName = '田语' + '标准词根_' + new Date().toISOString().replace('T', '_').slice(0, 16).replace(/:/g, '-') + '.xlsx'
+  } else if (type === 'allwords') {
+    headers = ['编码', '词语', '释义']
+    rows = buildAllwordsList().map(item => [
+      item._codeDisplay || item.code || '',
+      item.word || '',
+      item.meaning || ''
+    ])
+    fileName = '田语' + '所有词表_' + new Date().toISOString().replace('T', '_').slice(0, 16).replace(/:/g, '-') + '.xlsx'
+  } else if (type === 'finite') {
+    headers = ['编码', '词语', '音标', '释义', '词性', '备注']
+    rows = state.finiteWords.map(w => [
+      w.code || '',
+      w.word || '',
+      w.pronunciation || '',
+      w.meaning || '',
+      w.part_of_speech || '',
+      w.notes || ''
+    ])
+    fileName = '田语' + '有限词表_' + new Date().toISOString().replace('T', '_').slice(0, 16).replace(/:/g, '-') + '.xlsx'
+  } else {
+    toast('不支持的导出类型', 'error'); return
+  }
+
+  if (rows.length === 0) { toast('暂无数据可导出', 'error'); return }
+
+  const aoa = [headers, ...rows]
+  const ws = XLSX.utils.aoa_to_sheet(aoa)
+  const wb = XLSX.utils.book_new()
+  const sheetName = type === 'roots' ? '标准词根' : (type === 'classic' ? '古典词表' : (type === 'allwords' ? '所有词表' : (type === 'finite' ? '有限词表' : '已收借词')))
+  XLSX.utils.book_append_sheet(wb, ws, sheetName.substring(0, 31))
+  XLSX.writeFile(wb, fileName)
+  toast(`已导出 ${rows.length} 条数据`)
+}
+
+// ---- 词汇 CRUD ----
+function openWordModal(type, id) {
+  const isClassic = type === 'classic'
+  const words = isClassic ? state.classicWords : state.borrowingWords
+  const word = id ? words.find(w => w.id === id) : null
+  const title = word ? '编辑词汇' : '新增词汇'
+  const label = isClassic ? '古典' : '借词'
+
+  // 词汇编码已改为手动输入，放置在第一位，移除了原来的词根选择
+  modalContainer.innerHTML = `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>${title}（${label}）</h3>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- 词汇编码：移到第一位，改为手动输入 -->
+          <div class="form-group">
+            <label>词汇编码 *</label>
+            <input type="text" id="formCode" value="${esc(word?.code || '')}" placeholder="请输入唯一编码">
+          </div>
+          <div class="form-group">
+            <label>词语 *</label>
+            <input type="text" id="formWord" value="${esc(word?.word || '')}" placeholder="琳凯蒂亚语词汇">
+          </div>
+          <div class="form-group">
+            <label>音标</label>
+            <input type="text" id="formPron" value="${esc(word?.pronunciation || '')}" placeholder="如 /so se/">
+          </div>
+          <div class="form-group">
+            <label>释义 *</label>
+            <input type="text" id="formMeaning" value="${esc(word?.meaning || '')}" placeholder="如 v.学习">
+          </div>
+          <div class="form-group">
+            <label>备注</label>
+            <input type="text" id="formNotes" value="${esc(word?.notes || '')}" placeholder="可选备注">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn btn-primary" onclick="saveWord('${type}', ${id || 'null'})">💾 保存</button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+async function saveWord(type, id) {
+  // 增删改需口令验证
+  if (!await ensureAuth()) return
+
+  const isClassic = type === 'classic'
+  const table = isClassic ? 'classic_words' : 'borrowing_words'
+
+  const code = document.getElementById('formCode').value.trim()
+  const wordVal = document.getElementById('formWord').value.trim()
+  const record = {
+    code: code,
+    word: wordVal,
+    pronunciation: document.getElementById('formPron').value.trim(),
+    meaning: document.getElementById('formMeaning').value.trim(),
+    notes: document.getElementById('formNotes').value.trim(),
+  }
+
+  // 必填验证
+  if (!record.code || !record.word || !record.meaning) {
+    toast('词汇编码、词语和释义为必填项', 'error')
+    return
+  }
+
+  // 重复检测：编码
+  const dupCode = checkDuplicate(type, 'code', record.code, id)
+  if (dupCode) { toast(`编码 "${record.code}" 已被词汇 "${dupCode.word}" 使用`, 'error'); return }
+
+  // 重复检测：词语
+  const dupWord = checkDuplicate(type, 'word', record.word, id)
+  if (dupWord) { toast(`词语 "${record.word}" 已存在（编码: ${dupWord.code}）`, 'error'); return }
+
+  try {
+    if (id) {
+      const { error } = await db.from(table).update(record).eq('id', id)
+      if (error) throw error
+      toast('词汇已更新')
+    } else {
+      const { error } = await db.from(table).insert([record])
+      if (error) throw error
+      toast('词汇已添加')
+    }
+    closeModal()
+    updateFooterTime()
+    if (isClassic) { await loadClassicWords(); renderWordTable('classic') }
+    else { await loadBorrowingWords(); renderWordTable('borrowing') }
+  } catch (e) {
+    toast('保存失败: ' + e.message, 'error')
+  }
+}
+
+function deleteWord(type, id) {
+  showConfirm('确定要删除这条词汇吗？此操作不可撤销。', async () => {
+    // 增删改需口令验证
+    if (!await ensureAuth()) return
+
+    const isClassic = type === 'classic'
+    const table = isClassic ? 'classic_words' : 'borrowing_words'
+    try {
+      const { error } = await db.from(table).delete().eq('id', id)
+      if (error) throw error
+      toast('词汇已删除')
+      updateFooterTime()
+      if (isClassic) { await loadClassicWords(); renderWordTable('classic') }
+      else { await loadBorrowingWords(); renderWordTable('borrowing') }
+    } catch (e) {
+      toast('删除失败: ' + e.message, 'error')
+    }
+  })
+}
+
+function closeModal() { modalContainer.innerHTML = '' }
+
+// 展示完整词条详情对话框（只读）
+function showWordDetail(type, id) {
+  const isClassic = type === 'classic'
+  const list = isClassic ? state.classicWords : state.borrowingWords
+  const w = list.find(w => w.id === id)
+  if (!w) return
+
+  const label = isClassic ? '古典词表' : '已收借词'
+  const posText = w.part_of_speech ? `<span class="pos-inline">${esc(w.part_of_speech)}</span>` : ''
+
+  modalContainer.innerHTML = `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal" style="max-width:600px">
+        <div class="modal-header">
+          <h3>${label}详情</h3>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="line-height:2">
+          <div style="display:grid;grid-template-columns:80px 1fr;gap:0.5rem 1rem">
+            <strong>编码：</strong><span>${esc(w.code || '')}</span>
+            <strong>词语：</strong><span class="cell-word" style="font-size:1.1rem">${esc(w.word)}</span>
+            <strong>音标：</strong><span class="cell-ipa">${esc(w.pronunciation || '')}</span>
+            <strong>释义：</strong><span>${posText}${esc(w.meaning)}</span>
+            <strong>备注：</strong><span style="color:var(--text-secondary)">${esc(w.notes || '无')}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">关闭</button>
+          <button class="btn btn-primary" onclick="openWordModal('${type}', ${w.id})">✏️ 编辑</button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+// 展示词根详情对话框（只读）
+function showRootDetail(id) {
+  const r = state.roots.find(r => r.id === id)
+  if (!r) return
+
+  let derivs = []
+  try { derivs = JSON.parse(r.derivatives || '[]') } catch {}
+  const derivText = derivs.map(d => `${d.word} ${d.pos} ${d.meaning}`).join('；') || '无'
+
+  modalContainer.innerHTML = `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal" style="max-width:600px">
+        <div class="modal-header">
+          <h3>词根详情</h3>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" style="line-height:2">
+          <div style="display:grid;grid-template-columns:80px 1fr;gap:0.5rem 1rem">
+            <strong>编码：</strong><span>${esc(r.code)}</span>
+            <strong>音读词根：</strong><span class="cell-word" style="font-size:1.1rem">${esc(r.sound_root)}</span>
+            <strong>形读词根：</strong><span class="cell-ipa">${esc(r.form_root || '无')}</span>
+            <strong>核心义：</strong><span>${esc(r.core_meaning)}</span>
+            <strong>类别：</strong><span style="color:var(--accent)">${esc(r.category || '无')}</span>
+            <strong>派生词：</strong><span style="color:var(--text-secondary);font-size:0.85rem">${esc(derivText)}</span>
+            <strong>备注：</strong><span style="color:var(--text-secondary)">${esc(r.notes || '无')}</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">关闭</button>
+          <button class="btn btn-primary" onclick="openRootModal(${r.id})">✏️ 编辑</button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+// 触发模态弹窗中的保存按钮（Enter 键调用）
+function triggerModalSave() {
+  const saveBtn = modalContainer.querySelector('.btn-primary')
+  if (saveBtn) saveBtn.click()
+}
+
+// ---- 词根 CRUD ----
+function openRootModal(id) {
+  const root = id ? state.roots.find(r => r.id === id) : null
+  let derivs = []
+  try { derivs = JSON.parse(root?.derivatives || '[]') } catch {}
+
+  // 派生词行：词输入框缩短50%，释义框拉长，词类改为下拉选择（仅有名、动、形、副）
+  let derivHTML = derivs.map((d, i) => `
+    <div class="derivative-row">
+      <input type="text" class="deriv-word" placeholder="派生词" value="${esc(d.word || '')}">
+      <select class="deriv-pos">
+        ${DERIV_POS_OPTIONS.map(o => `<option value="${o.value}" ${d.pos === o.value ? 'selected' : ''}>${o.label}</option>`).join('')}
+      </select>
+      <input type="text" class="deriv-meaning" placeholder="释义" value="${esc(d.meaning || '')}">
+      <button class="btn-icon danger" onclick="this.closest('.derivative-row').remove()" title="删除">✕</button>
+    </div>
+  `).join('')
+
+  modalContainer.innerHTML = `
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>${root ? '编辑标准词根' : '新增标准词根'}</h3>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>编码 *</label>
+            <input type="text" id="formCode" value="${esc(root?.code || '')}" placeholder="请输入唯一编码">
+          </div>
+          <div class="form-group">
+            <label>音读词根 *</label>
+            <input type="text" id="formSoundRoot" value="${esc(root?.sound_root || '')}" placeholder="如 sos-">
+          </div>
+          <div class="form-group">
+            <label>形读词根</label>
+            <input type="text" id="formFormRoot" value="${esc(root?.form_root || '')}" placeholder="如 hog_kj-">
+          </div>
+          <div class="form-group">
+            <label>核心义 *</label>
+            <input type="text" id="formCoreMeaning" value="${esc(root?.core_meaning || '')}" placeholder="核心汉字 如 学">
+          </div>
+          <div class="form-group">
+            <label>类别</label>
+            <input type="text" id="formCategory" value="${esc(root?.category || '')}" placeholder="如：水果类、亲属类、颜色类">
+          </div>
+          <div class="form-group">
+            <label>派生词</label>
+            <div class="derivatives-section" id="derivSection">${derivHTML}</div>
+            <button class="btn btn-sm" style="margin-top:0.4rem" onclick="addDerivativeRow()">+ 添加派生词</button>
+          </div>
+          <div class="form-group">
+            <label>备注</label>
+            <input type="text" id="formNotes" value="${esc(root?.notes || '')}" placeholder="可选备注">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn btn-primary" onclick="saveRoot(${id || 'null'})">💾 保存</button>
+        </div>
+      </div>
+    </div>
+  `
+}
+
+function addDerivativeRow() {
+  const section = document.getElementById('derivSection')
+  const row = document.createElement('div')
+  row.className = 'derivative-row'
+  row.innerHTML = `
+    <input type="text" class="deriv-word" placeholder="派生词">
+    <select class="deriv-pos">
+      ${DERIV_POS_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+    </select>
+    <input type="text" class="deriv-meaning" placeholder="释义">
+    <button class="btn-icon danger" onclick="this.closest('.derivative-row').remove()" title="删除">✕</button>
+  `
+  section.appendChild(row)
+}
+
+async function saveRoot(id) {
+  // 增删改需口令验证
+  if (!await ensureAuth()) return
+
+  const derivSection = document.getElementById('derivSection')
+  const derivRows = derivSection ? derivSection.querySelectorAll('.derivative-row') : []
+  const derivatives = []
+  derivRows.forEach(row => {
+    const wordInput = row.querySelector('.deriv-word')
+    const posSelect = row.querySelector('.deriv-pos')
+    const meaningInput = row.querySelector('.deriv-meaning')
+    const word = wordInput?.value?.trim()
+    const pos = posSelect?.value || ''
+    const meaning = meaningInput?.value?.trim()
+    if (word) derivatives.push({ word, pos, meaning })
+  })
+
+  const code = document.getElementById('formCode').value.trim()
+  const soundRoot = document.getElementById('formSoundRoot').value.trim()
+  const record = {
+    code: code,
+    form_root: document.getElementById('formFormRoot').value.trim(),
+    sound_root: soundRoot,
+    core_meaning: document.getElementById('formCoreMeaning').value.trim(),
+    category: document.getElementById('formCategory').value.trim(),
+    derivatives: JSON.stringify(derivatives),
+    notes: document.getElementById('formNotes').value.trim(),
+  }
+
+  // 必填验证
+  if (!record.code || !record.sound_root || !record.core_meaning) {
+    toast('编码、音读词根和核心义为必填项', 'error')
+    return
+  }
+
+  // 重复检测：编码
+  const dupCode = checkDuplicate('roots', 'code', record.code, id)
+  if (dupCode) { toast(`编码 "${record.code}" 已被词根 "${dupCode.core_meaning}" 使用`, 'error'); return }
+
+  // 重复检测：音读词根
+  const dupSound = checkDuplicate('roots', 'sound_root', record.sound_root, id)
+  if (dupSound) { toast(`音读词根 "${record.sound_root}" 已存在（编码: ${dupSound.code}）`, 'error'); return }
+
+  // 重复检测：形读词根（若有值）
+  if (record.form_root) {
+    const dupForm = checkDuplicate('roots', 'form_root', record.form_root, id)
+    if (dupForm) { toast(`形读词根 "${record.form_root}" 已存在（编码: ${dupForm.code}）`, 'error'); return }
+  }
+
+  // 重复检测：核心义
+  const dupMeaning = checkDuplicate('roots', 'core_meaning', record.core_meaning, id)
+  if (dupMeaning) { toast(`核心义 "${record.core_meaning}" 已存在（编码: ${dupMeaning.code}）`, 'error'); return }
+
+  try {
+    if (id) {
+      const { error } = await db.from('roots').update(record).eq('id', id)
+      if (error) throw error
+      toast('词根已更新')
+    } else {
+      const { error } = await db.from('roots').insert([record])
+      if (error) throw error
+      toast('词根已添加')
+    }
+    closeModal()
+    updateFooterTime()
+    await loadRoots()
+    renderRootsTab()
+  } catch (e) {
+    toast('保存失败: ' + e.message, 'error')
+  }
+}
+
+function deleteRoot(id) {
+  showConfirm('确定要删除这个词根吗？关联词汇的词根编码将变为空。', async () => {
+    // 增删改需口令验证
+    if (!await ensureAuth()) return
+
+    try {
+      const { error } = await db.from('roots').delete().eq('id', id)
+      if (error) throw error
+      toast('词根已删除')
+      updateFooterTime()
+      await loadRoots()
+      renderRootsTab()
+    } catch (e) {
+      toast('删除失败: ' + e.message, 'error')
+    }
+  })
+}
+
+// ---- 语法 CRUD ----
+function selectGrammar(grammar) {
+  state.currentGrammar = grammar
+  state.grammarTitle = grammar.title
+  state.grammarContent = grammar.content || ''
+  state.grammarDirty = false
+  renderGrammarTab()
+}
+
+function selectGrammarById(id) {
+  const g = state.grammarList.find(g => g.id === id)
+  if (g) selectGrammar(g)
+}
+
+function onGrammarTitleChange(val) {
+  state.grammarTitle = val
+  state.grammarDirty = true
+}
+
+function onGrammarContentChange(val) {
+  state.grammarContent = val
+  state.grammarDirty = true
+  // 实时预览
+  const preview = document.getElementById('grammarPreview')
+  if (preview) {
+    preview.innerHTML = val ? marked.parse(val, { breaks: true, gfm: true }) : '<p style="color:var(--text-muted)">预览区域</p>'
+  }
+}
+
+async function saveGrammar() {
+  if (!state.currentGrammar) { toast('请先选择或新增一条语法', 'error'); return }
+  if (!state.grammarTitle.trim()) { toast('请输入语法标题', 'error'); return }
+
+  // 增删改需口令验证
+  if (!await ensureAuth()) return
+
+  try {
+    const { error } = await db.from('grammar').update({
+      title: state.grammarTitle.trim(),
+      content: state.grammarContent,
+    }).eq('id', state.currentGrammar.id)
+    if (error) throw error
+    toast('语法已保存')
+    updateFooterTime()
+    state.grammarDirty = false
+    await loadGrammar()
+    state.currentGrammar = state.grammarList.find(g => g.id === state.currentGrammar.id)
+    renderGrammarTab()
+  } catch (e) {
+    toast('保存失败: ' + e.message, 'error')
+  }
+}
+
+async function addGrammar() {
+  const title = prompt('请输入新语法标题：')
+  if (!title || !title.trim()) return
+
+  // 增删改需口令验证
+  if (!await ensureAuth()) return
+
+  try {
+    const maxOrder = state.grammarList.reduce((max, g) => Math.max(max, g.sort_order || 0), 0)
+    const { data, error } = await db.from('grammar').insert([{
+      title: title.trim(),
+      content: '',
+      sort_order: maxOrder + 1
+    }]).select()
+    if (error) throw error
+    toast('语法条目已创建')
+    updateFooterTime()
+    await loadGrammar()
+    if (data && data[0]) selectGrammar(data[0])
+  } catch (e) {
+    toast('创建失败: ' + e.message, 'error')
+  }
+}
+
+function deleteGrammar(id) {
+  showConfirm('确定要删除这条语法吗？', async () => {
+    // 增删改需口令验证
+    if (!await ensureAuth()) return
+
+    try {
+      const { error } = await db.from('grammar').delete().eq('id', id)
+      if (error) throw error
+      toast('语法已删除')
+      updateFooterTime()
+      await loadGrammar()
+      state.currentGrammar = state.grammarList.length > 0 ? state.grammarList[0] : null
+      state.grammarTitle = state.currentGrammar?.title || ''
+      state.grammarContent = state.currentGrammar?.content || ''
+      renderGrammarTab()
+    } catch (e) {
+      toast('删除失败: ' + e.message, 'error')
+    }
+  })
+}
+
+// ---- 工具 ----
+function esc(str) {
+  if (!str) return ''
+  const div = document.createElement('div')
+  div.textContent = str
+  return div.innerHTML
+}
+
+// ---- 语法编辑器格式工具栏 ----
+function getGrammarEditor() {
+  return document.getElementById('grammarEditor')
+}
+
+function insertFormat(before, after, placeholder) {
+  const ta = getGrammarEditor()
+  if (!ta) return
+  const start = ta.selectionStart
+  const end = ta.selectionEnd
+  const scrollTop = ta.scrollTop
+  const text = ta.value
+  const selected = text.substring(start, end) || placeholder
+  ta.value = text.substring(0, start) + before + selected + after + text.substring(end)
+  ta.focus()
+  ta.selectionStart = start + before.length
+  ta.selectionEnd = start + before.length + selected.length
+  ta.scrollTop = scrollTop  // 修复：恢复滚动位置，防止滚到底部
+  onGrammarContentChange(ta.value)
+}
+
+function insertLineStart(prefix) {
+  const ta = getGrammarEditor()
+  if (!ta) return
+  const start = ta.selectionStart
+  const scrollTop = ta.scrollTop
+  const text = ta.value
+  // 找到当前行开头
+  let lineStart = start
+  while (lineStart > 0 && text[lineStart - 1] !== '\n') lineStart--
+  ta.value = text.substring(0, lineStart) + prefix + text.substring(lineStart)
+  ta.focus()
+  ta.selectionStart = ta.selectionEnd = lineStart + prefix.length + (start - lineStart)
+  ta.scrollTop = scrollTop  // 修复：恢复滚动位置
+  onGrammarContentChange(ta.value)
+}
+
+function insertLink() {
+  const ta = getGrammarEditor()
+  if (!ta) return
+  const start = ta.selectionStart
+  const end = ta.selectionEnd
+  const scrollTop = ta.scrollTop
+  const text = ta.value
+  const selected = text.substring(start, end) || '链接文字'
+  ta.value = text.substring(0, start) + '[' + selected + '](url)' + text.substring(end)
+  ta.focus()
+  const urlStart = start + selected.length + 3
+  ta.selectionStart = urlStart
+  ta.selectionEnd = urlStart + 3
+  ta.scrollTop = scrollTop  // 修复：恢复滚动位置
+  onGrammarContentChange(ta.value)
+}
+
+// 插入 Markdown 表格模板
+function insertTable() {
+  const ta = getGrammarEditor()
+  if (!ta) return
+  const start = ta.selectionStart
+  const scrollTop = ta.scrollTop
+  const template = '\n| 列1 | 列2 | 列3 |\n| --- | --- | --- |\n| 内容 | 内容 | 内容 |\n'
+  const text = ta.value
+  ta.value = text.substring(0, start) + template + text.substring(start)
+  ta.focus()
+  ta.selectionStart = ta.selectionEnd = start + template.length
+  ta.scrollTop = scrollTop
+  onGrammarContentChange(ta.value)
+}
+
+// ---- 初始化 ----
+document.getElementById('headerNav').addEventListener('click', (e) => {
+  const tab = e.target.closest('.nav-tab')
+  if (tab) switchTab(tab.dataset.tab)
+})
+
+// 全局函数暴露
+window.openWordModal = openWordModal
+window.deleteWord = deleteWord
+window.closeModal = closeModal
+window.showWordDetail = showWordDetail
+window.showRootDetail = showRootDetail
+window.saveWord = saveWord
+window.exportXlsx = exportXlsx
+window.openRootModal = openRootModal
+window.deleteRoot = deleteRoot
+window.saveRoot = saveRoot
+window.addDerivativeRow = addDerivativeRow
+window.selectGrammarById = selectGrammarById
+window.deleteGrammar = deleteGrammar
+window.addGrammar = addGrammar
+window.saveGrammar = saveGrammar
+window.onGrammarTitleChange = onGrammarTitleChange
+window.onGrammarContentChange = onGrammarContentChange
+window.handleAuth = handleAuth
+window.insertFormat = insertFormat
+window.insertLineStart = insertLineStart
+window.insertLink = insertLink
+
+// 页面加载时直接初始化数据（查询无需认证）
+initData()
+
+// ==========================================
+// PWA — Service Worker 注册与安装管理
+// ==========================================
+;(function initPWA() {
+  // 检测是否支持 Service Worker
+  if (!('serviceWorker' in navigator)) {
+    console.log('[PWA] 浏览器不支持 Service Worker，以普通网页模式运行')
+    return
+  }
+
+  let swRegistration = null
+  let deferredPrompt = null
+
+  // ---- 注册 Service Worker ----
+  async function registerSW() {
+    try {
+      swRegistration = await navigator.serviceWorker.register('/dictionary/sw.js', {
+        scope: '/dictionary/'
+      })
+      console.log('[PWA] Service Worker 注册成功，scope:', swRegistration.scope)
+
+      // 监听 SW 更新
+      swRegistration.addEventListener('updatefound', () => {
+        const newWorker = swRegistration.installing
+        if (!newWorker) return
+        console.log('[PWA] 发现新版本 Service Worker')
+
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // 新 SW 已安装但等待激活，提示用户更新
+            console.log('[PWA] 新版本已就绪，等待激活')
+            showUpdateBanner()
+          }
+        })
+      })
+
+      // 定期检查更新（每 30 分钟）
+      setInterval(() => {
+        if (swRegistration) {
+          swRegistration.update().catch(err => {
+            console.warn('[PWA] 自动检查更新失败:', err.message)
+          })
+        }
+      }, 30 * 60 * 1000)
+
+      // 检测 controller 变化（新 SW 接管后）
+      let refreshing = false
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return
+        refreshing = true
+        console.log('[PWA] Service Worker 已更新，页面即将刷新')
+        window.location.reload()
+      })
+
+    } catch (err) {
+      console.error('[PWA] Service Worker 注册失败:', err.message)
+    }
+  }
+
+  // ---- 更新提示横幅 ----
+  function showUpdateBanner() {
+    const banner = document.getElementById('pwaUpdateBanner')
+    if (!banner) return
+    banner.style.display = 'flex'
+  }
+
+  function hideUpdateBanner() {
+    const banner = document.getElementById('pwaUpdateBanner')
+    if (banner) banner.style.display = 'none'
+  }
+
+  document.getElementById('btnUpdatePwa')?.addEventListener('click', () => {
+    hideUpdateBanner()
+    // 通知 SW 跳过等待，立即激活
+    if (swRegistration?.waiting) {
+      swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' })
+    }
+    // 延迟刷新，等待 skipWaiting 生效
+    setTimeout(() => window.location.reload(), 300)
+  })
+
+  document.getElementById('btnCloseUpdate')?.addEventListener('click', hideUpdateBanner)
+
+  // ---- 安装提示（beforeinstallprompt） ----
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // 阻止浏览器默认安装提示
+    e.preventDefault()
+    // 保存事件对象
+    deferredPrompt = e
+    console.log('[PWA] beforeinstallprompt 事件已触发，可安装')
+
+    // 显示自定义安装横幅
+    const banner = document.getElementById('pwaInstallBanner')
+    if (banner) banner.style.display = 'flex'
+
+    // iOS 检测：显示添加到主屏幕引导
+    if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+      const iosGuide = document.getElementById('pwaIosGuide')
+      if (iosGuide) {
+        iosGuide.style.display = 'block'
+        setTimeout(() => { iosGuide.style.display = 'none' }, 5000)
+      }
+    }
+  })
+
+  // 安装按钮点击
+  document.getElementById('btnInstallPwa')?.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+      toast('安装功能暂不可用，请稍后再试', 'info')
+      return
+    }
+    // 显示安装提示
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
+    console.log('[PWA] 用户安装选择:', outcome)
+    deferredPrompt = null
+
+    // 隐藏横幅
+    const banner = document.getElementById('pwaInstallBanner')
+    if (banner) banner.style.display = 'none'
+
+    if (outcome === 'accepted') {
+      toast('应用安装成功！', 'success')
+    }
+  })
+
+  // 关闭安装横幅
+  document.getElementById('btnDismissInstall')?.addEventListener('click', () => {
+    const banner = document.getElementById('pwaInstallBanner')
+    if (banner) banner.style.display = 'none'
+    // 存储关闭时间，24小时内不再显示
+    try {
+      localStorage.setItem('pwa_install_dismissed', Date.now().toString())
+    } catch {}
+  })
+
+  // 检测是否已安装（standalone 模式）
+  function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+      navigator.standalone ||
+      document.referrer.includes('android-app://')
+  }
+
+  // 如果已安装，不显示安装横幅
+  if (isStandalone()) {
+    console.log('[PWA] 检测到已安装（standalone 模式），跳过安装提示')
+    const banner = document.getElementById('pwaInstallBanner')
+    if (banner) banner.style.display = 'none'
+  } else {
+    // 检查 24 小时内是否已关闭
+    try {
+      const dismissed = localStorage.getItem('pwa_install_dismissed')
+      if (dismissed && (Date.now() - parseInt(dismissed)) < 24 * 60 * 60 * 1000) {
+        console.log('[PWA] 24 小时内已关闭安装提示，跳过')
+      }
+    } catch {}
+  }
+
+  // 监听 display-mode 变化（用户从浏览器切换到已安装的 PWA）
+  window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
+    if (e.matches) {
+      console.log('[PWA] 检测到应用已安装')
+      const banner = document.getElementById('pwaInstallBanner')
+      if (banner) banner.style.display = 'none'
+    }
+  })
+
+  // ---- 手动检查更新按钮（暴露到全局） ----
+  window.checkPwaUpdate = async function () {
+    if (!swRegistration) {
+      toast('Service Worker 未注册', 'error')
+      return
+    }
+    try {
+      await swRegistration.update()
+      toast('已检查更新', 'info')
+    } catch (err) {
+      toast('检查更新失败: ' + err.message, 'error')
+    }
+  }
+
+  // ---- 启动 ----
+  registerSW()
+})()
+
+// ---- 键盘快捷操作 ----
+document.addEventListener('keydown', (e) => {
+  // 在输入框内时不触发快捷键（Esc 除外）
+  const tag = document.activeElement?.tagName
+  const isInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'
+
+  // Alt+1~4：切换标签页
+  if (e.altKey && !e.ctrlKey && !e.metaKey) {
+    const tabMap = { '2': 'classic', '1': 'roots', '3': 'borrowing', '4': 'allwords', '5': 'finite', '6': 'grammar' }
+    const tab = tabMap[e.key]
+    if (tab) {
+      e.preventDefault()
+      switchTab(tab)
+      return
+    }
+  }
+
+  // Esc：关闭弹窗/认证对话框
+  if (e.key === 'Escape') {
+    // 优先关闭认证对话框
+    if (authOverlay.style.display === 'flex') {
+      e.preventDefault()
+      authOverlay.style.display = 'none'
+      if (window._authResolve) { window._authResolve(false); window._authResolve = null }
+      return
+    }
+    // 关闭编辑弹窗
+    if (modalContainer.innerHTML) {
+      e.preventDefault()
+      closeModal()
+      return
+    }
+    // 关闭确认对话框
+    if (confirmContainer.innerHTML) {
+      e.preventDefault()
+      confirmContainer.innerHTML = ''
+      return
+    }
+  }
+
+  // 在输入框内时，以下快捷键不触发
+  if (isInput) {
+    // Enter 键在非 textarea 输入框内触发保存
+    if (e.key === 'Enter' && tag !== 'TEXTAREA' && modalContainer.innerHTML) {
+      e.preventDefault()
+      triggerModalSave()
+    }
+    return
+  }
+
+  // Ctrl+N：新增（根据当前标签页）
+  if (e.ctrlKey && !e.altKey && !e.metaKey && e.key === 'n') {
+    e.preventDefault()
+    if (state.currentTab === 'classic') openWordModal('classic', null)
+    else if (state.currentTab === 'borrowing') openWordModal('borrowing', null)
+    else if (state.currentTab === 'roots') openRootModal(null)
+    else if (state.currentTab === 'finite') openFiniteWordModal(null)
+    else if (state.currentTab === 'grammar') addGrammar()
+    return
+  }
+
+  // Ctrl+F：聚焦搜索框
+  if (e.ctrlKey && !e.altKey && !e.metaKey && e.key === 'f') {
+    e.preventDefault()
+    const searchId = state.currentTab === 'roots' ? 'searchRoots'
+      : state.currentTab === 'allwords' ? 'searchAllwords'
+      : 'search' + state.currentTab
+    const searchInput = document.getElementById(searchId)
+    if (searchInput) searchInput.focus()
+    return
+  }
+})
+
+// 更新底部修改时间（仅在 CRUD 操作成功时调用）
+async function updateFooterTime() {
+  const timeStr = new Date().toLocaleString('zh-CN')
+  state.lastModifiedTime = timeStr
+  document.getElementById('footerTime').textContent = '最近修改时间：' + timeStr
+  // 同步保存到 Supabase
+  try {
+    await db.from('settings').upsert({ key: 'last_modified', value: timeStr }, { onConflict: 'key' })
+  } catch (e) { /* 静默失败，不影响主流程 */ }
+}
+
+// 从 Supabase 加载最近修改时间
+async function loadLastModifiedTime() {
+  try {
+    const { data, error } = await db.from('settings').select('value').eq('key', 'last_modified').maybeSingle()
+    if (error) throw error
+    if (data?.value) {
+      state.lastModifiedTime = data.value
+      document.getElementById('footerTime').textContent = '最近修改时间：' + data.value
+    } else {
+      document.getElementById('footerTime').textContent = '最近修改时间：暂无'
+    }
+  } catch (e) {
+    document.getElementById('footerTime').textContent = '最近修改时间：暂无'
+  }
+}
+</script>
+
+<!--
+  ===== Supabase SQL（在 Supabase SQL Editor 中执行）=====
+
+  -- 1. 创建 settings 表（用于存储最近修改时间等配置）
+  CREATE TABLE IF NOT EXISTS settings (
+    key   TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  );
+
+  -- 允许匿名用户读取 settings
+  ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "允许匿名读取 settings" ON settings FOR SELECT USING (true);
+  CREATE POLICY "允许认证用户写入 settings" ON settings FOR INSERT WITH CHECK (true);
+  CREATE POLICY "允许认证用户更新 settings" ON settings FOR UPDATE USING (true);
+
+  -- 2. roots 表增加类别字段
+  ALTER TABLE roots ADD COLUMN IF NOT EXISTS category TEXT DEFAULT '';
+
+  -- 3. 为所有数据表添加匿名读取策略（解决首次加载无数据问题）
+  -- 注意：如果表已存在 RLS 策略，请先检查是否需要调整
+  ALTER TABLE classic_words ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "允许匿名读取古典词表" ON classic_words FOR SELECT USING (true);
+
+  ALTER TABLE borrowing_words ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "允许匿名读取已收借词" ON borrowing_words FOR SELECT USING (true);
+
+  ALTER TABLE roots ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "允许匿名读取标准词根" ON roots FOR SELECT USING (true);
+
+  ALTER TABLE grammar ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "允许匿名读取语法" ON grammar FOR SELECT USING (true);
+-->
+
+</body>
+</html>

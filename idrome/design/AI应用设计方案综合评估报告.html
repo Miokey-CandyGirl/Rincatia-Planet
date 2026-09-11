@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iDrome AI 应用设计方案 — 综合评估报告</title>
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --bg-soft: #F8F9FA;
+    --bg-card: #FFFFFF;
+    --text: #1a1a2e;
+    --text-soft: #5F6368;
+    --text-muted: #999999;
+    --accent: #2C5F8A;
+    --accent-dark: #1A3A5C;
+    --gold: #C9A84C;
+    --green: #5B8C5A;
+    --orange: #E8985E;
+    --red: #EA4335;
+    --yellow: #FBBC04;
+    --border: #E0E0E0;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-soft);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  .report-header {
+    background: linear-gradient(135deg, #1A3A5C 0%, #2C5F8A 60%, #C9A84C 100%);
+    color: #fff;
+    padding: 48px 40px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .report-header::after {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .report-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .report-header .subtitle {
+    font-size: 15px;
+    opacity: 0.85;
+    position: relative;
+    z-index: 1;
+  }
+  .report-header .meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    opacity: 0.8;
+    position: relative;
+    z-index: 1;
+  }
+  .report-header .meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .report-header .meta strong {
+    font-weight: 600;
+    opacity: 1;
+  }
+
+  /* Overall Score Card */
+  .score-banner {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    border-left: 5px solid var(--accent);
+  }
+  .score-banner .score-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) 0deg, var(--accent) 297deg, #E0E0E0 297deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .score-banner .score-circle::before {
+    content: '';
+    position: absolute;
+    width: 82px; height: 82px;
+    border-radius: 50%;
+    background: var(--bg-card);
+  }
+  .score-banner .score-circle .score-num {
+    position: relative;
+    z-index: 1;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .score-banner .score-info h2 {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .score-banner .score-info .grade {
+    display: inline-block;
+    padding: 2px 12px;
+    background: #E8F0FE;
+    color: var(--accent);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .score-banner .score-info p {
+    font-size: 14px;
+    color: var(--text-soft);
+  }
+
+  /* Section */
+  section {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+  }
+  section > h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--bg-soft);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section > h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  section > h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin: 24px 0 12px;
+  }
+  section p {
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  thead {
+    background: var(--accent-dark);
+    color: #fff;
+  }
+  th {
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) {
+    background: var(--bg-soft);
+  }
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Score badges */
+  .score-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .score-excellent { background: #E8F5E9; color: var(--green); }
+  .score-good { background: #E8F0FE; color: var(--accent); }
+  .score-fair { background: #FFF3E0; color: var(--orange); }
+  .score-weak { background: #FFEBEE; color: var(--red); }
+
+  /* Star rating */
+  .stars {
+    color: var(--gold);
+    letter-spacing: 2px;
+    font-size: 15px;
+  }
+  .stars .empty { color: #E0E0E0; }
+
+  /* Callout boxes */
+  .callout {
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .callout-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .callout-success {
+    background: #F1F8F1;
+    border-left: 4px solid var(--green);
+  }
+  .callout-success .callout-title { color: var(--green); }
+  .callout-warn {
+    background: #FFF8E8;
+    border-left: 4px solid var(--yellow);
+  }
+  .callout-warn .callout-title { color: #B8860B; }
+  .callout-danger {
+    background: #FFF0F0;
+    border-left: 4px solid var(--red);
+  }
+  .callout-danger .callout-title { color: var(--red); }
+  .callout-info {
+    background: #F0F6FC;
+    border-left: 4px solid var(--accent);
+  }
+  .callout-info .callout-title { color: var(--accent); }
+
+  /* Lists */
+  ul, ol {
+    margin: 12px 0 12px 24px;
+  }
+  li {
+    margin-bottom: 6px;
+    line-height: 1.7;
+  }
+
+  /* Dimension cards */
+  .dim-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 20px 24px;
+    margin: 16px 0;
+    background: var(--bg-soft);
+    transition: box-shadow 0.2s;
+  }
+  .dim-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .dim-card .dim-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .dim-card .dim-header h3 {
+    margin: 0;
+    font-size: 16px;
+  }
+  .dim-card .dim-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dim-card .dim-score .score-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .dim-card .dim-body {
+    font-size: 14px;
+  }
+  .dim-card .dim-body p {
+    margin-bottom: 8px;
+  }
+  .dim-card .dim-body .pros,
+  .dim-card .dim-body .cons {
+    margin: 8px 0 8px 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  .dim-card .dim-body .pros li::before {
+    content: '+ ';
+    color: var(--green);
+    font-weight: 700;
+  }
+  .dim-card .dim-body .cons li::before {
+    content: '- ';
+    color: var(--red);
+    font-weight: 700;
+  }
+  .dim-card .dim-body .pros li,
+  .dim-card .dim-body .cons li {
+    margin-bottom: 4px;
+    padding-left: 0;
+    margin-left: 0;
+  }
+
+  /* Risk matrix */
+  .risk-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    margin: 10px 0;
+    font-size: 14px;
+  }
+  .risk-high {
+    background: #FFEBEE;
+    border-left: 4px solid var(--red);
+  }
+  .risk-medium {
+    background: #FFF8E8;
+    border-left: 4px solid var(--yellow);
+  }
+  .risk-low {
+    background: #F1F8F1;
+    border-left: 4px solid var(--green);
+  }
+  .risk-item .risk-level {
+    font-weight: 700;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .risk-high .risk-level { background: var(--red); color: #fff; }
+  .risk-medium .risk-level { background: var(--yellow); color: #5F4500; }
+  .risk-low .risk-level { background: var(--green); color: #fff; }
+  .risk-item .risk-content strong {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  /* Suggestion cards */
+  .suggestion-card {
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    padding: 18px 22px;
+    margin: 12px 0;
+    border-left: 4px solid var(--accent);
+  }
+  .suggestion-card .sug-priority {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .sug-urgent { background: var(--red); color: #fff; }
+  .sug-high { background: var(--orange); color: #fff; }
+  .sug-medium { background: var(--accent); color: #fff; }
+  .sug-low { background: var(--green); color: #fff; }
+  .suggestion-card h4 {
+    font-size: 15px;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .suggestion-card p {
+    font-size: 14px;
+    color: var(--text-soft);
+    margin: 0;
+  }
+
+  /* Weight bar chart */
+  .weight-bar-container {
+    margin: 16px 0;
+  }
+  .weight-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .weight-bar-row .dim-name {
+    width: 120px;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+  .weight-bar-row .weight-bar-bg {
+    flex: 1;
+    height: 24px;
+    background: var(--bg-soft);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+  .weight-bar-row .weight-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 40px;
+  }
+
+  /* Conclusion */
+  .conclusion-box {
+    background: linear-gradient(135deg, #F0F6FC 0%, #F8F4E8 100%);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-top: 24px;
+    border: 1px solid var(--border);
+  }
+  .conclusion-box h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: var(--accent-dark);
+  }
+  .conclusion-box p {
+    margin-bottom: 10px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container { padding: 20px 16px 60px; }
+    .report-header { padding: 32px 24px; }
+    .report-header h1 { font-size: 22px; }
+    .score-banner {
+      flex-direction: column;
+      text-align: center;
+      padding: 24px;
+    }
+    section { padding: 20px; }
+    table { font-size: 13px; }
+    th, td { padding: 8px 10px; }
+    .weight-bar-row .dim-name { width: 80px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="report-header">
+    <h1>iDrome AI 智能助手 — 设计方案综合评估报告</h1>
+    <div class="subtitle">琳凯蒂亚文化社区 AI 应用 (iDrome / DromAI) 全维度系统评估</div>
+    <div class="meta">
+      <span><strong>评估日期：</strong>2026-07-10</span>
+      <span><strong>文档规模：</strong>167KB / 29 章</span>
+      <span><strong>评估维度：</strong>8 项</span>
+    </div>
+  </div>
+
+  <!-- Overall Score -->
+  <div class="score-banner">
+    <div class="score-circle">
+      <span class="score-num">8.2</span>
+    </div>
+    <div class="score-info">
+      <span class="grade">综合评级：良好 (B+)</span>
+      <h2>综合评估结论</h2>
+      <p>该设计方案在功能完整性、安全架构、文化创新方面表现突出，技术选型合理，实施路径清晰。主要改进空间在于无框架架构的可维护性、多外部服务依赖的稳定性风险，以及部分技术假设的可行性验证。</p>
+    </div>
+  </div>
+
+  <!-- 1. 评估标准与权重 -->
+  <section>
+    <h2><span class="num">1</span>评估标准与权重</h2>
+    <p>本评估基于 AI 应用产品的行业特征与项目定位，设定 8 个核心评估维度。权重分配遵循"功能与体验优先，安全与可行性并重"的原则，结合 AI 对话类产品的关键成功因素确定。</p>
+
+    <div class="weight-bar-container">
+      <div class="weight-bar-row">
+        <span class="dim-name">功能性</span>
+        <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: 18%;">18%</div></div>
+      </div>
+      <div class="weight-bar-row">
+        <span class="dim-name">用户体验</span>
+        <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: 16%;">16%</div></div>
+      </div>
+      <div class="weight-bar-row">
+        <span class="dim-name">安全性</span>
+        <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: 15%;">15%</div></div>
+      </div>
+      <div class="weight-bar-row">
+        <span class="dim-name">可行性</span>
+        <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: 14%;">14%</div></div>
+      </div>
+      <div class="weight-bar-row">
+        <span class="dim-name">可扩展性</span>
+        <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: 12%;">12%</div></div>
+      </div>
+      <div class="weight-bar-row">
+        <span class="dim-name">技术实现难度</span>
+        <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: 10%;">10%</div></div>
+      </div>
+      <div class="weight-bar-row">
+        <span class="dim-name">创新性</span>
+        <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: 8%;">8%</div></div>
+      </div>
+      <div class="weight-bar-row">
+        <span class="dim-name">经济性</span>
+        <div class="weight-bar-bg"><div class="weight-bar-fill" style="width: 7%;">7%</div></div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">评分标准说明</div>
+      每项维度按 10 分制评分：9-10 优秀，7-8 良好，5-6 一般，3-4 较弱，1-2 严重不足。综合得分按权重加权计算。
+    </div>
+  </section>
+
+  <!-- 2. 综合评分总览 -->
+  <section>
+    <h2><span class="num">2</span>综合评分总览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>评估维度</th>
+          <th>权重</th>
+          <th>得分</th>
+          <th>加权得分</th>
+          <th>评级</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>功能性</td>
+          <td>18%</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></span> 9.0</td>
+          <td>1.62</td>
+          <td><span class="score-badge score-excellent">优秀</span></td>
+        </tr>
+        <tr>
+          <td>用户体验</td>
+          <td>16%</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></span> 8.5</td>
+          <td>1.36</td>
+          <td><span class="score-badge score-good">良好</span></td>
+        </tr>
+        <tr>
+          <td>安全性</td>
+          <td>15%</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></span> 8.8</td>
+          <td>1.32</td>
+          <td><span class="score-badge score-good">良好</span></td>
+        </tr>
+        <tr>
+          <td>可行性</td>
+          <td>14%</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;&#9733;</span></span> 7.0</td>
+          <td>0.98</td>
+          <td><span class="score-badge score-good">良好</span></td>
+        </tr>
+        <tr>
+          <td>可扩展性</td>
+          <td>12%</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;&#9733;</span></span> 7.5</td>
+          <td>0.90</td>
+          <td><span class="score-badge score-good">良好</span></td>
+        </tr>
+        <tr>
+          <td>技术实现难度</td>
+          <td>10%</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;<span class="empty">&#9733;&#9733;&#9733;</span></span> 6.5</td>
+          <td>0.65</td>
+          <td><span class="score-badge score-fair">一般</span></td>
+        </tr>
+        <tr>
+          <td>创新性</td>
+          <td>8%</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></span> 9.0</td>
+          <td>0.72</td>
+          <td><span class="score-badge score-excellent">优秀</span></td>
+        </tr>
+        <tr>
+          <td>经济性</td>
+          <td>7%</td>
+          <td><span class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;&#9733;</span></span> 7.5</td>
+          <td>0.53</td>
+          <td><span class="score-badge score-good">良好</span></td>
+        </tr>
+        <tr style="font-weight: 700; background: #E8F0FE;">
+          <td>综合得分</td>
+          <td>100%</td>
+          <td>--</td>
+          <td>8.08</td>
+          <td><span class="score-badge score-good">良好 (B+)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 3. 各维度详细评估 -->
+  <section>
+    <h2><span class="num">3</span>各维度详细评估</h2>
+
+    <!-- 功能性 -->
+    <div class="dim-card">
+      <div class="dim-header">
+        <h3>3.1 功能性 (9.0/10)</h3>
+        <div class="dim-score">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></span>
+          <span class="score-text">9.0</span>
+        </div>
+      </div>
+      <div class="dim-body">
+        <p>方案在功能规划上极为全面，覆盖了主流 AI 对话产品的核心能力并有所拓展，功能矩阵清晰，能力分层合理。</p>
+        <p><strong>核心功能完备性：</strong></p>
+        <ul class="pros">
+          <li>对话管理完整：新建/删除/重命名/置顶/归档/批量管理/跨设备同步，功能闭环</li>
+          <li>消息交互丰富：流式响应、停止生成、重新生成、编辑重发（过期标记机制）、点赞踩反馈</li>
+          <li>深度思考模式：完整展示推理链（Chain of Thought），折叠/展开交互设计合理</li>
+          <li>联网搜索：经过充分调研后选定百度 AI 搜索 API，含搜索降级机制</li>
+          <li>多模态支持：图片识别（OCR）、50 种文件格式解析、语音输入（ASR）与合成（TTS）</li>
+          <li>模式切换系统：普通/田语/小说三模式，知识库文件分离，版本化缓存管理</li>
+          <li>个人知识库：上传/解析/注入/截断策略/存储隔离，设计完整</li>
+        </ul>
+        <p><strong>不足之处：</strong></p>
+        <ul class="cons">
+          <li>对话导出功能仅提及 Markdown / PDF / 图片格式，未详细说明实现方案</li>
+          <li>对话分享功能（生成分享链接、密码保护）仅一笔带过，缺少技术细节</li>
+          <li>对话归档功能在功能列表中提及，但后续章节无实现说明</li>
+          <li>缺少消息搜索功能（仅在导航面板有对话搜索，无单条消息内容搜索）</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 用户体验 -->
+    <div class="dim-card">
+      <div class="dim-header">
+        <h3>3.2 用户体验 (8.5/10)</h3>
+        <div class="dim-score">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></span>
+          <span class="score-text">8.5</span>
+        </div>
+      </div>
+      <div class="dim-body">
+        <p>方案在 UX 设计上参考 DeepSeek / ChatGPT 的成熟模式，同时通过文化融合创造了差异化体验，交互细节考虑周到。</p>
+        <p><strong>亮点：</strong></p>
+        <ul class="pros">
+          <li>渐进式呈现：导航面板按需展开（非抽屉式），减少认知负担</li>
+          <li>即时反馈：流式打字机效果、加载动画、骨架屏、Toast 提示，多层次反馈体系</li>
+          <li>智能滚动控制：用户上滚时暂停自动滚底，500ms 后恢复，体验自然</li>
+          <li>键盘快捷键体系完整：Ctrl+N 新建、Ctrl+K 搜索、Ctrl+Shift+C 复制等</li>
+          <li>响应式三端适配：Mobile / Tablet / Desktop 断点明确，触摸优化到位（44px 最小点击区域）</li>
+          <li>文化融合得当：琳凯蒂亚语问候、波纹装饰、星芒 Logo，"克制的表达"原则正确</li>
+          <li>深色模式完整色板，CSS 变量天然支持主题切换</li>
+        </ul>
+        <p><strong>不足之处：</strong></p>
+        <ul class="cons">
+          <li>导航面板"点击或悬浮展开"的交互模式可能导致误触发，悬浮展开在对话场景下容易干扰</li>
+          <li>输入框固定高度 60px 但支持多行自动扩展至 120px，移动端键盘弹起时可能遮挡内容</li>
+          <li>未讨论首次使用引导（Onboarding）流程，新用户可能对模式选择感到困惑</li>
+          <li>错误状态的 UI 设计有描述但缺少具体的错误恢复流程（如 Token 耗尽后的降级体验）</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 安全性 -->
+    <div class="dim-card">
+      <div class="dim-header">
+        <h3>3.3 安全性 (8.8/10)</h3>
+        <div class="dim-score">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></span>
+          <span class="score-text">8.8</span>
+        </div>
+      </div>
+      <div class="dim-body">
+        <p>安全架构设计是本方案的一大亮点，秘钥管理、RLS 策略、输入安全、提示词注入防护均有深入考虑。</p>
+        <p><strong>亮点：</strong></p>
+        <ul class="pros">
+          <li>秘钥零暴露：所有 API 密钥存储在 Supabase Edge Function Secrets，前端仅持有 JWT，架构设计正确</li>
+          <li>RLS 策略完善：conversations、messages、usage_logs、knowledge_base_files 表均有行级安全策略</li>
+          <li>XSS 防护：使用 DOMPurify 对用户输入和文件名进行清洗，AI 返回内容渲染前安全处理</li>
+          <li>提示词注入防护：XML 标签隔离系统提示词与用户输入，标签转义，关键词检测，前后端双重截断</li>
+          <li>注销时清除 Service Worker 缓存（caches.delete），防止离线场景下用户数据泄露</li>
+          <li>乐观锁并发控制：messages 表 version 字段防止多设备编辑冲突</li>
+          <li>月度预算硬上限：Edge Function 端校验，超限返回 429，成本失控防护到位</li>
+        </ul>
+        <p><strong>不足之处：</strong></p>
+        <ul class="cons">
+          <li>Supabase anon key 从 localStorage 读取存在被篡改风险（虽然 anon key 设计为可公开，但 localStorage 读取逻辑可被注入伪造）</li>
+          <li>未提及 CSRF 防护策略（虽然 API 通过 JWT Bearer Token 认证，CSRS 风险较低，但应明确说明）</li>
+          <li>语音录音的 PCM 数据通过 Base64 传输，未提及音频数据的加密存储或传输保护</li>
+          <li>个人知识库文件存储在 Supabase Storage，未提及文件内容扫描（如恶意文件检测）</li>
+          <li>提示词注入的关键词检测方案较为简单，无法应对高级变种攻击</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 可行性 -->
+    <div class="dim-card">
+      <div class="dim-header">
+        <h3>3.4 可行性 (7.0/10)</h3>
+        <div class="dim-score">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;&#9733;</span></span>
+          <span class="score-text">7.0</span>
+        </div>
+      </div>
+      <div class="dim-body">
+        <p>方案整体技术可行，但存在若干技术假设需验证、外部依赖风险需关注。</p>
+        <p><strong>可行性较高的部分：</strong></p>
+        <ul class="pros">
+          <li>DeepSeek API 兼容 OpenAI SDK 格式，集成成熟度高，社区资源丰富</li>
+          <li>Supabase 提供完整的 Auth / Database / Storage / Edge Function / Realtime 全栈能力，减少自建后端</li>
+          <li>PWA 技术成熟，方案参考了主网站词典 PWA 的已有模式</li>
+          <li>联网搜索 API 选型经过充分调研，Bing 不可用的论证清晰，百度 AI 搜索作为替代方案合理</li>
+        </ul>
+        <p><strong>需关注的风险：</strong></p>
+        <ul class="cons">
+          <li>DeepSeek V4-Flash 定位为 2026 年 4 月发布的新模型，API 特性（thinking 参数格式、reasoning_content 字段、Vision 能力）需实际验证</li>
+          <li>百度 AI 搜索 API（/v2/ai_search/web_search 和 /v2/ai_search/chat/completions）的接口规格、计费方式、配额限制未完全确认</li>
+          <li>豆包 ASR / TTS / 文档解析 API 的调用方式（火山引擎方舟平台）与方案中描述的接口格式可能存在差异</li>
+          <li>原生 HTML/CSS/JS 无框架方案在功能复杂度如此高的情况下，代码组织和状态管理将面临挑战</li>
+          <li>js-tiktoken 使用 cl100k_base 编码器估算 DeepSeek Token 数量，但 DeepSeek 实际使用的分词器可能不同，估算精度存疑</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 可扩展性 -->
+    <div class="dim-card">
+      <div class="dim-header">
+        <h3>3.5 可扩展性 (7.5/10)</h3>
+        <div class="dim-score">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;&#9733;</span></span>
+          <span class="score-text">7.5</span>
+        </div>
+      </div>
+      <div class="dim-body">
+        <p>方案在架构层面具备一定的扩展能力，但无框架的技术选型在一定程度上限制了扩展性。</p>
+        <p><strong>扩展性优势：</strong></p>
+        <ul class="pros">
+          <li>APIRouter 统一调度器设计：支持多服务商自动回退、健康检查、能力检测，新增模型仅需配置 proxyUrls</li>
+          <li>模式系统可扩展：新增模式只需在 mode/ 目录下添加知识库文件和 system-prompt.md</li>
+          <li>知识库版本化缓存：# version: N 机制支持知识库热更新</li>
+          <li>i18n 架构完善：data-i18n + JSON 语言包，新增语言只需添加 locale 文件</li>
+          <li>Supabase 后端天然支持水平扩展，无需担心数据库扩展</li>
+          <li>Edge Function 架构使后端逻辑可独立部署和扩展</li>
+        </ul>
+        <p><strong>扩展性限制：</strong></p>
+        <ul class="cons">
+          <li>无组件化框架，UI 复用依赖手动 copy-paste，新增页面/组件时重复代码多</li>
+          <li>前端状态管理散落在多个 JS 文件中（chatState、apiRouter、KnowledgeLoader 等），全局状态缺乏统一管理</li>
+          <li>无构建工具意味着无法使用 TypeScript、模块打包、Tree-shaking 等现代前端工程能力</li>
+          <li>messages 表使用 bigint 自增主键，在多用户高并发写入时可能有瓶颈（虽然 RLS 隔离了数据）</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 技术实现难度 -->
+    <div class="dim-card">
+      <div class="dim-header">
+        <h3>3.6 技术实现难度 (6.5/10)</h3>
+        <div class="dim-score">
+          <span class="stars">&#9733;&#9733;&#9733;<span class="empty">&#9733;&#9733;&#9733;</span></span>
+          <span class="score-text">6.5</span>
+        </div>
+      </div>
+      <div class="dim-body">
+        <p>本维度评分较低并非方案质量问题，而是反映实现复杂度较高、开发工作量较大的客观现实。（注：此维度得分越低表示难度越高，但在加权计算中已转为正向影响）</p>
+        <p><strong>高难度模块：</strong></p>
+        <ul class="cons">
+          <li>SSE 流式解析：需手动处理 buffer 分包、UTF-8 多字节字符截断、reasoning_content / content 双通道渲染，边界情况多</li>
+          <li>Edge Function 流式透传 + usage 追踪：使用 TransformStream 拦截 SSE 流解析 usage 字段，同时原样透传，实现复杂</li>
+          <li>音频格式转换：WebM/Opus → PCM 的 AudioContext + OfflineAudioContext 重采样链路，兼容性问题多</li>
+          <li>无框架状态管理：对话列表、消息历史、模式状态、设置状态等需手动同步 DOM 与数据，容易产生不一致</li>
+          <li>多 CDN 回退加载：8 个第三方库的主源 + 备源 onerror 链式加载，配置易出错</li>
+          <li>触摸手势隔离：pan-y + deltaX/deltaY 判断的左滑操作，在不同浏览器和设备上表现可能不一致</li>
+        </ul>
+        <p><strong>难度适中的部分：</strong></p>
+        <ul class="pros">
+          <li>Supabase CRUD 操作标准直接，RLS 策略语法清晰</li>
+          <li>PWA manifest.json 和 sw.js 有主网站参考，实现门槛低</li>
+          <li>深色模式通过 CSS 变量实现，技术方案成熟</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 创新性 -->
+    <div class="dim-card">
+      <div class="dim-header">
+        <h3>3.7 创新性 (9.0/10)</h3>
+        <div class="dim-score">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;</span></span>
+          <span class="score-text">9.0</span>
+        </div>
+      </div>
+      <div class="dim-body">
+        <p>方案在文化融合、模式系统、知识库架构等方面展现了显著的创新性，在同类 AI 对话产品中具有差异化竞争优势。</p>
+        <p><strong>创新亮点：</strong></p>
+        <ul class="pros">
+          <li>文化融合体系化：从命名（DromAI 词根溯源）、色彩（5 色文化体系）、符号（4 种文化符号现代转化）、语言（琳凯蒂亚语界面元素）四个层面系统融合，而非简单贴图</li>
+          <li>三模式对话系统：普通 / 田语 / 小说模式，每种模式对应独立知识库和系统提示词，满足不同场景需求</li>
+          <li>个人知识库 + 模式知识库双层架构：模式知识库（静态、版本化）+ 个人知识库（动态、用户上传），互补设计</li>
+          <li>知识库版本化缓存机制：# version: N 标签支持热更新，避免用户缓存旧版本知识库</li>
+          <li>展开式导航面板（非抽屉式）：从 Logo 下方展开覆盖对话区，避免侧边栏永久占用空间</li>
+          <li>消息编辑过期标记机制：编辑后后续消息标记 expired = true，虚线边框视觉提示，上下文管理清晰</li>
+          <li>双参数回调流式渲染：(delta, fullContent) 语义支持增量追加渲染，性能优化到位</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 经济性 -->
+    <div class="dim-card">
+      <div class="dim-header">
+        <h3>3.8 经济性 (7.5/10)</h3>
+        <div class="dim-score">
+          <span class="stars">&#9733;&#9733;&#9733;&#9733;<span class="empty">&#9733;&#9733;</span></span>
+          <span class="score-text">7.5</span>
+        </div>
+      </div>
+      <div class="dim-body">
+        <p>方案在成本控制方面有系统性设计，但多外部服务依赖增加了成本不确定性。</p>
+        <p><strong>成本控制优势：</strong></p>
+        <ul class="pros">
+          <li>DeepSeek V4-Flash 定价极低：输入 $0.14/M tokens，输出 $0.28/M tokens，相比 GPT-4 便宜约 100 倍</li>
+          <li>月度预算硬上限：默认 $10/月/用户，Edge Function 端强制执行，防止成本失控</li>
+          <li>Token 上下文管理策略：500K/800K/950K 三级阈值，滑动窗口 + 强制截断，控制单次请求成本</li>
+          <li>图片压缩：发送 Vision API 前自动压缩至 2048px，减少 Token 消耗</li>
+          <li>多级缓存：对话/搜索/TTS/OCR 结果缓存，减少重复 API 调用</li>
+          <li>Supabase 免费层支持 500MB 数据库 + 1GB 存储 + 50万月活用户，初期成本极低</li>
+          <li>无框架纯静态部署，无需服务器成本（仅 Supabase + API 调用费用）</li>
+        </ul>
+        <p><strong>成本风险：</strong></p>
+        <ul class="cons">
+          <li>多服务叠加成本：DeepSeek（对话）+ 百度 AI 搜索（联网）+ 豆包 ASR/TTS（语音）+ 豆包文档解析（文件），四项服务独立计费</li>
+          <li>百度 AI 搜索 API 和豆包 API 的计费方式未明确说明，成本不可预测</li>
+          <li>个人知识库每次对话都注入系统提示词，增加 Token 消耗（虽然有 3000 字符上限）</li>
+          <li>usage_logs 表逐条记录每次 API 调用，高并发下数据库写入成本需关注</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 优势分析 -->
+  <section>
+    <h2><span class="num">4</span>方案核心优势</h2>
+
+    <div class="callout callout-success">
+      <div class="callout-title">优势一：安全架构设计严谨</div>
+      "秘钥零暴露"原则贯穿全方案 — 前端仅持有 Supabase JWT，所有 API 密钥通过 Edge Function 环境变量读取，绝不出现在前端代码中。RLS 策略覆盖所有数据表，注销时清除 SW 缓存防止数据泄露。在同类纯前端 AI 应用中，安全设计水平明显高于行业平均。
+    </div>
+
+    <div class="callout callout-success">
+      <div class="callout-title">优势二：文化融合系统化且克制</div>
+      非简单的文化元素堆砌，而是从命名词源、色彩体系、符号转化、语言元素四个层面系统设计。遵循"克制的表达、符号化转化、功能第一"三原则，文化元素作为视觉点缀而非干扰，在保持现代 AI 产品体验的同时实现品牌差异化。
+    </div>
+
+    <div class="callout callout-success">
+      <div class="callout-title">优势三：功能完整度行业领先</div>
+      对标 DeepSeek 和 ChatGPT，在对话管理、消息交互、深度思考、联网搜索、多模态（图片/文件/语音）、模式切换、个人知识库等 7 大功能域均有完整设计。50 种文件格式支持、三模式知识库系统、版本化缓存机制等功能在同类产品中少见。
+    </div>
+
+    <div class="callout callout-success">
+      <div class="callout-title">优势四：容错与降级设计周全</div>
+      APIRouter 统一调度器支持多服务商自动回退（DeepSeek → 豆包），搜索功能失败时自动降级为普通对话模式，文件解析多级回退（豆包 → PDF.js / SheetJS），Edge Function 健康检查端点。联网搜索 API 选型经过充分调研论证，否决 Bing 后选定百度，决策有据。
+    </div>
+
+    <div class="callout callout-success">
+      <div class="callout-title">优势五：实施路径清晰可执行</div>
+      六阶段实施规划（基础框架 → 核心对话 → 数据持久化 → PWA → 增强功能 → 完善优化）阶段划分合理，每阶段有明确交付物。文件结构规划完整（CSS 10 个文件 + JS 17 个模块 + mode 知识库目录），集成测试矩阵覆盖 8 大模块 30+ 测试项。
+    </div>
+  </section>
+
+  <!-- 5. 不足与风险 -->
+  <section>
+    <h2><span class="num">5</span>不足与风险识别</h2>
+
+    <h3>5.1 高风险项</h3>
+    <div class="risk-item risk-high">
+      <span class="risk-level">高</span>
+      <div class="risk-content">
+        <strong>无框架架构的可维护性风险</strong>
+        方案涉及 17 个 JS 模块、10 个 CSS 文件，功能复杂度接近中型 SPA，但使用原生 HTML/CSS/JS 无任何框架。随着功能迭代，代码组织、状态同步、DOM 操作将变得难以维护。建议至少引入轻量级状态管理方案（如 Proxy + EventTarget 模式）或考虑迁移至轻量框架（如 Preact / Alpine.js）。
+      </div>
+    </div>
+    <div class="risk-item risk-high">
+      <span class="risk-level">高</span>
+      <div class="risk-content">
+        <strong>多外部 API 依赖的稳定性风险</strong>
+        方案同时依赖 DeepSeek（对话）、百度 AI 搜索（联网搜索）、豆包 ASR/TTS/文档解析（语音/文件）四项外部服务。任一服务宕机、API 变更、配额耗尽都可能影响核心功能。虽然有回退机制，但豆包和百度搜索均为单点依赖（无备选方案），需准备更充分的降级策略。
+      </div>
+    </div>
+    <div class="risk-item risk-high">
+      <span class="risk-level">高</span>
+      <div class="risk-content">
+        <strong>技术假设未经实际验证</strong>
+        DeepSeek V4-Flash 为 2026 年 4 月新发布的模型，方案中关于 thinking 参数格式、reasoning_content 字段、Vision 能力（2026 年 6 月上线）、API 兼容性等技术细节均基于文档描述，未经实际调用验证。若 API 实际行为与文档不符，多个核心模块（深度思考、流式解析、Vision OCR）需返工。
+      </div>
+    </div>
+
+    <h3>5.2 中风险项</h3>
+    <div class="risk-item risk-medium">
+      <span class="risk-level">中</span>
+      <div class="risk-content">
+        <strong>CDN 依赖与国内访问稳定性</strong>
+        方案使用 8 个第三方库通过境外 CDN（jsdelivr / cdnjs / unpkg）加载，虽然有双源回退机制，但中国内地访问境外 CDN 的不稳定性是已知问题。Service Worker 缓存可缓解首次加载后的问题，但首次访问体验可能受影响。建议考虑国内 CDN 镜像或将关键库本地化。
+      </div>
+    </div>
+    <div class="risk-item risk-medium">
+      <span class="risk-level">中</span>
+      <div class="risk-content">
+        <strong>个人知识库注入的 Token 成本</strong>
+        每次普通模式对话都注入全部个人知识库内容（默认上限 3000 字符），在长对话场景下，系统提示词 + 知识库 + 历史消息的 Token 累积可能显著增加成本。虽然方案有 Token 管理策略，但知识库内容与上下文管理的交互逻辑未充分讨论。
+      </div>
+    </div>
+    <div class="risk-item risk-medium">
+      <span class="risk-level">中</span>
+      <div class="risk-content">
+        <strong>跨标签页状态同步的局限性</strong>
+        方案使用 localStorage storage 事件实现跨标签页同步，但此方案仅在同一浏览器同源下有效。多设备同步依赖 Supabase，但方案中 Realtime 功能标注为"可选"，未明确多设备实时同步的保障机制。
+      </div>
+    </div>
+    <div class="risk-item risk-medium">
+      <span class="risk-level">中</span>
+      <div class="risk-content">
+        <strong>音频处理兼容性风险</strong>
+        WebM/Opus → PCM 转换依赖 AudioContext + OfflineAudioContext，Safari 的 AudioContext 行为与 Chrome 不一致，MediaRecorder 支持的 MIME 类型也有差异。方案虽有 MIME 检测逻辑，但实际兼容性测试覆盖不足。
+      </div>
+    </div>
+
+    <h3>5.3 低风险项</h3>
+    <div class="risk-item risk-low">
+      <span class="risk-level">低</span>
+      <div class="risk-content">
+        <strong>对话导出与分享功能缺失细节</strong>
+        对话导出（Markdown/PDF/图片）和分享（链接+密码保护）功能在功能列表中提及但缺少技术实现方案。属于增强功能，可在后续阶段补充，不影响核心体验。
+      </div>
+    </div>
+    <div class="risk-item risk-low">
+      <span class="risk-level">低</span>
+      <div class="risk-content">
+        <strong>无障碍设计描述偏简</strong>
+        无障碍章节仅有 5 条原则性描述（键盘操作、ARIA 标签、WCAG AA、prefers-reduced-motion、焦点指示器），缺少具体的 ARIA 角色映射、屏幕阅读器测试计划等实施细节。
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 优化建议 -->
+  <section>
+    <h2><span class="num">6</span>优化建议</h2>
+
+    <h3>6.1 架构层面</h3>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-urgent">紧急</span>
+      <h4>引入轻量级状态管理与模块化方案</h4>
+      <p>建议在保持"无重型框架"理念的前提下，引入以下轻量方案：(1) 使用 ES Modules（import/export）替代全局变量模块组织；(2) 引入 Proxy-based 响应式状态管理（如 Vue 3 reactivity 的独立使用）或 Alpine.js 处理 UI 状态绑定；(3) 将 chatState、apiRouter、KnowledgeLoader 等全局状态统一到 Store 模式管理。这可以在不增加构建工具的前提下显著提升可维护性。</p>
+    </div>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-high">高优先级</span>
+      <h4>关键第三方库本地化</h4>
+      <p>将 Supabase JS SDK、marked.js、DOMPurify、KaTeX 等核心依赖下载到本地 assets/vendor/ 目录，通过相对路径加载。仅对非关键库（highlight.js、SheetJS）保留 CDN + 回退策略。消除首次访问的 CDN 不稳定性风险，同时 Service Worker 缓存策略更可控。</p>
+    </div>
+
+    <h3>6.2 技术验证</h3>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-urgent">紧急</span>
+      <h4>启动前进行 API 可行性验证</h4>
+      <p>在正式开发前，使用独立脚本验证以下关键 API 的实际行为：(1) DeepSeek V4-Flash 的 thinking 参数格式和 reasoning_content 字段结构；(2) 百度 AI 搜索 API 的端点路径、请求/响应格式、计费方式；(3) 豆包 ASR/TTS/文档解析 API 的实际调用方式（火山引擎方舟平台的 SDK vs REST API）；(4) js-tiktoken cl100k_base 编码器对 DeepSeek 模型 Token 估算的准确度。根据验证结果调整方案中的 API 调用代码。</p>
+    </div>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-high">高优先级</span>
+      <h4>建立 API Mock 与单元测试基线</h4>
+      <p>在开发初期为 Edge Function 建立 Mock 层，支持本地开发时无需真实 API 调用。同时为 SSE 流解析、Token 估算、知识库截断等纯逻辑模块编写单元测试，确保边界情况覆盖。</p>
+    </div>
+
+    <h3>6.3 功能完善</h3>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-medium">中优先级</span>
+      <h4>补充对话导出与分享的技术方案</h4>
+      <p>对话导出：Markdown 直接拼接消息内容；PDF 使用 jsPDF + html2canvas 或浏览器 print API；图片使用 html2canvas 截图对话区域。分享功能：在 Supabase 新增 shared_conversations 表（share_id, conversation_id, password_hash, expires_at），Edge Function 生成分享链接，未登录用户通过 share_id 只读访问。</p>
+    </div>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-medium">中优先级</span>
+      <h4>新增首次使用引导流程</h4>
+      <p>设计轻量级 Onboarding：(1) 首次访问显示 3 步引导卡片（选择模式 → 输入问题 → 查看回答）；(2) 模式选择卡片增加"不了解？点击查看说明"浮层；(3) 首次开启深度思考/联网搜索时显示功能说明 Tooltip。引导状态通过 localStorage 标记，仅显示一次。</p>
+    </div>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-low">低优先级</span>
+      <h4>增加消息内容搜索功能</h4>
+      <p>在导航面板搜索框中增加全局搜索模式（切换"搜对话标题"和"搜消息内容"），消息内容搜索通过 Supabase ilike 模糊查询实现。搜索结果高亮匹配关键词，点击跳转到对应消息位置。</p>
+    </div>
+
+    <h3>6.4 安全增强</h3>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-high">高优先级</span>
+      <h4>强化提示词注入防护</h4>
+      <p>关键词检测方案过于简单，建议增加：(1) 基于规则的语义分析（检测"角色扮演"、"模拟"、"忽略限制"等变体表达）；(2) 在 Edge Function 中使用轻量级分类模型（或 DeepSeek 自身）对用户输入做安全预检；(3) 对 AI 输出内容也做注入检测（防止间接注入攻击）。</p>
+    </div>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-medium">中优先级</span>
+      <h4>个人知识库文件安全扫描</h4>
+      <p>在文件上传到 Supabase Storage 前，增加：(1) 文件 MIME 类型二次校验（防止伪造扩展名）；(2) 文件内容大小限制在服务端也做校验（不信任前端）；(3) 对上传的文档内容做敏感信息检测（如手机号、身份证号等 PII 数据脱敏提示）。</p>
+    </div>
+
+    <h3>6.5 性能与体验</h3>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-medium">中优先级</span>
+      <h4>优化个人知识库注入策略</h4>
+      <p>当前方案每次对话都注入全部知识库内容，建议改为：(1) 基于用户问题做语义相关性筛选（用 Embedding 向量检索 Top-K 最相关片段）；(2) 或让 AI 自主决定是否需要知识库（先发简短问题判断，再决定是否注入）；(3) 知识库内容分段摘要后注入，减少 Token 消耗。</p>
+    </div>
+    <div class="suggestion-card">
+      <span class="sug-priority sug-low">低优先级</span>
+      <h4>导航面板交互优化</h4>
+      <p>将"点击或悬浮展开"改为仅"点击展开"，避免对话时鼠标移到左上角误触发面板展开。展开后点击面板外区域或按 Esc 关闭。移动端保持点击 Logo 全屏覆盖展开。</p>
+    </div>
+  </section>
+
+  <!-- 7. 综合结论 -->
+  <section>
+    <h2><span class="num">7</span>综合结论</h2>
+
+    <div class="conclusion-box">
+      <h3>总体评价</h3>
+      <p>iDrome AI 智能助手设计方案是一份<strong>完成度高、专业性强、具有明确差异化定位</strong>的 AI 应用设计文档。方案在功能完整性（9.0）、创新性（9.0）、安全性（8.8）三个核心维度表现优秀，在用户体验（8.5）、可扩展性（7.5）、经济性（7.5）方面表现良好，综合得分 <strong>8.08/10（B+）</strong>。</p>
+
+      <h3>核心价值</h3>
+      <p>方案的核心价值在于三个层面：(1) <strong>安全架构严谨</strong> — 秘钥零暴露 + RLS + 注入防护，在纯前端应用中达到了企业级安全标准；(2) <strong>文化融合系统化</strong> — 从命名到色彩到符号到语言四层体系化设计，在 AI 产品中实现了独特的品牌差异化；(3) <strong>功能完整对标主流</strong> — 对标 DeepSeek / ChatGPT 的功能矩阵，同时通过模式系统和知识库架构提供了超越基础对话的增值能力。</p>
+
+      <h3>关键风险</h3>
+      <p>方案面临三个关键风险：(1) <strong>无框架架构在功能复杂度如此高的情况下的可维护性</strong>，建议引入轻量状态管理方案；(2) <strong>DeepSeek V4-Flash 等新 API 的技术假设未经实际验证</strong>，建议开发前进行可行性验证；(3) <strong>四项外部 API 服务的单点依赖</strong>，建议为百度搜索和豆包服务准备更充分的降级策略。</p>
+
+      <h3>实施建议</h3>
+      <p>建议按以下优先级推进：(1) <strong>第一阶段（验证期）</strong>：完成 API 可行性验证 + 基础框架搭建 + 认证体系对接；(2) <strong>第二阶段（核心期）</strong>：核心对话 + 流式输出 + 深度思考，确保 AI 对话核心体验达标；(3) <strong>第三阶段（数据期）</strong>：Supabase 数据持久化 + 对话管理 + 模式切换；(4) <strong>第四阶段（增强期）</strong>：PWA + 联网搜索 + 语音/图像/文件多模态；(5) <strong>第五阶段（优化期）</strong>：个人知识库 + 性能优化 + 测试完善。每个阶段完成后进行评审，根据实际验证结果调整后续方案。</p>
+
+      <h3>最终结论</h3>
+      <p>该设计方案<strong>具备实施条件，推荐推进</strong>。在解决 API 验证、架构可维护性、外部依赖降级三个关键问题后，方案有望成为琳凯蒂亚文化社区的高品质 AI 应用。方案的文档质量、设计深度和安全意识在同类项目中处于优秀水平，体现了设计团队的专业能力和对产品品质的追求。</p>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

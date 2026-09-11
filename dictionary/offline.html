@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>离线 — 琳凯蒂亚语词典</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .offline-container {
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .logo {
+      margin-bottom: 1.5rem;
+    }
+
+    .logo svg {
+      width: 80px;
+      height: 80px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #ffd700;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #8888aa;
+      margin-bottom: 1.5rem;
+    }
+
+    .status-icon {
+      margin: 1.5rem 0;
+    }
+
+    .status-icon svg {
+      width: 64px;
+      height: 64px;
+    }
+
+    .message {
+      font-size: 1rem;
+      color: #8888aa;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .message strong {
+      color: #e0e0e0;
+    }
+
+    .btn-retry {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 2rem;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      color: #7b9fff;
+      background: rgba(123, 159, 255, 0.12);
+      border: 1px solid rgba(123, 159, 255, 0.35);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-retry:hover {
+      background: rgba(123, 159, 255, 0.22);
+      border-color: rgba(123, 159, 255, 0.5);
+    }
+
+    .btn-retry svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .tips {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      text-align: left;
+    }
+
+    .tips h3 {
+      font-size: 0.82rem;
+      color: #ffd700;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
+
+    .tips ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .tips li {
+      font-size: 0.8rem;
+      color: #5a5a7a;
+      padding: 0.25rem 0;
+      padding-left: 1.2rem;
+      position: relative;
+    }
+
+    .tips li::before {
+      content: '•';
+      position: absolute;
+      left: 0.2rem;
+      color: #7b9fff;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.75rem;
+      color: #5a5a7a;
+    }
+  </style>
+</head>
+<body>
+  <div class="offline-container">
+    <!-- Logo -->
+    <div class="logo">
+      <svg viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="36" stroke="#ffd700" stroke-width="2" fill="none"/>
+        <path d="M22 50 L40 18 L58 50" stroke="#ffd700" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="40" cy="18" r="5" fill="#ffd700"/>
+      </svg>
+    </div>
+
+    <h1>琳凯蒂亚语词典</h1>
+    <p class="subtitle">华田中央大学田语学院</p>
+
+    <!-- 离线图标 -->
+    <div class="status-icon">
+      <svg viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" stroke="#5a5a7a" stroke-width="2" stroke-dasharray="6 4" fill="none"/>
+        <path d="M22 32 L28 38 L38 26 L42 32" stroke="#f87171" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="20" y1="20" x2="44" y2="44" stroke="#f87171" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <div class="message">
+      <strong>当前处于离线状态</strong><br>
+      无法连接到网络，部分功能暂不可用。<br>
+      请检查您的网络连接后重试。
+    </div>
+
+    <button class="btn-retry" onclick="location.reload()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      重新连接
+    </button>
+
+    <div class="tips">
+      <h3>提示</h3>
+      <ul>
+        <li>确认 Wi-Fi 或移动数据已开启</li>
+        <li>尝试切换网络或重启路由器</li>
+        <li>如已连接网络，可能是服务器暂时不可用</li>
+        <li>已缓存的内容仍可离线查看</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      琳凯蒂亚语词典管理系统 &copy; 华田中央大学田语学院
+    </div>
+  </div>
+
+  <script>
+    // 监听在线状态变化，自动刷新
+    window.addEventListener('online', () => {
+      location.reload()
+    })
+  </script>
+</body>
+</html>

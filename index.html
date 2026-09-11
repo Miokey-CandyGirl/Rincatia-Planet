@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="琳凯蒂亚星球 - 探索《光线传奇》中的魔法世界">
+  <link rel="icon" href="/flag_logo.png" type="image/png">
+  <title>琳凯蒂亚星球 - Rincatia Planet</title>
+  <meta name="baidu-site-verification" content="codeva-VKwwsnYeID" />
+  <!--
+    域名跳转优化：当 .top 主域名不可用时自动尝试 .com / .cn
+    检测逻辑在 main.js 中执行，通过 fetchWithFallback 探测可用域名后重定向
+  -->
+  <script>
+    // 域名自动切换：如果当前在 .top 域名上，探测是否可用，不可用则重定向
+    (function() {
+      var host = location.hostname
+      if (host.endsWith('.top')) {
+        var base = host.slice(0, -4) // 去掉 .top
+        var alternatives = [base + '.com', base + '.cn']
+        // 并行探测备用域名
+        alternatives.forEach(function(alt) {
+          fetch('https://' + alt + '/', { method: 'HEAD', mode: 'no-cors', redirect: 'follow' })
+            .then(function(res) {
+              if (res.type === 'opaque' || res.ok) {
+                // 备用域名可用 — 记录到 localStorage 供 JS 层使用
+                try { localStorage.setItem('domain-fallback-available', alt) } catch(e) {}
+              }
+            })
+            .catch(function() {})
+        })
+      }
+    })()
+  </script>
+  <script type="module" crossorigin src="/assets/index-GHUPY8ne.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Wt4JTZef.css">
+</head>
+<body>
+  <div id="app"></div>
+</body>
+</html>

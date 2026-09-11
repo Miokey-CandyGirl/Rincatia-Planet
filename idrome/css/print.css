@@ -1,0 +1,70 @@
+/* ==========================================================================
+   print.css — 打印样式（PDF 导出预留）
+   对应设计方案：第 32 章对话导出
+   ========================================================================== */
+
+@media print {
+  /* 隐藏不需要打印的元素 */
+  .top-nav,
+  .nav-panel,
+  .input-area,
+  .settings-modal,
+  .toast-container,
+  .network-banner,
+  .scroll-to-bottom-btn,
+  .message-actions,
+  .stop-generating-btn {
+    display: none !important;
+  }
+
+  /* 重置布局 */
+  body {
+    display: block;
+    overflow: visible;
+    height: auto;
+    background: #FFFFFF;
+    color: #000000;
+  }
+
+  .main-content {
+    overflow: visible;
+  }
+
+  .chat-area {
+    overflow: visible;
+  }
+
+  .message-list {
+    overflow: visible;
+    padding: 0;
+  }
+
+  /* 消息气泡打印样式 */
+  .message-bubble {
+    border: 1px solid #CCCCCC;
+    background: #FFFFFF !important;
+    color: #000000;
+    box-shadow: none;
+    max-width: 100%;
+  }
+
+  .message-item.user .message-bubble {
+    border-top-right-radius: 4px;
+  }
+
+  .message-item.assistant .message-bubble {
+    border-top-left-radius: 4px;
+  }
+
+  /* 代码块 */
+  .message-bubble pre {
+    background: #F5F5F5 !important;
+    color: #000000;
+    border: 1px solid #CCCCCC;
+  }
+
+  /* 分页控制 */
+  .message-item {
+    page-break-inside: avoid;
+  }
+}

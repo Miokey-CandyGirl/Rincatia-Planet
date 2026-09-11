@@ -1,0 +1,181 @@
+/* ==========================================================================
+   modes.css — 模式选择卡片样式
+   设计参考：design/style.css 的 mode-card 设计规范
+   对应设计方案：第 4.4.3 节模式选择卡片
+   ========================================================================== */
+
+/* ==================== 卡片容器 ==================== */
+.mode-cards {
+  display: flex;
+  gap: var(--spacing-md);
+  width: 100%;
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+  z-index: 1;
+}
+
+/* ==================== 单张卡片 ==================== */
+.mode-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  position: relative;
+}
+
+.mode-card:hover {
+  border-color: var(--accent-primary-light);
+  box-shadow: var(--shadow-md);
+}
+
+.mode-card:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.mode-card:active {
+  transform: scale(0.98);
+}
+
+/* ==================== 选中态 ==================== */
+.mode-card.selected {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary-bg);
+  box-shadow: var(--shadow-md);
+}
+
+/* ==================== 图标容器 ==================== */
+.mode-card__icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.mode-card__icon svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 1.5;
+}
+
+/* --- 普通模式（智慧蓝） --- */
+.mode-card--normal .mode-card__icon {
+  background: var(--accent-primary-bg);
+}
+
+.mode-card--normal .mode-card__icon svg {
+  stroke: var(--accent-primary);
+}
+
+/* --- 田语模式（金色） --- */
+.mode-card--tianyu .mode-card__icon {
+  background: var(--accent-gold-bg);
+}
+
+.mode-card--tianyu .mode-card__icon svg {
+  stroke: var(--accent-gold-dark);
+}
+
+/* --- 小说模式（叶绿） --- */
+.mode-card--novel .mode-card__icon {
+  background: var(--accent-green-bg);
+}
+
+.mode-card--novel .mode-card__icon svg {
+  stroke: var(--accent-green-dark);
+}
+
+/* ==================== 卡片内容 ==================== */
+.mode-card__body {
+  flex: 1;
+}
+
+.mode-card__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.mode-card__desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ==================== 选中标记 ==================== */
+.mode-card__check {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: var(--accent-primary);
+  color: var(--text-on-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: checkPop var(--transition-fast);
+}
+
+@keyframes checkPop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.mode-card.selected .mode-card__check {
+  display: flex;
+}
+
+/* ==================== 移动端响应式 ==================== */
+@media (max-width: 768px) {
+  .mode-cards {
+    flex-direction: column;
+  }
+
+  .mode-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .mode-card__icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  .mode-card__icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .mode-card__title {
+    font-size: 0.9rem;
+  }
+
+  .mode-card__desc {
+    font-size: 0.75rem;
+  }
+}

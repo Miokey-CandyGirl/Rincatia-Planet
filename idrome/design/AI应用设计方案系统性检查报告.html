@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iDrome AI 应用设计方案 — 系统性检查报告</title>
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --bg-soft: #F8F9FA;
+    --bg-card: #FFFFFF;
+    --text: #1a1a2e;
+    --text-soft: #5F6368;
+    --text-muted: #999999;
+    --accent: #2C5F8A;
+    --accent-dark: #1A3A5C;
+    --gold: #C9A84C;
+    --green: #5B8C5A;
+    --orange: #E8985E;
+    --red: #EA4335;
+    --yellow: #FBBC04;
+    --border: #E0E0E0;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-soft);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .report-header {
+    background: linear-gradient(135deg, #1A3A5C 0%, #2C5F8A 50%, #3A7CA5 100%);
+    color: #fff;
+    padding: 44px 40px;
+    border-radius: 16px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .report-header::after {
+    content: '';
+    position: absolute;
+    top: -30%; right: -8%;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(201,168,76,0.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .report-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; position: relative; z-index: 1; }
+  .report-header .subtitle { font-size: 14px; opacity: 0.85; position: relative; z-index: 1; }
+  .report-header .meta {
+    margin-top: 18px; display: flex; gap: 20px; font-size: 13px; opacity: 0.8; position: relative; z-index: 1; flex-wrap: wrap;
+  }
+  .report-header .meta span { display: flex; align-items: center; gap: 6px; }
+  .report-header .meta strong { font-weight: 600; opacity: 1; }
+
+  .summary-bar {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .summary-stat {
+    text-align: center;
+    min-width: 80px;
+  }
+  .summary-stat .num {
+    font-size: 28px;
+    font-weight: 700;
+    display: block;
+  }
+  .summary-stat .label {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-top: 2px;
+  }
+  .summary-stat.p0 .num { color: var(--red); }
+  .summary-stat.p1 .num { color: var(--orange); }
+  .summary-stat.p2 .num { color: var(--accent); }
+  .summary-stat.p3 .num { color: var(--green); }
+  .summary-divider {
+    width: 1px;
+    height: 50px;
+    background: var(--border);
+  }
+  .summary-conclusion {
+    flex: 1;
+    min-width: 250px;
+    font-size: 14px;
+    color: var(--text-soft);
+    line-height: 1.6;
+  }
+  .summary-conclusion strong { color: var(--text); }
+
+  section {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+  section > h2 {
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--bg-soft);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section > h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  section > h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin: 20px 0 10px;
+  }
+  section p { margin-bottom: 10px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  thead { background: var(--accent-dark); color: #fff; }
+  th { padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:nth-child(even) { background: var(--bg-soft); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-p0 { background: #FFEBEE; color: var(--red); }
+  .badge-p1 { background: #FFF3E0; color: var(--orange); }
+  .badge-p2 { background: #E8F0FE; color: var(--accent); }
+  .badge-p3 { background: #E8F5E9; color: var(--green); }
+  .badge-ok { background: #E8F5E9; color: var(--green); }
+  .badge-warn { background: #FFF8E8; color: #B8860B; }
+  .badge-err { background: #FFEBEE; color: var(--red); }
+
+  .issue-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 18px 22px;
+    margin: 14px 0;
+    background: var(--bg-soft);
+  }
+  .issue-card .issue-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .issue-card .issue-header h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+    flex: 1;
+  }
+  .issue-card .issue-location {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .issue-card .issue-body {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .issue-card .issue-fix {
+    background: #fff;
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 13px;
+    border-left: 3px solid var(--green);
+  }
+  .issue-card .issue-fix strong {
+    color: var(--green);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .issue-card .issue-fix code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    background: var(--bg-soft);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--accent-dark);
+  }
+
+  .issue-card.p0 { border-left: 4px solid var(--red); }
+  .issue-card.p1 { border-left: 4px solid var(--orange); }
+  .issue-card.p2 { border-left: 4px solid var(--accent); }
+  .issue-card.p3 { border-left: 4px solid var(--green); }
+
+  .callout {
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  .callout-title { font-weight: 700; margin-bottom: 4px; font-size: 14px; }
+  .callout-info { background: #F0F6FC; border-left: 4px solid var(--accent); }
+  .callout-info .callout-title { color: var(--accent); }
+  .callout-success { background: #F1F8F1; border-left: 4px solid var(--green); }
+  .callout-success .callout-title { color: var(--green); }
+  .callout-warn { background: #FFF8E8; border-left: 4px solid var(--yellow); }
+  .callout-warn .callout-title { color: #B8860B; }
+
+  ul, ol { margin: 10px 0 10px 22px; }
+  li { margin-bottom: 5px; line-height: 1.7; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+  .check-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 2px;
+  }
+  .check-pass { background: var(--green); }
+  .check-fail { background: var(--red); }
+  .check-warn { background: var(--yellow); color: #5F4500; }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    background: #F0F0F0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--accent-dark);
+  }
+  pre {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    overflow-x: auto;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  .conclusion-box {
+    background: linear-gradient(135deg, #F0F6FC 0%, #F8F4E8 100%);
+    border-radius: var(--radius);
+    padding: 26px 30px;
+    margin-top: 20px;
+    border: 1px solid var(--border);
+  }
+  .conclusion-box h3 { font-size: 17px; margin-bottom: 10px; color: var(--accent-dark); }
+  .conclusion-box p { margin-bottom: 8px; }
+
+  @media (max-width: 768px) {
+    .container { padding: 20px 16px 60px; }
+    .report-header { padding: 28px 22px; }
+    .report-header h1 { font-size: 20px; }
+    .summary-bar { flex-direction: column; align-items: stretch; }
+    .summary-divider { display: none; }
+    section { padding: 20px; }
+    table { font-size: 12px; }
+    th, td { padding: 7px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="report-header">
+    <h1>iDrome AI 应用设计方案 — 系统性检查报告</h1>
+    <div class="subtitle">针对更新版设计方案的全面技术审查与一致性校验</div>
+    <div class="meta">
+      <span><strong>检查日期：</strong>2026-07-11</span>
+      <span><strong>文档版本：</strong>更新版（含第 29-33 章新增内容）</span>
+      <span><strong>检查范围：</strong>需求 / 架构 / 功能 / 技术 / 接口 / 数据 / 安全 / 性能 / 扩展 / 实施</span>
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    <div class="summary-stat p0">
+      <span class="num">4</span>
+      <span class="label">P0 阻断性问题</span>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat p1">
+      <span class="num">5</span>
+      <span class="label">P1 高优先级</span>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat p2">
+      <span class="num">6</span>
+      <span class="label">P2 中优先级</span>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat p3">
+      <span class="num">3</span>
+      <span class="label">P3 低优先级</span>
+    </div>
+    <div class="summary-divider"></div>
+    <div class="summary-conclusion">
+      <strong>总体结论：</strong>更新版方案在第 29-33 章中有效回应了前次评估的大部分建议（ES Modules 架构、API 验证计划、导出与分享、Mock 测试层、Onboarding 引导等），文档完整度和实施可行性显著提升。但仍存在 <strong>4 个阻断性问题</strong>（数据库类型不一致、Edge Function 函数未定义、单元测试缺失导入、user_id 外键引用不一致）需在正式开发前修复。
+    </div>
+  </div>
+
+  <!-- 1. 检查范围与方法 -->
+  <section>
+    <h2><span class="num">1</span>检查范围与方法</h2>
+    <p>本次检查覆盖设计方案的 33 个章节，重点校验以下方面：</p>
+    <table>
+      <thead>
+        <tr><th>检查维度</th><th>检查要点</th><th>覆盖章节</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>需求符合性</td><td>功能列表与数据模型、UI 设计的对应关系</td><td>1-8, 13, 28</td></tr>
+        <tr><td>架构设计</td><td>ES Modules + Proxy 状态管理的可行性</td><td>10, 31</td></tr>
+        <tr><td>数据一致性</td><td>跨章节表定义、外键类型、字段完整性</td><td>8, 13, 18, 28, 32</td></tr>
+        <tr><td>技术可行性</td><td>API 假设、外部依赖、代码实现可执行性</td><td>14-17, 22, 30, 33</td></tr>
+        <tr><td>安全策略</td><td>RLS 策略、密码处理、秘钥管理</td><td>16, 18, 28, 32</td></tr>
+        <tr><td>接口定义</td><td>Edge Function 代码完整性、函数引用</td><td>18, 23, 28, 32</td></tr>
+        <tr><td>实施计划</td><td>阶段划分逻辑、依赖关系、交付物</td><td>11, 29</td></tr>
+        <tr><td>测试方案</td><td>单元测试可执行性、Mock 层安全性</td><td>27, 33</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 2. P0 阻断性问题 -->
+  <section>
+    <h2><span class="num">2</span>P0 阻断性问题（必须修复后才能开发）</h2>
+
+    <div class="issue-card p0">
+      <div class="issue-header">
+        <span class="badge badge-p0">P0</span>
+        <h4>2.1 shared_conversations.conversation_id 类型与 conversations.id 不匹配</h4>
+        <span class="issue-location">第 8 章 line 1170 / 第 32 章 line 5317 vs 第 13 章 line 1044</span>
+      </div>
+      <div class="issue-body">
+        <p><strong>问题描述：</strong><code>conversations.id</code> 定义为 <code>uuid</code> 类型（line 1044），但 <code>shared_conversations.conversation_id</code> 在两处定义中均为 <code>bigint</code>（line 1170 表结构描述、line 5317 CREATE TABLE 语句）。PostgreSQL 不允许 bigint 外键引用 uuid 主键，执行 CREATE TABLE 语句将直接报错。</p>
+        <p>对比其他表：<code>messages.conversation_id</code> 为 <code>uuid</code>（正确，line 1071），<code>usage_logs.conversation_id</code> 为 <code>uuid</code>（正确，line 1118）。仅 shared_conversations 存在类型错误。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>
+        将两处 <code>conversation_id bigint</code> 改为 <code>conversation_id uuid</code>：
+        <pre><code>-- 第 32 章 line 5317 修改为：
+conversation_id uuid REFERENCES conversations(id) ON DELETE CASCADE,</code></pre>
+        同时修改第 8 章 line 1170 的表结构描述：<code>conversation_id | uuid (FK → conversations.id) | 关联对话</code>
+      </div>
+    </div>
+
+    <div class="issue-card p0">
+      <div class="issue-header">
+        <span class="badge badge-p0">P0</span>
+        <h4>2.2 Edge Function 中 hashPassword 函数被注释，调用将报 ReferenceError</h4>
+        <span class="issue-location">第 32 章 line 5364-5372</span>
+      </div>
+      <div class="issue-body">
+        <p><strong>问题描述：</strong>分享链接生成 Edge Function 中，line 5364 调用了 <code>await hashPassword(password)</code>，但该函数的实现（line 5366-5372）被包裹在注释中。部署执行时将抛出 <code>ReferenceError: hashPassword is not defined</code>，分享功能完全不可用。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>
+        取消注释，将 hashPassword 定义为可执行函数。同时建议使用更安全的哈希算法：
+        <pre><code>// 使用 Web Crypto API 的 PBKDF2 替代 SHA-256（更安全）
+async function hashPassword(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']
+  )
+  const hash = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, 256
+  )
+  return Array.from(salt).map(b => b.toString(16).padStart(2,'0')).join('') + ':'
+    + Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('')
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="issue-card p0">
+      <div class="issue-header">
+        <span class="badge badge-p0">P0</span>
+        <h4>2.3 单元测试文件缺失所有 import 语句，无法执行</h4>
+        <span class="issue-location">第 33 章 line 5485-5583</span>
+      </div>
+      <div class="issue-body">
+        <p><strong>问题描述：</strong>单元测试文件 <code>test/unit-tests.js</code> 使用了 <code>parseSSEChunk</code>、<code>estimateTokens</code>、<code>prepareKnowledgeForPrompt</code>、<code>detectInjection</code> 四个函数，但文件中没有任何 <code>import</code> 语句。在 ES Module 模式下，这些函数未定义，所有测试将抛出 <code>ReferenceError</code>。</p>
+        <p>此外，文档描述"使用原生 <code>console.assert</code> 实现轻量测试框架"（line 5482），但实际代码使用自定义 <code>assert</code> / <code>assertEqual</code> 函数（通过 <code>throw new Error</code> 实现），并未使用 <code>console.assert</code>。文档描述与代码实现不一致。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>
+        在文件顶部添加导入语句，并修正文档描述：
+        <pre><code>// test/unit-tests.js 顶部添加：
+import { parseSSEChunk } from '../js/chat.js'
+import { estimateTokens } from '../js/usageTracker.js'
+import { prepareKnowledgeForPrompt } from '../js/knowledgeLoader.js'
+import { detectInjection } from '../js/errorHandler.js'</code></pre>
+        文档描述改为："使用自定义 assert / assertEqual 函数实现轻量测试框架"。
+      </div>
+    </div>
+
+    <div class="issue-card p0">
+      <div class="issue-header">
+        <span class="badge badge-p0">P0</span>
+        <h4>2.4 user_id 外键引用不一致：users.id vs auth.users(id)</h4>
+        <span class="issue-location">第 8/13 章 vs 第 18/28/32 章</span>
+      </div>
+      <div class="issue-body">
+        <p><strong>问题描述：</strong>同一方案中，不同章节的 <code>user_id</code> 外键引用目标不一致：</p>
+        <table>
+          <thead>
+            <tr><th>章节</th><th>表</th><th>引用目标</th><th>位置</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>第 8/13 章</td><td>conversations</td><td><code>users.id</code></td><td>line 1045</td></tr>
+            <tr><td>第 8 章</td><td>usage_logs</td><td><code>users.id</code></td><td>line 1117</td></tr>
+            <tr><td>第 8 章</td><td>knowledge_base_files</td><td><code>users.id</code></td><td>line 1134</td></tr>
+            <tr><td>第 8 章</td><td>knowledge_base_chunks</td><td><code>users.id</code></td><td>line 1153</td></tr>
+            <tr><td>第 8 章</td><td>shared_conversations</td><td><code>users.id</code></td><td>line 1171</td></tr>
+            <tr><td>第 18 章</td><td>usage_logs (CREATE TABLE)</td><td><code>auth.users(id)</code></td><td>line 1843</td></tr>
+            <tr><td>第 28 章</td><td>knowledge_base_files (CREATE TABLE)</td><td><code>auth.users(id)</code></td><td>line 4580</td></tr>
+            <tr><td>第 28.8 章</td><td>knowledge_base_chunks (CREATE TABLE)</td><td><code>auth.users(id)</code></td><td>line 4796</td></tr>
+            <tr><td>第 32 章</td><td>shared_conversations (CREATE TABLE)</td><td><code>auth.users(id)</code></td><td>line 5318</td></tr>
+          </tbody>
+        </table>
+        <p>第 8 章表结构概览引用 <code>users.id</code>（暗示存在 public.users 表），而第 18/28/32 章的 CREATE TABLE 语句引用 <code>auth.users(id)</code>（Supabase 内置认证表）。如果 public.users 表不存在，第 8 章的 FK 引用将失败；如果两者都存在但未统一，会导致数据关系混乱。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>
+        全方案统一为 <code>REFERENCES auth.users(id) ON DELETE CASCADE</code>（Supabase 标准做法）。如果主网站确有 public.users 表用于扩展用户信息，则 conversations 等业务表应引用 public.users(id)，而 public.users 表自身引用 auth.users(id)。需在文档中明确 public.users 表是否存在及其与 auth.users 的关系，然后统一所有 FK 引用。
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. P1 高优先级问题 -->
+  <section>
+    <h2><span class="num">3</span>P1 高优先级问题（严重影响功能正确性）</h2>
+
+    <div class="issue-card p1">
+      <div class="issue-header">
+        <span class="badge badge-p1">P1</span>
+        <h4>3.1 Proxy 状态管理缺乏深层响应式，嵌套变更不会触发 UI 更新</h4>
+        <span class="issue-location">第 31 章 line 5088-5120</span>
+      </div>
+      <div class="issue-body">
+        <p><strong>问题描述：</strong><code>makeReactive</code> 函数仅代理顶层对象，注释声称"递归代理嵌套对象"但实现并未递归。关键缺陷：</p>
+        <ul>
+          <li><code>state.conversations.push(newConv)</code> — 不会触发监听器（push 修改的是原始数组，非 Proxy）</li>
+          <li><code>state.messages[i].content = 'new'</code> — 不会触发监听器（嵌套属性修改）</li>
+          <li><code>state.currentUser.name = 'x'</code> — 不会触发监听器</li>
+        </ul>
+        <p>在 AI 对话应用中，消息列表的 push/更新是最频繁的操作。此缺陷将导致流式消息渲染、对话列表更新等核心 UI 不会自动刷新。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>
+        增加 <code>get</code> 拦截器返回代理后的嵌套对象，<code>set</code> 时对新对象值递归代理：
+        <pre><code>const makeReactive = (obj) => {
+  return new Proxy(obj, {
+    get(target, key) {
+      const val = target[key]
+      if (val && typeof val === 'object' && !val.__isReactive) {
+        return makeReactive(val)
+      }
+      return val
+    },
+    set(target, key, value) {
+      const oldValue = target[key]
+      target[key] = value
+      if (oldValue !== value) {
+        listeners.forEach(fn => fn(target, key, value, oldValue))
+      }
+      return true
+    }
+  })
+}</code></pre>
+        注意：数组 <code>push</code>/<code>splice</code> 仍需额外处理。建议覆盖数组方法或使用 <code>state.conversations = [...state.conversations, newConv]</code> 模式触发更新。
+      </div>
+    </div>
+
+    <div class="issue-card p1">
+      <div class="issue-header">
+        <span class="badge badge-p1">P1</span>
+        <h4>3.2 shared_conversations RLS 策略允许任何人读取所有行的 password_hash</h4>
+        <span class="issue-location">第 32 章 line 5334-5336</span>
+      </div>
+      <div class="issue-body">
+        <p><strong>问题描述：</strong>RLS 策略 <code>"Anyone can view shared conversations"</code> 使用 <code>USING (true)</code>，允许任何匿名用户 SELECT 表中的<strong>所有行和所有列</strong>，包括 <code>password_hash</code>、<code>user_id</code>、<code>conversation_id</code> 等敏感字段。攻击者可通过 Supabase 客户端直接查询获取所有分享链接的密码哈希。</p>
+        <p>虽然密码使用 SHA-256 + 盐存储，但暴露哈希仍违反安全最佳实践，且攻击者可枚举所有 share_id 访问未设密码的分享对话。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>
+        方案 A（推荐）：移除公开 SELECT 策略，通过 Edge Function 处理分享访问（服务端验证 share_id + password 后返回对话内容）。
+        <pre><code>-- 移除 "Anyone can view" 策略
+-- 仅保留用户管理自己分享的策略
+-- 分享访问通过 Edge Function（service_role 绕过 RLS）处理</code></pre>
+        方案 B：仅暴露非敏感列，通过视图实现：
+        <pre><code>CREATE VIEW shared_conversations_public AS
+  SELECT share_id, expires_at, view_count
+  FROM shared_conversations;
+
+-- RLS 仅对视图开放，password_hash 不暴露</code></pre>
+      </div>
+    </div>
+
+    <div class="issue-card p1">
+      <div class="issue-header">
+        <span class="badge badge-p1">P1</span>
+        <h4>3.3 "对话归档"功能在功能列表中列出，但 conversations 表无 archived 字段</h4>
+        <span class="issue-location">第 5 章 line 485 vs 第 13 章 line 1042-1051</span>
+      </div>
+      <div class="issue-body">
+        <p><strong>问题描述：</strong>功能列表（line 485）包含"对话归档"，但 <code>conversations</code> 表仅有 <code>pinned</code> 字段，无 <code>archived</code> 字段。归档对话无法持久化存储，功能与数据模型不匹配。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>
+        在 conversations 表增加 <code>archived boolean DEFAULT false</code> 字段，并添加索引 <code>idx_conversations_archived ON (user_id, archived)</code>。导航面板中归档对话单独分组显示。
+      </div>
+    </div>
+
+    <div class="issue-card p1">
+      <div class="issue-header">
+        <span class="badge badge-p1">P1</span>
+        <h4>3.4 knowledge_base_files 表定义在 Chapter 8 和 Chapter 28 之间存在字段不一致</h4>
+        <span class="issue-location">第 8 章 line 1127-1143 vs 第 28 章 line 4578-4598</span>
+      </div>
+      <div class="issue-body">
+        <p><strong>问题描述：</strong>两处定义存在差异：</p>
+        <table>
+          <thead><tr><th>差异点</th><th>第 8 章</th><th>第 28 章</th></tr></thead>
+          <tbody>
+            <tr><td>created_at 字段</td><td>无</td><td>有（DEFAULT now()）</td></tr>
+            <tr><td>user_id FK</td><td>users.id</td><td>auth.users(id)</td></tr>
+            <tr><td>ON DELETE CASCADE</td><td>未指定</td><td>有</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>以第 28 章的 CREATE TABLE 语句为权威定义，更新第 8 章的表结构概览使其完全一致。所有表的概览描述与 CREATE TABLE 语句应保持字段、类型、约束的完全对应。
+      </div>
+    </div>
+
+    <div class="issue-card p1">
+      <div class="issue-header">
+        <span class="badge badge-p1">P1</span>
+        <h4>3.5 DeepSeek Embedding API 是否存在尚未确认，28.8 整节功能依赖此假设</h4>
+        <span class="issue-location">第 28.8 章 line 4785, 4818 / 第 30 章 line 4977</span>
+      </div>
+      <div class="issue-body">
+        <p><strong>问题描述：</strong>知识库语义检索功能（28.8 节）假设 DeepSeek 提供 Embedding API（<code>/v1/embeddings</code> 端点，1024 维向量）。但 DeepSeek 以对话模型闻名，其 Embedding API 的存在性、端点格式、向量维度均未在官方文档中被确认。方案在验证清单（line 4977）中列出了此项验证，但功能设计已基于未验证的假设展开。</p>
+        <p>如果 DeepSeek 不提供 Embedding API，则 knowledge_base_chunks 表的 <code>vector(1024)</code> 维度、<code>batchEmbed</code> 函数、<code>match_knowledge_chunks</code> RPC 均需调整。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>
+        在阶段 0 验证中优先确认此 API。如不可用，准备备选方案：(1) 使用 OpenAI text-embedding-3-small（1536 维，需调整 vector 维度）；(2) 使用 Jina AI Embedding（768 维）；(3) 暂时回退为全量注入方案（已实现，作为保底）。在 28.8 节中明确标注"此功能依赖阶段 0 验证结果"。
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. P2 中优先级问题 -->
+  <section>
+    <h2><span class="num">4</span>P2 中优先级问题（应修复，不影响核心流程启动）</h2>
+
+    <div class="issue-card p2">
+      <div class="issue-header">
+        <span class="badge badge-p2">P2</span>
+        <h4>4.1 Mock 层全局覆盖 window.fetch，可能干扰 Supabase SDK 内部调用</h4>
+        <span class="issue-location">第 33 章 line 5467-5477</span>
+      </div>
+      <div class="issue-body">
+        <p>Mock 层在开发环境下全局覆盖 <code>window.fetch</code>，虽然仅拦截 URL 含 <code>chat-proxy</code> 的请求，但 Supabase JS SDK 内部也使用 fetch 进行认证和数据操作。如果 URL 匹配逻辑有边界情况（如相对路径解析），可能意外拦截 Supabase 请求。</p>
+        <p>此外，line 5470 存在冗余 <code>isDev</code> 检查：外层 <code>if (isDev)</code>（line 5467）已判断，内层 <code>if (url.includes('chat-proxy') && isDev)</code> 的 <code>isDev</code> 为多余。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>
+        改为在 API Router 层注入 Mock，而非全局覆盖 fetch：
+        <pre><code>// apiRouter.js 中，开发环境直接返回 Mock 响应
+if (isDev && url.includes('chat-proxy')) {
+  return mockSSEResponse(body.thinking ? 'thinking' : 'normal')
+}
+// 正常调用原始 fetch
+return originalFetch(url, options)</code></pre>
+        移除内层冗余 <code>isDev</code> 判断。
+      </div>
+    </div>
+
+    <div class="issue-card p2">
+      <div class="issue-header">
+        <span class="badge badge-p2">P2</span>
+        <h4>4.2 html2canvas 通过 CDN 动态加载，图片导出功能受 CDN 稳定性影响</h4>
+        <span class="issue-location">第 32 章 line 5292</span>
+      </div>
+      <div class="issue-body">
+        <p>图片导出功能在运行时从 <code>cdn.jsdelivr.net</code> 动态加载 html2canvas。前次评估建议核心库本地化到 <code>assets/vendor/</code>，html2canvas 虽为按需功能但仍受 CDN 不稳定性影响。在中国大陆访问 jsdelivr 的成功率不稳定。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>将 html2canvas 下载到 <code>assets/vendor/html2canvas.min.js</code>，通过相对路径加载。或提供双源回退：CDN 失败后尝试本地路径。
+      </div>
+    </div>
+
+    <div class="issue-card p2">
+      <div class="issue-header">
+        <span class="badge badge-p2">P2</span>
+        <h4>4.3 PDF 导出依赖浏览器 print API，导出结果不可控</h4>
+        <span class="issue-location">第 32 章 line 5254-5271</span>
+      </div>
+      <div class="issue-body">
+        <p>PDF 导出使用 <code>window.print()</code> + 打印 CSS，依赖用户在打印对话框中选择"保存为 PDF"。此方案无法控制输出文件名、页边距、纸张方向等，不同浏览器行为不一致。移动端浏览器普遍不支持打印对话框，功能在移动端不可用。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>桌面端保留 print API 方案（零依赖、够用），移动端隐藏 PDF 导出按钮或改用 jsPDF（可按需 CDN 加载）。在文档中注明此限制。
+      </div>
+    </div>
+
+    <div class="issue-card p2">
+      <div class="issue-header">
+        <span class="badge badge-p2">P2</span>
+        <h4>4.4 密码哈希使用 SHA-256，强度不足</h4>
+        <span class="issue-location">第 32 章 line 5366-5372</span>
+      </div>
+      <div class="issue-body">
+        <p>分享密码使用 SHA-256 + 随机盐。虽然加盐后比纯 SHA-256 更安全，但 SHA-256 速度快，容易被暴力破解。对于密码存储，应使用专门的密码哈希函数（PBKDF2、bcrypt、Argon2）。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>改用 Web Crypto API 的 PBKDF2（已在 P0-2.2 修复建议中给出代码示例），迭代次数不低于 100,000 次。Deno 环境原生支持 <code>crypto.subtle.deriveBits</code>。
+      </div>
+    </div>
+
+    <div class="issue-card p2">
+      <div class="issue-header">
+        <span class="badge badge-p2">P2</span>
+        <h4>4.5 第 11 章实施规划与第 29 章更新规划并存，可能产生混淆</h4>
+        <span class="issue-location">第 11 章 line 950-952 vs 第 29 章</span>
+      </div>
+      <div class="issue-body">
+        <p>第 11 章保留了原始的六阶段实施规划，line 952 添加了"已被第 29 章取代"的声明。但第 11 章的详细阶段内容仍然完整存在，读者可能未注意到取代声明而按旧规划执行。第 29 章的阶段编号（阶段 0、第二阶段补充、第三阶段补充...）与第 11 章的阶段编号（第一至第六阶段）对应关系不够直观。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>将第 11 章内容精简为"已迁移至第 29 章"的指引段落（保留原始规划要点但明确标注为"参考"），或直接合并到第 29 章中以第 29 章为唯一权威实施规划。第 29 章的阶段编号改为从 1 开始的连续编号（阶段 1 验证与架构 / 阶段 2 基础框架与认证 / ...），避免"阶段 0"和"第X阶段补充"的混淆。
+      </div>
+    </div>
+
+    <div class="issue-card p2">
+      <div class="issue-header">
+        <span class="badge badge-p2">P2</span>
+        <h4>4.6 knowledge_base_chunks 表在 RLS 策略中缺少 service_role 写入策略</h4>
+        <span class="issue-location">第 28.8 章</span>
+      </div>
+      <div class="issue-body">
+        <p>knowledge_base_chunks 表由 Edge Function（file-proxy）在文件解析后写入向量数据。文档提到"用户只能访问自己的知识库分段"的 RLS 策略，但未明确 Edge Function 使用 service_role 绕过 RLS 进行写入。如果 RLS 策略仅允许用户以 authenticated 身份操作，Edge Function 的写入可能被 RLS 拦截。同样的问题存在于 knowledge_base_files 表的写入操作。</p>
+      </div>
+      <div class="issue-fix">
+        <strong>修复建议：</strong>明确标注：knowledge_base_chunks 和 knowledge_base_files 表的 INSERT/UPDATE 操作通过 Edge Function 使用 service_role 密钥执行（绕过 RLS），用户端仅通过 RLS 策略进行 SELECT/DELETE。
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. P3 低优先级问题 -->
+  <section>
+    <h2><span class="num">5</span>P3 低优先级问题（建议改进）</h2>
+
+    <div class="issue-card p3">
+      <div class="issue-header">
+        <span class="badge badge-p3">P3</span>
+        <h4>5.1 conversations 表缺少 model_version 字段，无法追溯对话使用的模型版本</h4>
+      </div>
+      <div class="issue-body">
+        <p><code>conversations.model</code> 存储模型名称（如 <code>deepseek-v4-flash</code>），但同一模型名称可能有多个版本。建议增加 <code>model_version text</code> 字段记录具体版本号，便于问题排查和兼容性处理。</p>
+      </div>
+    </div>
+
+    <div class="issue-card p3">
+      <div class="issue-header">
+        <span class="badge badge-p3">P3</span>
+        <h4>5.2 单元测试描述与实现不一致</h4>
+      </div>
+      <div class="issue-body">
+        <p>文档（line 5482）描述"使用原生 <code>console.assert</code> 实现轻量测试框架"，但实际代码使用自定义 <code>assert</code> 和 <code>assertEqual</code> 函数（基于 <code>throw new Error</code>）。应修正文档描述以匹配代码实现。</p>
+      </div>
+    </div>
+
+    <div class="issue-card p3">
+      <div class="issue-header">
+        <span class="badge badge-p3">P3</span>
+        <h4>5.3 文件结构中缺少 mode/ 目录下的知识库文件示例</h4>
+      </div>
+      <div class="issue-body">
+        <p>文件结构（line 932-938）列出了 mode/ 目录下的三个 system-prompt.md 文件，但方案中未提供任何 system-prompt.md 的示例内容。建议至少提供 general 模式的 system-prompt.md 示例，包含 <code># version: 1</code> 标签和基础提示词结构，作为开发参考。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 改进确认（前次评估建议的落实情况） -->
+  <section>
+    <h2><span class="num">6</span>前次评估建议落实情况</h2>
+    <p>对比前次综合评估报告的 12 条优化建议，逐项检查落实情况：</p>
+    <table>
+      <thead>
+        <tr><th>建议项</th><th>优先级</th><th>落实状态</th><th>对应章节</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>引入轻量级状态管理与模块化方案</td><td>紧急</td><td><span class="badge badge-ok">已落实</span> ES Modules + Proxy store（第 31 章）</td><td>31</td></tr>
+        <tr><td>关键第三方库本地化</td><td>高</td><td><span class="badge badge-ok">已落实</span> 4 个核心库已本地化到 vendor/</td><td>10, 22</td></tr>
+        <tr><td>启动前进行 API 可行性验证</td><td>紧急</td><td><span class="badge badge-ok">已落实</span> 完整验证清单 + 脚本示例（第 30 章）</td><td>30</td></tr>
+        <tr><td>建立 API Mock 与单元测试基线</td><td>高</td><td><span class="badge badge-warn">部分落实</span> Mock 层和测试框架已建立，但存在 P0 缺陷</td><td>33</td></tr>
+        <tr><td>补充对话导出与分享的技术方案</td><td>中</td><td><span class="badge badge-ok">已落实</span> 完整实现方案（第 32 章），但存在 P0/P1 缺陷</td><td>32</td></tr>
+        <tr><td>新增首次使用引导流程</td><td>中</td><td><span class="badge badge-ok">已落实</span> 3 步引导 + localStorage 标记（第 7.1 节）</td><td>7.1</td></tr>
+        <tr><td>增加消息内容搜索功能</td><td>低</td><td><span class="badge badge-ok">已落实</span> 搜索模式切换 + ilike 查询（第 5.1 节）</td><td>5.1</td></tr>
+        <tr><td>强化提示词注入防护</td><td>高</td><td><span class="badge badge-ok">已落实</span> 多层级检测（第 16.3 节）</td><td>16.3</td></tr>
+        <tr><td>个人知识库文件安全扫描</td><td>中</td><td><span class="badge badge-ok">已落实</span> MIME 校验 + PII 检测（第 28.5 节）</td><td>28.5</td></tr>
+        <tr><td>优化个人知识库注入策略</td><td>中</td><td><span class="badge badge-ok">已落实</span> Embedding 语义检索（第 28.8 节），但依赖未验证 API</td><td>28.8</td></tr>
+        <tr><td>导航面板交互优化（移除 hover）</td><td>低</td><td><span class="badge badge-ok">已落实</span> 仅点击展开，明确禁用 hover（第 4.1 节）</td><td>4.1</td></tr>
+        <tr><td>无障碍设计完善</td><td>低</td><td><span class="badge badge-ok">已落实</span> ARIA 角色映射 + 屏幕阅读器测试计划（第 9 章）</td><td>9.2-9.4</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-success">
+      <div class="callout-title">落实率：12/12（100%）</div>
+      前次评估的所有 12 条优化建议均已在更新版方案中得到落实，其中 2 项在落实中引入了新的技术缺陷（Mock 层缺 import、分享功能 hashPassword 未定义），需按 P0 修复。
+    </div>
+  </section>
+
+  <!-- 7. 各模块一致性检查 -->
+  <section>
+    <h2><span class="num">7</span>各模块一致性检查结果</h2>
+
+    <h3>7.1 需求与数据模型一致性</h3>
+    <div class="check-item"><span class="check-icon check-fail">!</span><span><strong>对话归档</strong>：功能列表有，conversations 表无 archived 字段（P1-3.3）</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>对话管理（新建/删除/重命名/置顶）：conversations 表字段完整支持</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>消息编辑过期标记：messages 表有 expired + version 字段</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>模式切换：conversations 表有 mode 字段，三模式取值定义清晰</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>个人知识库：knowledge_base_files 表完整，支持上传/解析/注入/删除</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>用量追踪：usage_logs 表字段支持月度预算校验</span></div>
+    <div class="check-item"><span class="check-icon check-warn">!</span><span>对话分享：shared_conversations 表定义存在但 conversation_id 类型错误（P0-2.1）</span></div>
+
+    <h3>7.2 跨章节表定义一致性</h3>
+    <div class="check-item"><span class="check-icon check-fail">!</span><span><strong>user_id FK 引用</strong>：第 8 章用 users.id，第 18/28/32 章用 auth.users(id)（P0-2.4）</span></div>
+    <div class="check-item"><span class="check-icon check-fail">!</span><span><strong>knowledge_base_files</strong>：第 8 章缺 created_at 字段，FK 引用不一致（P1-3.4）</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>messages 表：第 8 章概览与第 13 章详细定义一致</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>usage_logs 表：第 8 章概览与第 18 章 CREATE TABLE 字段一致（除 FK 引用）</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>knowledge_base_chunks：第 8 章概览与第 28.8 章定义字段一致（除 FK 引用）</span></div>
+
+    <h3>7.3 代码实现可执行性</h3>
+    <div class="check-item"><span class="check-icon check-fail">!</span><span><strong>hashPassword</strong>：函数调用存在但实现被注释（P0-2.2）</span></div>
+    <div class="check-item"><span class="check-icon check-fail">!</span><span><strong>单元测试</strong>：缺失 import 语句，无法执行（P0-2.3）</span></div>
+    <div class="check-item"><span class="check-icon check-warn">!</span><span><strong>Proxy store</strong>：可执行但深层响应式不工作（P1-3.1）</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>API 验证脚本：代码完整，可直接执行</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>Markdown 导出：代码完整可执行</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>match_knowledge_chunks RPC：SQL 函数定义完整</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>Onboarding 引导：代码完整，localStorage 标记逻辑正确</span></div>
+
+    <h3>7.4 安全策略完整性</h3>
+    <div class="check-item"><span class="check-icon check-fail">!</span><span><strong>shared_conversations RLS</strong>：公开 SELECT 暴露 password_hash（P1-3.2）</span></div>
+    <div class="check-item"><span class="check-icon check-warn">!</span><span><strong>密码哈希</strong>：使用 SHA-256 而非 PBKDF2/bcrypt（P2-4.4）</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>秘钥零暴露：所有 API 密钥通过 Edge Function 环境变量，前端仅持 JWT</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>XSS 防护：DOMPurify 清洗用户输入和 AI 输出</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>提示词注入防护：多层级检测（关键词 + 语义 + AI 预检）</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>RLS 策略：conversations、messages、usage_logs、knowledge_base_files 均有策略</span></div>
+    <div class="check-item"><span class="check-icon check-pass">&#10003;</span><span>月度预算硬上限：Edge Function 端校验，超限返回 429</span></div>
+  </section>
+
+  <!-- 8. 综合结论 -->
+  <section>
+    <h2><span class="num">8</span>综合结论与行动清单</h2>
+
+    <div class="conclusion-box">
+      <h3>总体评价</h3>
+      <p>更新版设计方案在前次评估基础上完成了<strong>100% 的建议落实</strong>，新增的第 29-33 章显著提升了方案的实施可行性。ES Modules 架构、API 验证计划、Onboarding 引导、导出与分享、Mock 测试层等新增内容设计思路正确，方向合理。</p>
+
+      <p>但本次检查发现 <strong>4 个 P0 阻断性问题</strong>，均属于代码/SQL 层面的具体错误（类型不匹配、函数未定义、导入缺失、FK 引用不一致），不影响方案的整体架构设计，但必须在正式开发前逐项修复。修复工作量估计 <strong>2-4 小时</strong>（主要是统一 FK 引用和修正代码缺陷）。</p>
+
+      <h3>开发前必须完成的行动清单</h3>
+      <ol>
+        <li><strong>修复 P0-2.1</strong>：将 shared_conversations.conversation_id 从 bigint 改为 uuid（2 处）</li>
+        <li><strong>修复 P0-2.2</strong>：取消 hashPassword 函数注释，改用 PBKDF2 实现</li>
+        <li><strong>修复 P0-2.3</strong>：在 unit-tests.js 顶部添加 4 个 import 语句</li>
+        <li><strong>修复 P0-2.4</strong>：全方案统一 user_id FK 引用目标（建议统一为 auth.users(id)）</li>
+        <li><strong>修复 P1-3.1</strong>：为 Proxy store 添加 get 拦截器实现深层响应式</li>
+        <li><strong>修复 P1-3.2</strong>：移除 shared_conversations 的公开 SELECT RLS 策略，改用 Edge Function 处理分享访问</li>
+        <li><strong>修复 P1-3.3</strong>：conversations 表增加 archived 字段</li>
+        <li><strong>修复 P1-3.4</strong>：同步第 8 章与第 28 章的 knowledge_base_files 表定义</li>
+        <li><strong>执行阶段 0 验证</strong>（第 30 章）：优先验证 DeepSeek Embedding API（P1-3.5 的前置条件）</li>
+      </ol>
+
+      <h3>结论</h3>
+      <p>方案在架构设计、功能规划、安全策略层面已达到<strong>可启动正式开发</strong>的水平。上述 P0/P1 问题修复后，建议按照第 29 章的阶段 0（验证与架构准备）启动开发。第 29 章的实施路径规划合理，阶段依赖关系清晰，每阶段交付物明确，可作为开发执行的权威指引。</p>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

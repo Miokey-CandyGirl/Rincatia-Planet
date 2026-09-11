@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iDrome AI 应用设计方案 — 优化分析报告</title>
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --bg-soft: #F8F9FA;
+    --bg-card: #FFFFFF;
+    --text: #1a1a2e;
+    --text-soft: #5F6368;
+    --text-muted: #999999;
+    --accent: #2C5F8A;
+    --accent-dark: #1A3A5C;
+    --gold: #C9A84C;
+    --green: #5B8C5A;
+    --orange: #E8985E;
+    --red: #EA4335;
+    --yellow: #FBBC04;
+    --border: #E0E0E0;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-soft);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .report-header {
+    background: linear-gradient(135deg, #1A3A5C 0%, #2C5F8A 60%, #C9A84C 100%);
+    color: #fff;
+    padding: 48px 40px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .report-header::after {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .report-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+  .report-header .subtitle {
+    font-size: 15px;
+    opacity: 0.85;
+    position: relative;
+    z-index: 1;
+  }
+  .report-header .meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    opacity: 0.8;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+  }
+  .report-header .meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  section {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+  }
+  section > h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--bg-soft);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section > h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  section > h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin: 24px 0 12px;
+  }
+  section p {
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  ul, ol {
+    margin: 8px 0 16px 20px;
+  }
+  li {
+    margin-bottom: 6px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  thead {
+    background: var(--accent-dark);
+    color: #fff;
+  }
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+  tbody tr:nth-child(even) {
+    background: var(--bg-soft);
+  }
+
+  .callout {
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-left: 4px solid;
+  }
+  .callout-title {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .callout-info {
+    background: #E8F0FE;
+    border-color: var(--accent);
+    color: #1a3a5c;
+  }
+  .callout-success {
+    background: #E6F4EA;
+    border-color: var(--green);
+    color: #1d4e1d;
+  }
+  .callout-warn {
+    background: #FEF7E0;
+    border-color: var(--yellow);
+    color: #8a6d00;
+  }
+  .callout-danger {
+    background: #FCE8E6;
+    border-color: var(--red);
+    color: #8a2018;
+  }
+
+  .opt-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin: 16px 0;
+    background: var(--bg-card);
+    transition: box-shadow 0.2s;
+  }
+  .opt-card:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .opt-card .opt-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .opt-card .opt-id {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    background: var(--accent-dark);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .opt-card .opt-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+  }
+  .priority-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .pri-p0 { background: #FCE8E6; color: var(--red); }
+  .pri-p1 { background: #FEF7E0; color: #8a6d00; }
+  .pri-p2 { background: #E8F0FE; color: var(--accent); }
+  .pri-p3 { background: #E6F4EA; color: var(--green); }
+
+  .opt-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: var(--text-soft);
+    flex-wrap: wrap;
+  }
+  .opt-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .opt-meta strong {
+    color: var(--text);
+  }
+
+  .opt-body h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin: 12px 0 6px;
+  }
+  .opt-body ul {
+    margin: 6px 0 12px 20px;
+  }
+  .opt-body li {
+    font-size: 14px;
+    color: var(--text-soft);
+    margin-bottom: 4px;
+  }
+
+  .phase-card {
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 12px 0;
+    background: var(--bg-soft);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+  .phase-card .phase-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin-bottom: 8px;
+  }
+  .phase-card .phase-desc {
+    font-size: 14px;
+    color: var(--text-soft);
+  }
+
+  .match-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .match-stat {
+    text-align: center;
+    padding: 20px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+  }
+  .match-stat .stat-num {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .match-stat .stat-label {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-top: 4px;
+  }
+
+  .conclusion-box {
+    background: linear-gradient(135deg, #E8F0FE 0%, #F8F9FA 100%);
+    border-radius: var(--radius);
+    padding: 32px;
+    border: 1px solid var(--border);
+  }
+  .conclusion-box h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent-dark);
+    margin: 20px 0 12px;
+  }
+  .conclusion-box h3:first-child {
+    margin-top: 0;
+  }
+
+  code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+    font-size: 13px;
+    color: var(--accent-dark);
+  }
+  pre {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+
+  @media (max-width: 768px) {
+    .container { padding: 20px 16px 40px; }
+    section { padding: 20px; }
+    .report-header { padding: 32px 24px; }
+    .report-header h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="report-header">
+    <h1>iDrome AI 智能助手 — 设计方案优化分析报告</h1>
+    <div class="subtitle">基于综合评估报告的系统性优化需求分析与实施路径规划</div>
+    <div class="meta">
+      <span><strong>分析日期：</strong>2026-07-10</span>
+      <span><strong>评估报告得分：</strong>8.2 / 10 (B+)</span>
+      <span><strong>优化项总数：</strong>12 项</span>
+      <span><strong>项目路径：</strong>public/idrome/</span>
+    </div>
+  </div>
+
+  <!-- 1. 分析方法论 -->
+  <section>
+    <h2><span class="num">1</span>分析方法论与工作范围</h2>
+    <p>本报告基于《iDrome AI 应用设计方案综合评估报告》（得分 8.2/10）与《AI 应用设计方案》（167KB / 29 章）的系统性比对分析，结合琳凯蒂亚文化社区整体项目框架，确定优化需求并制定实施路径。</p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">分析工作流程</div>
+      <ol style="margin: 8px 0 0 20px;">
+        <li><strong>全面比对</strong>：逐项提取评估报告中的评估指标、问题发现与潜在风险</li>
+        <li><strong>详细审查</strong>：审查设计方案的技术架构、功能模块、性能参数及实施路径</li>
+        <li><strong>匹配度评估</strong>：结合项目整体框架的兼容性、扩展性和资源约束，评估设计方案与评估建议的匹配度</li>
+        <li><strong>优化需求清单</strong>：明确需要调整的设计模块、技术选型或实施策略，分析必要性、可行性及预期效益</li>
+        <li><strong>路径约束</strong>：iDrome 项目严格放在 <code>public/idrome/</code> 下执行</li>
+      </ol>
+    </div>
+
+    <h3>项目框架兼容性约束</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>子系统</th>
+          <th>技术栈</th>
+          <th>部署路径</th>
+          <th>与 iDrome 的关系</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>主网站</td>
+          <td>Vue 3 + Vite + Tailwind CSS</td>
+          <td><code>/src/</code></td>
+          <td>共享 Supabase 实例 + Auth 会话 (<code>rincatia_user</code>)</td>
+        </tr>
+        <tr>
+          <td>DromAI (旧版)</td>
+          <td>React JSX + Vite</td>
+          <td><code>/DromAI/</code></td>
+          <td>iDrome 的前身，iDrome 为替代方案</td>
+        </tr>
+        <tr>
+          <td><strong>iDrome (本项目)</strong></td>
+          <td><strong>原生 HTML/CSS/JS</strong></td>
+          <td><code>/public/idrome/</code></td>
+          <td><strong>独立部署的 PWA 应用</strong></td>
+        </tr>
+        <tr>
+          <td>Supabase 后端</td>
+          <td>Deno Edge Functions + PostgreSQL</td>
+          <td><code>/supabase/functions/</code></td>
+          <td>共享 Auth / DB / Storage / Edge Function</td>
+        </tr>
+        <tr>
+          <td>词典 PWA</td>
+          <td>原生 HTML/CSS/JS</td>
+          <td><code>/public/dictionary/</code></td>
+          <td>iDrome PWA 的参考模式</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 2. 评估报告核心发现回顾 -->
+  <section>
+    <h2><span class="num">2</span>评估报告核心发现回顾</h2>
+
+    <h3>2.1 八维度评分总览</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>权重</th>
+          <th>得分</th>
+          <th>评级</th>
+          <th>本报告判定</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>功能性</td><td>18%</td><td>9.0</td><td>优秀</td><td>无需优化</td></tr>
+        <tr><td>用户体验</td><td>16%</td><td>8.5</td><td>良好</td><td>局部优化</td></tr>
+        <tr><td>安全性</td><td>15%</td><td>8.8</td><td>良好</td><td>增强优化</td></tr>
+        <tr><td>可行性</td><td>14%</td><td>7.0</td><td>良好</td><td><strong>重点优化</strong></td></tr>
+        <tr><td>可扩展性</td><td>12%</td><td>7.5</td><td>良好</td><td>架构优化</td></tr>
+        <tr><td>技术实现难度</td><td>10%</td><td>6.5</td><td>一般</td><td>降低复杂度</td></tr>
+        <tr><td>创新性</td><td>8%</td><td>9.0</td><td>优秀</td><td>无需优化</td></tr>
+        <tr><td>经济性</td><td>7%</td><td>7.5</td><td>良好</td><td>成本优化</td></tr>
+      </tbody>
+    </table>
+
+    <h3>2.2 风险等级分布</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>风险等级</th>
+          <th>数量</th>
+          <th>关键风险项</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="priority-badge pri-p0">高风险</span></td>
+          <td>3 项</td>
+          <td>无框架可维护性、多外部 API 依赖、技术假设未验证</td>
+        </tr>
+        <tr>
+          <td><span class="priority-badge pri-p1">中风险</span></td>
+          <td>4 项</td>
+          <td>CDN 稳定性、知识库 Token 成本、跨标签页同步、音频兼容性</td>
+        </tr>
+        <tr>
+          <td><span class="priority-badge pri-p2">低风险</span></td>
+          <td>2 项</td>
+          <td>导出分享缺失细节、无障碍设计偏简</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 3. 匹配度分析 -->
+  <section>
+    <h2><span class="num">3</span>设计方案与评估建议匹配度分析</h2>
+
+    <div class="match-summary">
+      <div class="match-stat">
+        <div class="stat-num">5</div>
+        <div class="stat-label">已修复项（近期迭代）</div>
+      </div>
+      <div class="match-stat">
+        <div class="stat-num">4</div>
+        <div class="stat-label">部分覆盖项</div>
+      </div>
+      <div class="match-stat">
+        <div class="stat-num">7</div>
+        <div class="stat-label">需新增项</div>
+      </div>
+      <div class="match-stat">
+        <div class="stat-num">2</div>
+        <div class="stat-label">暂不采纳项</div>
+      </div>
+    </div>
+
+    <h3>3.1 已修复项（近期迭代已完成）</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>评估建议</th>
+          <th>设计方案现状</th>
+          <th>匹配状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>CDN 双源回退机制</td>
+          <td>已实现 8 个第三方库的主源 + 备源 <code>onerror</code> 链式加载</td>
+          <td><span class="priority-badge pri-p3">已修复</span></td>
+        </tr>
+        <tr>
+          <td>知识库截断策略可配置</td>
+          <td>已实现 <code>prepareKnowledgeForPrompt()</code> + 可调字符上限（2000-10000）</td>
+          <td><span class="priority-badge pri-p3">已修复</span></td>
+        </tr>
+        <tr>
+          <td>知识库版本化缓存</td>
+          <td>已实现 <code># version: N</code> 机制 + <code>refresh()</code> 方法</td>
+          <td><span class="priority-badge pri-p3">已修复</span></td>
+        </tr>
+        <tr>
+          <td>离线上传检测</td>
+          <td>已实现 <code>navigator.onLine</code> 检测 + 离线提示</td>
+          <td><span class="priority-badge pri-p3">已修复</span></td>
+        </tr>
+        <tr>
+          <td>API 密钥零暴露</td>
+          <td>所有前端类通过 Edge Function 代理，仅持有 JWT</td>
+          <td><span class="priority-badge pri-p3">已修复</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>3.2 部分覆盖项（需增强）</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>评估建议</th>
+          <th>设计方案现状</th>
+          <th>差距分析</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>提示词注入防护</td>
+          <td>XML 标签隔离 + 关键词检测 + 字符截断</td>
+          <td>仅基础关键词检测，缺少语义变体识别和 AI 预检</td>
+        </tr>
+        <tr>
+          <td>导航面板交互</td>
+          <td>"点击或悬浮展开"双模式</td>
+          <td>悬浮展开在对话场景易误触发，应改为仅点击</td>
+        </tr>
+        <tr>
+          <td>个人知识库注入</td>
+          <td>每次对话注入全部内容（有截断上限）</td>
+          <td>缺少语义相关性筛选，Token 成本可优化</td>
+        </tr>
+        <tr>
+          <td>无障碍设计</td>
+          <td>5 条原则性描述（键盘/ARIA/WCAG AA）</td>
+          <td>缺少具体 ARIA 角色映射和屏幕阅读器测试计划</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>3.3 需新增项（设计方案中完全缺失）</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>评估建议</th>
+          <th>缺失内容</th>
+          <th>影响范围</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>API 可行性验证</td>
+          <td>开发前未验证 DeepSeek/百度/豆包 API 实际行为</td>
+          <td>影响深度思考、流式解析、语音、OCR 等核心模块</td>
+        </tr>
+        <tr>
+          <td>ES Modules + 状态管理</td>
+          <td>使用全局变量（chatState/apiRouter 等），无模块化</td>
+          <td>影响代码可维护性和扩展性</td>
+        </tr>
+        <tr>
+          <td>关键库本地化</td>
+          <td>所有第三方库通过 CDN 加载，无本地备份</td>
+          <td>首次访问体验受 CDN 可达性影响</td>
+        </tr>
+        <tr>
+          <td>对话导出技术方案</td>
+          <td>仅提及 Markdown/PDF/图片，无实现细节</td>
+          <td>增强功能缺失</td>
+        </tr>
+        <tr>
+          <td>对话分享技术方案</td>
+          <td>仅提及分享链接+密码保护，无表结构和 API 设计</td>
+          <td>增强功能缺失</td>
+        </tr>
+        <tr>
+          <td>首次使用引导</td>
+          <td>首次使用流程仅覆盖登录检测，无模式选择引导</td>
+          <td>新用户体验</td>
+        </tr>
+        <tr>
+          <td>消息内容搜索</td>
+          <td>仅对话标题搜索，无消息正文搜索</td>
+          <td>信息检索能力</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>3.4 暂不采纳项</h3>
+    <div class="callout callout-warn">
+      <div class="callout-title">暂不采纳：迁移至轻量框架（Preact / Alpine.js）</div>
+      评估报告建议考虑迁移至 Preact 或 Alpine.js。但本项目作为琳凯蒂亚文化社区的独立子应用，采用原生 HTML/CSS/JS 是与词典 PWA 一致的既定技术选型，且 <code>public/idrome/</code> 为静态部署目录，引入框架将增加构建复杂度。<strong>替代方案</strong>：引入 ES Modules 原生模块化 + Proxy-based 响应式状态管理，在不增加构建工具的前提下提升可维护性。
+    </div>
+    <div class="callout callout-warn">
+      <div class="callout-title">暂不采纳：Supabase Realtime 强制多设备同步</div>
+      评估报告建议明确多设备实时同步保障机制。当前方案以 localStorage storage 事件实现跨标签页同步，多设备同步依赖用户主动刷新。强制 Realtime 会增加 Supabase 连接数和复杂度。<strong>替代方案</strong>：在设置面板中提供"实时同步"开关，用户按需开启。
+    </div>
+  </section>
+
+  <!-- 4. 优化需求清单 -->
+  <section>
+    <h2><span class="num">4</span>优化需求清单（优先级排序）</h2>
+
+    <p>基于匹配度分析，提出以下 12 项优化需求，按优先级 P0（必须）→ P1（高）→ P2（中）→ P3（低）排序。每项包含必要性、可行性及预期效益分析。</p>
+
+    <!-- P0-1 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">1</span>
+        <span class="opt-title">启动前 API 可行性验证</span>
+        <span class="priority-badge pri-p0">P0 必须</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>技术假设未验证（高风险）</span>
+        <span><strong>影响维度：</strong>可行性 (7.0)</span>
+        <span><strong>预计工作量：</strong>1-2 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>DeepSeek V4-Flash 为 2026 年 4 月新模型，thinking 参数格式、reasoning_content 字段结构、Vision 能力均基于文档描述，未经实际调用验证</li>
+          <li>百度 AI 搜索 API 的端点路径和计费方式未完全确认</li>
+          <li>豆包 ASR/TTS/文档解析 API 的调用方式可能与方案描述存在差异</li>
+          <li>若 API 实际行为与文档不符，深度思考、流式解析、语音、OCR 等核心模块需返工</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>使用独立 Node.js / Deno 脚本逐一调用各 API，验证请求/响应格式</li>
+          <li>验证项：DeepSeek thinking 模式 SSE 结构、百度搜索端点、豆包 ASR PCM 格式、js-tiktoken 对 DeepSeek 的估算精度</li>
+          <li>无前端依赖，可在开发前独立完成</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>消除最高风险项，避免开发后期核心模块返工</li>
+          <li>验证结果可直接修正设计方案中的 API 调用代码</li>
+          <li>为后续 Mock 层建立提供真实响应样本</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P0-2 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">2</span>
+        <span class="opt-title">引入 ES Modules 原生模块化 + Proxy 响应式状态管理</span>
+        <span class="priority-badge pri-p0">P0 必须</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>无框架可维护性（高风险）</span>
+        <span><strong>影响维度：</strong>可扩展性 (7.5)、技术实现难度 (6.5)</span>
+        <span><strong>预计工作量：</strong>2-3 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>17 个 JS 模块使用全局变量组织（chatState、apiRouter、KnowledgeLoader 等），状态散落难以追踪</li>
+          <li>DOM 操作与数据状态手动同步，容易产生不一致</li>
+          <li>新增功能时代码组织困难，重复代码多</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>使用浏览器原生 ES Modules（<code>&lt;script type="module"&gt;</code>），无需构建工具</li>
+          <li>引入 Proxy-based 响应式状态管理（约 50 行代码的轻量 Store 实现）</li>
+          <li>将全局变量改为 <code>export</code> / <code>import</code> 模块化组织</li>
+          <li>与 <code>public/idrome/</code> 静态部署完全兼容</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>状态变更自动触发 UI 更新，消除手动 DOM 同步</li>
+          <li>模块化后代码可维护性显著提升</li>
+          <li>为后续功能扩展（对话导出、分享等）奠定架构基础</li>
+        </ul>
+        <h4>实现示例</h4>
+        <pre><code>// store.js — 轻量响应式状态管理
+export function createStore(initialState) {
+  const listeners = new Set()
+  const state = new Proxy(initialState, {
+    set(target, key, value) {
+      target[key] = value
+      listeners.forEach(fn => fn(target))
+      return true
+    }
+  })
+  return {
+    state,
+    subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn) }
+  }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- P1-1 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">3</span>
+        <span class="opt-title">关键第三方库本地化</span>
+        <span class="priority-badge pri-p1">P1 高</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>CDN 国内访问稳定性（中风险）</span>
+        <span><strong>影响维度：</strong>可行性 (7.0)、用户体验 (8.5)</span>
+        <span><strong>预计工作量：</strong>0.5 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>Supabase JS SDK、marked.js、DOMPurify、KaTeX 为核心依赖，CDN 不可达时应用完全不可用</li>
+          <li>中国内地访问境外 CDN 不稳定，首次访问体验可能受影响</li>
+          <li>Service Worker 缓存仅在首次成功加载后才生效</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>下载 4 个核心库到 <code>public/idrome/assets/vendor/</code> 目录</li>
+          <li>HTML 中优先加载本地路径，<code>onerror</code> 回退到 CDN</li>
+          <li>非关键库（highlight.js、SheetJS、PDF.js）保留 CDN + 回退策略</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>消除首次访问的 CDN 不稳定性风险</li>
+          <li>Service Worker 缓存策略更可控（同源缓存）</li>
+          <li>加载速度提升（减少 DNS 解析和 TLS 握手）</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P1-2 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">4</span>
+        <span class="opt-title">强化提示词注入防护</span>
+        <span class="priority-badge pri-p1">P1 高</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>安全性不足之处</span>
+        <span><strong>影响维度：</strong>安全性 (8.8)</span>
+        <span><strong>预计工作量：</strong>1 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>当前仅基础关键词检测（"忽略之前的指令"等），无法应对语义变体（"忘记系统提示词"、"扮演开发者模式"等）</li>
+          <li>仅检测用户输入，未检测 AI 输出中的间接注入</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>扩展关键词检测为正则模式库（覆盖中英文变体表达）</li>
+          <li>在 Edge Function 中增加 DeepSeek 自身做安全预检（轻量级分类请求）</li>
+          <li>对 AI 输出内容也做注入检测（防止间接注入攻击）</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>安全性评分从 8.8 提升至 9.2+</li>
+          <li>覆盖高级注入攻击变体</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P1-3 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">5</span>
+        <span class="opt-title">建立 API Mock 层与单元测试基线</span>
+        <span class="priority-badge pri-p1">P1 高</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>技术实现难度高</span>
+        <span><strong>影响维度：</strong>技术实现难度 (6.5)</span>
+        <span><strong>预计工作量：</strong>1-2 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>SSE 流解析、Token 估算、知识库截断等纯逻辑模块边界情况多</li>
+          <li>开发期间频繁调用真实 API 增加成本和不确定性</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>为 Edge Function 建立 Mock 响应层（返回预录制的 SSE 流）</li>
+          <li>为纯逻辑函数编写单元测试（使用原生 <code>assert</code> 或引入轻量测试框架）</li>
+          <li>测试文件放在 <code>public/idrome/test/</code> 目录</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>开发效率提升，无需真实 API 调用即可调试</li>
+          <li>边界情况覆盖，减少生产环境 Bug</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P2-1 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">6</span>
+        <span class="opt-title">补充对话导出与分享技术方案</span>
+        <span class="priority-badge pri-p2">P2 中</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>功能缺失细节（低风险）</span>
+        <span><strong>影响维度：</strong>功能性 (9.0)</span>
+        <span><strong>预计工作量：</strong>2 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>对话导出（Markdown/PDF/图片）和分享（链接+密码）在功能列表中提及但无技术实现</li>
+          <li>属于增强功能，不影响核心体验，但影响功能完整度评分</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li><strong>Markdown 导出</strong>：拼接消息内容为 .md 文件，<code>Blob</code> + <code>URL.createObjectURL</code> 下载</li>
+          <li><strong>PDF 导出</strong>：使用 <code>window.print()</code> + 打印样式 CSS，或引入 jsPDF</li>
+          <li><strong>图片导出</strong>：使用 html2canvas 截图对话区域</li>
+          <li><strong>分享功能</strong>：Supabase 新增 <code>shared_conversations</code> 表（<code>share_id</code>, <code>conversation_id</code>, <code>password_hash</code>, <code>expires_at</code>），Edge Function 生成分享链接</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>功能性评分从 9.0 提升至 9.5</li>
+          <li>用户可导出对话记录和分享给他人</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P2-2 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">7</span>
+        <span class="opt-title">新增首次使用引导（Onboarding）流程</span>
+        <span class="priority-badge pri-p2">P2 中</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>用户体验不足之处</span>
+        <span><strong>影响维度：</strong>用户体验 (8.5)</span>
+        <span><strong>预计工作量：</strong>1 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>当前首次使用流程仅覆盖登录检测，新用户可能对三模式选择感到困惑</li>
+          <li>深度思考、联网搜索等高级功能缺少功能说明</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>首次访问显示 3 步引导卡片（选择模式 → 输入问题 → 查看回答）</li>
+          <li>模式选择卡片增加"不了解？点击查看说明"浮层</li>
+          <li>首次开启深度思考/联网搜索时显示功能说明 Tooltip</li>
+          <li>引导状态通过 <code>localStorage</code> 标记，仅显示一次</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>用户体验评分从 8.5 提升至 8.8+</li>
+          <li>降低新用户使用门槛</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P2-3 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">8</span>
+        <span class="opt-title">个人知识库文件安全扫描</span>
+        <span class="priority-badge pri-p2">P2 中</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>安全性不足之处</span>
+        <span><strong>影响维度：</strong>安全性 (8.8)</span>
+        <span><strong>预计工作量：</strong>1 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>个人知识库文件存储在 Supabase Storage，未提及文件内容扫描</li>
+          <li>前端文件类型校验可被绕过（伪造扩展名）</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>Edge Function 中增加文件 MIME 类型二次校验（<code>file.type</code> 服务端验证）</li>
+          <li>服务端文件大小限制（不信任前端校验）</li>
+          <li>对文档内容做 PII 数据检测（手机号、身份证号等脱敏提示）</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>防止恶意文件上传</li>
+          <li>PII 数据保护合规</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P2-4 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">9</span>
+        <span class="opt-title">导航面板交互优化（移除悬浮触发）</span>
+        <span class="priority-badge pri-p2">P2 中</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>用户体验不足之处</span>
+        <span><strong>影响维度：</strong>用户体验 (8.5)</span>
+        <span><strong>预计工作量：</strong>0.5 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>"点击或悬浮展开"双模式在对话场景下容易误触发（鼠标移到左上角时面板意外展开）</li>
+          <li>干扰用户阅读和输入</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>桌面端：改为仅"点击 Logo 展开"，移除 <code>hover</code> 事件</li>
+          <li>展开后点击面板外区域或按 <code>Esc</code> 关闭</li>
+          <li>移动端保持点击 Logo 全屏覆盖展开</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>消除误触发，提升对话专注度</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P2-5 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">10</span>
+        <span class="opt-title">优化个人知识库注入策略（语义相关性筛选）</span>
+        <span class="priority-badge pri-p2">P2 中</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>知识库 Token 成本（中风险）</span>
+        <span><strong>影响维度：</strong>经济性 (7.5)</span>
+        <span><strong>预计工作量：</strong>2-3 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>当前每次对话注入全部知识库内容（虽有 3000 字符上限），长对话场景下 Token 累积增加成本</li>
+          <li>与用户问题无关的知识库内容浪费 Token</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li><strong>方案 A（推荐）</strong>：使用 DeepSeek Embedding API 对知识库内容分段向量化，用户问题时检索 Top-K 最相关片段注入</li>
+          <li><strong>方案 B（轻量）</strong>：让 AI 自主决定——先发送简短判断请求，决定是否需要注入知识库</li>
+          <li><strong>方案 C（最简）</strong>：知识库内容分段摘要后注入，减少 Token 消耗</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>Token 消耗降低 40-70%</li>
+          <li>经济性评分从 7.5 提升至 8.5</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P3-1 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">11</span>
+        <span class="opt-title">增加消息内容搜索功能</span>
+        <span class="priority-badge pri-p3">P3 低</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>功能性不足之处</span>
+        <span><strong>影响维度：</strong>功能性 (9.0)</span>
+        <span><strong>预计工作量：</strong>1 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>当前仅对话标题搜索，无法搜索消息正文内容</li>
+          <li>长对话场景下查找历史信息困难</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>导航面板搜索框增加切换按钮（"搜对话标题" / "搜消息内容"）</li>
+          <li>消息内容搜索通过 Supabase <code>ilike</code> 模糊查询实现</li>
+          <li>搜索结果高亮匹配关键词，点击跳转到对应消息位置</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>信息检索能力提升</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- P3-2 -->
+    <div class="opt-card">
+      <div class="opt-header">
+        <span class="opt-id">12</span>
+        <span class="opt-title">无障碍设计完善</span>
+        <span class="priority-badge pri-p3">P3 低</span>
+      </div>
+      <div class="opt-meta">
+        <span><strong>对应风险：</strong>无障碍设计偏简（低风险）</span>
+        <span><strong>影响维度：</strong>用户体验 (8.5)</span>
+        <span><strong>预计工作量：</strong>1 天</span>
+      </div>
+      <div class="opt-body">
+        <h4>必要性</h4>
+        <ul>
+          <li>当前仅 5 条原则性描述，缺少具体 ARIA 角色映射</li>
+          <li>缺少屏幕阅读器测试计划</li>
+        </ul>
+        <h4>可行性</h4>
+        <ul>
+          <li>为对话气泡、导航面板、输入框等组件补充 <code>role</code>、<code>aria-label</code>、<code>aria-live</code> 属性</li>
+          <li>流式输出区域使用 <code>aria-live="polite"</code> 让屏幕阅读器播报新消息</li>
+          <li>制定 NVDA / VoiceOver 基础测试清单</li>
+        </ul>
+        <h4>预期效益</h4>
+        <ul>
+          <li>WCAG AA 合规性提升</li>
+          <li>视障用户可用性改善</li>
+        </ul>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- 5. 实施路径规划 -->
+  <section>
+    <h2><span class="num">5</span>实施路径规划</h2>
+
+    <p>基于优化需求的优先级和依赖关系，制定五阶段实施路径。所有开发工作在 <code>public/idrome/</code> 目录下执行。</p>
+
+    <h3>5.1 阶段总览</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>阶段</th>
+          <th>名称</th>
+          <th>包含优化项</th>
+          <th>前置依赖</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>阶段 0</strong></td>
+          <td>验证与架构准备</td>
+          <td>#1 API 验证、#2 ES Modules + 状态管理</td>
+          <td>无</td>
+        </tr>
+        <tr>
+          <td><strong>阶段 1</strong></td>
+          <td>核心开发加固</td>
+          <td>#3 关键库本地化、#4 注入防护强化、#5 Mock + 测试基线</td>
+          <td>阶段 0 完成</td>
+        </tr>
+        <tr>
+          <td><strong>阶段 2</strong></td>
+          <td>功能完善</td>
+          <td>#6 导出与分享、#7 首次使用引导</td>
+          <td>阶段 1 完成</td>
+        </tr>
+        <tr>
+          <td><strong>阶段 3</strong></td>
+          <td>安全与体验优化</td>
+          <td>#8 文件安全扫描、#9 导航面板优化、#10 知识库注入优化</td>
+          <td>阶段 2 完成</td>
+        </tr>
+        <tr>
+          <td><strong>阶段 4</strong></td>
+          <td>收尾增强</td>
+          <td>#11 消息内容搜索、#12 无障碍完善</td>
+          <td>阶段 3 完成</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>5.2 各阶段详细规划</h3>
+
+    <div class="phase-card">
+      <div class="phase-title">阶段 0：验证与架构准备（开发前）</div>
+      <div class="phase-desc">
+        <strong>优化项 #1 API 可行性验证：</strong><br>
+        - 编写独立验证脚本，逐一调用 DeepSeek V4-Flash（thinking 模式 + Vision）、百度 AI 搜索、豆包 ASR/TTS/文档解析 API<br>
+        - 记录实际请求/响应格式，与设计方案中的代码进行比对<br>
+        - 根据验证结果修正设计方案中的 API 调用代码<br><br>
+        <strong>优化项 #2 ES Modules + 状态管理：</strong><br>
+        - 在 <code>public/idrome/js/</code> 下创建 <code>store.js</code>（Proxy-based 响应式 Store）<br>
+        - 将 <code>dromai.html</code> 中的 <code>&lt;script&gt;</code> 改为 <code>&lt;script type="module"&gt;</code><br>
+        - 将全局变量（chatState、apiRouter、KnowledgeLoader）重构为 ES Module 导出/导入<br>
+        - 建立 UI 更新订阅机制，状态变更自动触发 DOM 更新
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-title">阶段 1：核心开发加固（基础框架阶段）</div>
+      <div class="phase-desc">
+        <strong>优化项 #3 关键库本地化：</strong><br>
+        - 下载 Supabase JS SDK、marked.js、DOMPurify、KaTeX 到 <code>public/idrome/assets/vendor/</code><br>
+        - HTML 中优先加载本地路径，<code>onerror</code> 回退到 CDN<br><br>
+        <strong>优化项 #4 注入防护强化：</strong><br>
+        - 扩展关键词检测为正则模式库（覆盖中英文变体）<br>
+        - 在 <code>chat-proxy</code> Edge Function 中增加 DeepSeek 安全预检请求<br>
+        - 对 AI 输出内容增加注入检测逻辑<br><br>
+        <strong>优化项 #5 Mock + 测试基线：</strong><br>
+        - 在 <code>public/idrome/test/</code> 下创建 Mock 响应文件（预录制 SSE 流）<br>
+        - 为 SSE 解析、Token 估算、知识库截断等函数编写单元测试
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-title">阶段 2：功能完善（增强功能阶段）</div>
+      <div class="phase-desc">
+        <strong>优化项 #6 导出与分享：</strong><br>
+        - 在 <code>public/idrome/js/</code> 下创建 <code>export.js</code>（Markdown/PDF/图片导出）<br>
+        - Supabase 新增 <code>shared_conversations</code> 表 + Edge Function 生成分享链接<br>
+        - 未登录用户通过 <code>share_id</code> 只读访问分享的对话<br><br>
+        <strong>优化项 #7 首次使用引导：</strong><br>
+        - 在 <code>public/idrome/js/</code> 下创建 <code>onboarding.js</code><br>
+        - 实现 3 步引导卡片 + 模式说明浮层 + 功能 Tooltip<br>
+        - <code>localStorage</code> 标记引导状态，仅首次显示
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-title">阶段 3：安全与体验优化（完善优化阶段）</div>
+      <div class="phase-desc">
+        <strong>优化项 #8 文件安全扫描：</strong><br>
+        - 在 <code>file-proxy</code> Edge Function 中增加 MIME 二次校验 + 服务端大小限制<br>
+        - 对文档内容做 PII 数据检测（正则匹配手机号/身份证号）<br><br>
+        <strong>优化项 #9 导航面板优化：</strong><br>
+        - 移除 <code>navpanel.js</code> 中的 hover 展开事件监听<br>
+        - 添加点击面板外区域关闭 + <code>Esc</code> 键关闭逻辑<br><br>
+        <strong>优化项 #10 知识库注入优化：</strong><br>
+        - 在 <code>chat-proxy</code> Edge Function 中集成 DeepSeek Embedding API<br>
+        - 知识库内容分段向量化存储到 Supabase<br>
+        - 用户问题时检索 Top-K 最相关片段注入（替代全量注入）
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-title">阶段 4：收尾增强（测试完善阶段）</div>
+      <div class="phase-desc">
+        <strong>优化项 #11 消息内容搜索：</strong><br>
+        - 导航面板搜索框增加"搜标题/搜消息"切换<br>
+        - <code>navpanel.js</code> 中实现 Supabase <code>ilike</code> 模糊查询<br>
+        - 搜索结果高亮 + 点击跳转<br><br>
+        <strong>优化项 #12 无障碍完善：</strong><br>
+        - 为所有交互组件补充 ARIA 属性（<code>role</code>、<code>aria-label</code>、<code>aria-live</code>）<br>
+        - 流式输出区域使用 <code>aria-live="polite"</code><br>
+        - 制定 NVDA / VoiceOver 测试清单
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 优化效益预测 -->
+  <section>
+    <h2><span class="num">6</span>优化效益预测</h2>
+
+    <h3>6.1 各维度评分提升预测</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>当前得分</th>
+          <th>优化后预测</th>
+          <th>提升幅度</th>
+          <th>主要贡献优化项</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>功能性</td>
+          <td>9.0</td>
+          <td>9.5</td>
+          <td>+0.5</td>
+          <td>#6 导出与分享、#11 消息搜索</td>
+        </tr>
+        <tr>
+          <td>用户体验</td>
+          <td>8.5</td>
+          <td>9.0</td>
+          <td>+0.5</td>
+          <td>#7 引导流程、#9 导航优化、#12 无障碍</td>
+        </tr>
+        <tr>
+          <td>安全性</td>
+          <td>8.8</td>
+          <td>9.3</td>
+          <td>+0.5</td>
+          <td>#4 注入防护、#8 文件扫描</td>
+        </tr>
+        <tr>
+          <td>可行性</td>
+          <td>7.0</td>
+          <td>8.5</td>
+          <td>+1.5</td>
+          <td>#1 API 验证、#3 库本地化、#5 Mock 测试</td>
+        </tr>
+        <tr>
+          <td>可扩展性</td>
+          <td>7.5</td>
+          <td>8.5</td>
+          <td>+1.0</td>
+          <td>#2 ES Modules + 状态管理</td>
+        </tr>
+        <tr>
+          <td>技术实现难度</td>
+          <td>6.5</td>
+          <td>7.5</td>
+          <td>+1.0</td>
+          <td>#2 状态管理、#5 Mock 测试</td>
+        </tr>
+        <tr>
+          <td>创新性</td>
+          <td>9.0</td>
+          <td>9.0</td>
+          <td>0</td>
+          <td>无需优化</td>
+        </tr>
+        <tr>
+          <td>经济性</td>
+          <td>7.5</td>
+          <td>8.5</td>
+          <td>+1.0</td>
+          <td>#10 知识库注入优化</td>
+        </tr>
+        <tr style="font-weight: 700; background: #E8F0FE;">
+          <td>综合得分</td>
+          <td>8.08</td>
+          <td>9.02</td>
+          <td>+0.94</td>
+          <td>从 B+ 提升至 A-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>6.2 风险消除预测</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>风险项</th>
+          <th>当前等级</th>
+          <th>优化后等级</th>
+          <th>消除措施</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>无框架可维护性</td>
+          <td><span class="priority-badge pri-p0">高</span></td>
+          <td><span class="priority-badge pri-p3">低</span></td>
+          <td>#2 ES Modules + 状态管理</td>
+        </tr>
+        <tr>
+          <td>多外部 API 依赖</td>
+          <td><span class="priority-badge pri-p0">高</span></td>
+          <td><span class="priority-badge pri-p1">中</span></td>
+          <td>#1 API 验证 + #5 Mock 降级</td>
+        </tr>
+        <tr>
+          <td>技术假设未验证</td>
+          <td><span class="priority-badge pri-p0">高</span></td>
+          <td><span class="priority-badge pri-p3">低</span></td>
+          <td>#1 API 可行性验证</td>
+        </tr>
+        <tr>
+          <td>CDN 稳定性</td>
+          <td><span class="priority-badge pri-p1">中</span></td>
+          <td><span class="priority-badge pri-p3">低</span></td>
+          <td>#3 关键库本地化</td>
+        </tr>
+        <tr>
+          <td>知识库 Token 成本</td>
+          <td><span class="priority-badge pri-p1">中</span></td>
+          <td><span class="priority-badge pri-p3">低</span></td>
+          <td>#10 语义相关性筛选</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 7. 综合结论 -->
+  <section>
+    <h2><span class="num">7</span>综合结论</h2>
+
+    <div class="conclusion-box">
+      <h3>总体判定</h3>
+      <p>经系统性分析，iDrome AI 应用设计方案<strong>需要依据评估报告进行优化</strong>。当前方案综合得分 8.2/10（B+），在功能性和创新性方面表现优秀，但在可行性（7.0）、技术实现难度（6.5）方面存在明显改进空间。通过实施 12 项优化措施，预计综合得分可提升至 <strong>9.02/10（A-）</strong>，3 项高风险项可全部降级。</p>
+
+      <h3>优化必要性总结</h3>
+      <p>12 项优化需求中，<strong>P0 必须项 2 项</strong>（API 验证 + 架构模块化）是开发前的必要准备，直接影响核心功能能否正常工作；<strong>P1 高优先级 3 项</strong>（库本地化 + 注入防护 + Mock 测试）是核心开发阶段的加固措施；<strong>P2 中优先级 5 项</strong>是功能完善和体验优化；<strong>P3 低优先级 2 项</strong>是收尾增强。</p>
+
+      <h3>项目框架兼容性</h3>
+      <p>所有优化措施均<strong>严格在 <code>public/idrome/</code> 目录下执行</strong>，与主网站（Vue 3）、DromAI（React）、Supabase 后端完全兼容。ES Modules + Proxy 状态管理方案无需引入构建工具，与 <code>public/idrome/</code> 的静态部署模式一致。Edge Function 新增（shared_conversations 表、文件安全扫描、Embedding 检索）在 <code>supabase/functions/</code> 下独立开发，不影响主网站已有的 <code>send-sms</code> 和 <code>verify-sms</code> 函数。</p>
+
+      <h3>实施建议</h3>
+      <p>建议严格按五阶段路径推进：<strong>阶段 0</strong>（验证与架构准备）必须在正式开发前完成，是后续所有工作的基础；<strong>阶段 1-4</strong> 与设计方案原有的六阶段实施规划对齐，在每个阶段完成对应优化项。每阶段完成后进行评审，根据实际验证结果调整后续方案。</p>
+
+      <h3>最终结论</h3>
+      <p>该设计方案<strong>具备实施条件，推荐在完成阶段 0 优化后启动正式开发</strong>。评估报告提出的核心风险（API 验证、架构可维护性、外部依赖）均有明确的优化对策，且优化措施与项目框架完全兼容。通过系统性优化，iDrome 有望成为琳凯蒂亚文化社区的高品质 AI 应用。</p>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

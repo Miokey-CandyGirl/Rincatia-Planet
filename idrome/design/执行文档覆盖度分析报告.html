@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>执行文档 vs 设计文档 — 覆盖度分析报告</title>
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --bg-soft: #F8F9FA;
+    --text: #1a1a2e;
+    --text-soft: #5F6368;
+    --accent: #2C5F8A;
+    --accent-dark: #1A3A5C;
+    --green: #5B8C5A;
+    --orange: #E8985E;
+    --red: #EA4335;
+    --yellow: #FBBC04;
+    --border: #E0E0E0;
+    --radius: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg-soft);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  .header {
+    background: linear-gradient(135deg, #1A3A5C 0%, #2C5F8A 50%, #3A7CA5 100%);
+    color: #fff;
+    padding: 44px 40px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+  }
+  .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .header .subtitle { font-size: 14px; opacity: 0.85; }
+  .header .meta { margin-top: 18px; display: flex; gap: 20px; font-size: 13px; opacity: 0.8; flex-wrap: wrap; }
+
+  .overview {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .overview-bar {
+    height: 32px;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    margin: 16px 0 8px;
+  }
+  .overview-bar .seg { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; }
+  .seg-full { background: var(--green); }
+  .seg-partial { background: var(--yellow); color: #5F4500; }
+  .seg-missing { background: var(--red); }
+  .overview-legend { display: flex; gap: 20px; font-size: 13px; color: var(--text-soft); margin-top: 8px; }
+  .overview-legend span { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  section {
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+  section > h2 {
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--bg-soft);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section > h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px; height: 26px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  section > h3 { font-size: 15px; font-weight: 600; color: var(--accent-dark); margin: 20px 0 10px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  thead { background: var(--accent-dark); color: #fff; }
+  th { padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:nth-child(even) { background: var(--bg-soft); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .tag-full { background: #E8F5E9; color: var(--green); }
+  .tag-partial { background: #FFF8E8; color: #B8860B; }
+  .tag-missing { background: #FFEBEE; color: var(--red); }
+  .tag-na { background: #F0F0F0; color: #999; }
+
+  .gap-item {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    background: var(--bg-soft);
+  }
+  .gap-item.missing { border-left: 4px solid var(--red); }
+  .gap-item.partial { border-left: 4px solid var(--yellow); }
+  .gap-item h4 { font-size: 15px; margin-bottom: 4px; }
+  .gap-item .gap-meta { display: flex; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+  .gap-item .gap-body { font-size: 14px; margin-bottom: 8px; color: var(--text); }
+  .gap-item .gap-rec {
+    font-size: 13px;
+    background: #fff;
+    padding: 10px 14px;
+    border-radius: 4px;
+    border-left: 3px solid var(--green);
+    color: var(--text-soft);
+  }
+  .gap-item .gap-rec strong { color: var(--green); }
+
+  .callout {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  .callout-title { font-weight: 700; margin-bottom: 4px; }
+  .callout-warn { background: #FFF8E8; border-left: 4px solid var(--yellow); }
+  .callout-warn .callout-title { color: #B8860B; }
+  .callout-info { background: #F0F6FC; border-left: 4px solid var(--accent); }
+  .callout-info .callout-title { color: var(--accent); }
+  .callout-success { background: #F1F8F1; border-left: 4px solid var(--green); }
+  .callout-success .callout-title { color: var(--green); }
+
+  .verdict-box {
+    background: linear-gradient(135deg, #F0F6FC 0%, #F8F4E8 100%);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-top: 20px;
+    border: 1px solid var(--border);
+  }
+  .verdict-box h3 { font-size: 18px; margin-bottom: 10px; color: var(--accent-dark); }
+  .verdict-box p { margin-bottom: 8px; }
+
+  code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    background: #F0F0F0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--accent-dark);
+  }
+
+  @media (max-width: 768px) {
+    .container { padding: 20px 16px 60px; }
+    .header { padding: 28px 22px; }
+    .header h1 { font-size: 20px; }
+    section { padding: 20px; }
+    table { font-size: 12px; }
+    th, td { padding: 7px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>执行文档 vs 设计文档 — 覆盖度分析</h1>
+    <div class="subtitle">逐章交叉对比，识别遗漏与不完整项</div>
+    <div class="meta">
+      <span><strong>设计文档：</strong>33 章</span>
+      <span><strong>执行文档：</strong>12 步 + 3 附录</span>
+      <span><strong>分析日期：</strong>2026-07-11</span>
+    </div>
+  </div>
+
+  <div class="overview">
+    <h2 style="font-size:18px; margin-bottom:6px;">覆盖度总览</h2>
+    <p style="font-size:14px; color:var(--text-soft);">将设计文档 33 章逐项映射到执行文档步骤，统计覆盖情况：</p>
+    <div class="overview-bar">
+      <div class="seg seg-full" style="width:70%;">70% 完全覆盖</div>
+      <div class="seg seg-partial" style="width:18%;">18% 部分覆盖</div>
+      <div class="seg seg-missing" style="width:12%;">12% 未覆盖</div>
+    </div>
+    <div class="overview-legend">
+      <span><span class="dot" style="background:var(--green);"></span>完全覆盖（23 项）</span>
+      <span><span class="dot" style="background:var(--yellow);"></span>部分覆盖（6 项）</span>
+      <span><span class="dot" style="background:var(--red);"></span>未覆盖（4 项）</span>
+    </div>
+    <div class="callout callout-warn" style="margin-top:16px;">
+      <div class="callout-title">总体结论</div>
+      执行文档覆盖了设计文档约 <strong>88%</strong> 的内容（完全 + 部分），核心功能模块全部有对应步骤。12 项未覆盖/部分覆盖的内容集中在 <strong>设置面板二级功能、性能优化细节、动效微交互、状态反馈 UI</strong> 四个方面。建议在对应步骤中补充这些内容，无需新增步骤。
+    </div>
+  </div>
+
+  <!-- 1. 完整覆盖映射表 -->
+  <section>
+    <h2><span class="num">1</span>完整覆盖章节（23 项）</h2>
+    <table>
+      <thead>
+        <tr><th>设计章节</th><th>章节名称</th><th>对应执行步骤</th><th>状态</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>第 2 章</td><td>设计参考与风格定位</td><td>步骤 1（CSS）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 3 章</td><td>色彩搭配方案</td><td>步骤 1（CSS 变量）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 4 章</td><td>页面结构划分（4.1-4.5）</td><td>步骤 1（HTML 骨架 + CSS）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 6 章</td><td>响应式设计策略</td><td>步骤 1（响应式断点）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 9 章</td><td>无障碍设计</td><td>步骤 11.2（ARIA + 键盘 + 屏幕阅读器）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 10 章</td><td>文件结构规划</td><td>步骤 1（目录结构 + 附录 A）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 13 章</td><td>Supabase 数据存储</td><td>步骤 5（建表 + RLS）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 14 章</td><td>账号与认证体系</td><td>步骤 2（auth.js）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 15 章</td><td>PWA 实现方案</td><td>步骤 9（manifest + SW + 离线）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 16 章</td><td>安全设计</td><td>步骤 4（注入防护）+ 步骤 11.1（安全加固）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 17 章</td><td>DeepSeek API 集成</td><td>步骤 4（deepseek.js）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 18 章</td><td>深度思考模式</td><td>步骤 7.1（Thinking UI + 渲染）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 19 章</td><td>联网搜索功能</td><td>步骤 7.2-7.4（search-proxy + search.js）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 20 章</td><td>语音处理功能</td><td>步骤 8.3（voice.js + voice-proxy）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 21 章</td><td>图像识别功能</td><td>步骤 8.1（vision.js）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 22 章</td><td>文件读取功能</td><td>步骤 8.2（fileReader.js）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 23 章</td><td>统一 API 调用接口</td><td>步骤 4.3（apiRouter.js）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 24 章</td><td>错误处理机制</td><td>步骤 4.6（errorHandler.js）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 27 章</td><td>模式切换功能</td><td>步骤 6（knowledgeLoader + 模式逻辑）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 28 章</td><td>个人知识库功能</td><td>步骤 6（Storage + file-proxy + 注入）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 30 章</td><td>API 可行性验证</td><td>步骤 0（验证清单 + 脚本）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 31 章</td><td>ES Modules 与状态管理</td><td>步骤 2（store.js + state.js）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+        <tr><td>第 32 章</td><td>对话导出与分享</td><td>步骤 10（export.js + share-proxy）</td><td><span class="tag tag-full">覆盖</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 2. 部分覆盖项 -->
+  <section>
+    <h2><span class="num">2</span>部分覆盖项（6 项 — 需补充细节）</h2>
+
+    <div class="gap-item partial">
+      <div class="gap-meta">
+        <span class="tag tag-partial">部分覆盖</span>
+        <span class="tag tag-na">第 4.7 节 → 步骤 3.5</span>
+      </div>
+      <h4>2.1 键盘快捷键不完整</h4>
+      <div class="gap-body">
+        设计文档定义了 9 个快捷键，执行文档步骤 3.5 仅列出 5 个。缺失：<code>Ctrl + /</code>（快捷键帮助）、<code>Ctrl + Shift + C</code>（复制最后一条 AI 回复）、<code>↑ / ↓</code>（消息列表滚动）、<code>Tab</code>（按钮间切换焦点）。
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>在步骤 3.5 的快捷键表格中补齐全部 9 项。其中 <code>Ctrl + /</code> 依赖"快捷键参考"弹窗（见 2.6），<code>Ctrl + Shift + C</code> 可直接在步骤 3 实现。
+      </div>
+    </div>
+
+    <div class="gap-item partial">
+      <div class="gap-meta">
+        <span class="tag tag-partial">部分覆盖</span>
+        <span class="tag tag-na">第 7.1 节 → 步骤 10.3</span>
+      </div>
+      <h4>2.2 Onboarding 引导步骤数不一致</h4>
+      <div class="gap-body">
+        设计文档定义 4 步引导（欢迎卡片 → 模式选择说明 → 功能介绍 → 完成），执行文档步骤 10.3 描述为"3 步"（选择模式 → 输入问题 → 查看回答）。设计文档还包含"不了解？点击查看说明"浮层，执行文档未提及。
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>按设计文档 4 步结构更新步骤 10.3。补充模式选择说明浮层的交互逻辑。
+      </div>
+    </div>
+
+    <div class="gap-item partial">
+      <div class="gap-meta">
+        <span class="tag tag-partial">部分覆盖</span>
+        <span class="tag tag-na">第 8 章 → 步骤 1</span>
+      </div>
+      <h4>2.3 动效与微交互设计未逐项列出</h4>
+      <div class="gap-body">
+        设计文档第 8 章定义了 5 类过渡动效 + 8 个微交互 + 4 类状态反馈。执行文档步骤 1 的 CSS 描述仅笼统提及"展开/收起动画"和"加载动画"，未逐项列出需实现的动效清单。具体缺失：
+        <ul style="margin:6px 0 0 16px; font-size:13px;">
+          <li>消息出现动画（从下方滑入 + 淡入 200ms）</li>
+          <li>模态框/弹窗动画（缩放 + 淡入 200ms）</li>
+          <li>Logo hover 放大 105% / active 缩小 95%</li>
+          <li>发送按钮 hover/active 微交互</li>
+          <li>消息气泡 hover 上浮 + 阴影增强</li>
+          <li>复制按钮点击后 ✓ 图标 + 2 秒恢复</li>
+          <li>滚动到底部按钮弹性弹入</li>
+          <li>功能开关按钮开启态高亮样式</li>
+        </ul>
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>在步骤 1 的 CSS 编写部分，增加"动效清单"子节，逐项列出第 8 章的 5 类过渡 + 8 个微交互，作为 CSS 实现的检查清单。
+      </div>
+    </div>
+
+    <div class="gap-item partial">
+      <div class="gap-meta">
+        <span class="tag tag-partial">部分覆盖</span>
+        <span class="tag tag-na">第 25 章 → 步骤 10.4</span>
+      </div>
+      <h4>2.4 性能优化策略覆盖不完整</h4>
+      <div class="gap-body">
+        设计文档第 25 章分 4 小节（请求优化 / 缓存策略 / 渲染优化 / 内存管理），执行文档步骤 10.4 仅覆盖渲染优化的一部分（虚拟滚动 + 懒加载 + 防抖）。具体缺失：
+        <table style="margin:8px 0;">
+          <thead><tr><th>设计文档小节</th><th>执行文档覆盖情况</th></tr></thead>
+          <tbody>
+            <tr><td>25.1 请求优化（去重、合并、连接复用、超时控制）</td><td><span class="tag tag-missing">未覆盖</span></td></tr>
+            <tr><td>25.2 缓存策略（搜索缓存 5min / TTS 缓存 30min / OCR 缓存 10min）</td><td><span class="tag tag-missing">仅 TTS 在步骤 8.3 提及</span></td></tr>
+            <tr><td>25.3 渲染优化（Markdown 懒渲染 / 代码块按需高亮 / requestIdleCallback）</td><td><span class="tag tag-partial">虚拟滚动和懒加载有，其余未提及</span></td></tr>
+            <tr><td>25.4 内存管理（音频资源清理 / blob URL 释放 / 消息超 1000 条处理）</td><td><span class="tag tag-missing">未覆盖</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>在步骤 10.4 中补充：(1) 请求去重逻辑（Map 缓存进行中请求）；(2) 搜索/OCR 结果缓存（步骤 7/8 中实现）；(3) 代码块 Intersection Observer 按需高亮；(4) 步骤 8.3 补充音频资源清理和 blob URL 释放逻辑；(5) 步骤 5 补充消息超 1000 条的分页加载。
+      </div>
+    </div>
+
+    <div class="gap-item partial">
+      <div class="gap-meta">
+        <span class="tag tag-partial">部分覆盖</span>
+        <span class="tag tag-na">第 23 章 → 步骤 4.3</span>
+      </div>
+      <h4>2.5 APIRouter 健康检查与熔断机制</h4>
+      <div class="gap-body">
+        设计文档第 23 章定义了 APIRouter 的健康检查端点（<code>healthCheck(provider)</code>）、能力检测、自动回退。执行文档步骤 4.3 提及"健康检查 + 自动回退"，但未明确：健康检查的触发时机（初始化时？定时？）、回退的具体策略（连续失败几次后切换？是否自动恢复？）。
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>在步骤 4.3 中补充：(1) <code>initialize()</code> 时执行首次健康检查；(2) 每次 API 调用失败时记录失败次数，连续 3 次失败标记为不可用；(3) 后台定时（每 5 分钟）重试不可用服务，成功后恢复。
+      </div>
+    </div>
+
+    <div class="gap-item partial">
+      <div class="gap-meta">
+        <span class="tag tag-partial">部分覆盖</span>
+        <span class="tag tag-na">第 26 章 → 步骤 11.4</span>
+      </div>
+      <h4>2.6 集成测试矩阵覆盖不完整</h4>
+      <div class="gap-body">
+        设计文档第 26 章的测试矩阵包含约 30+ 测试项，执行文档步骤 11.4 仅列出 9 项。缺失的测试项包括：上下文连贯性测试、深度思考开关切换 3 次、非搜索问题不触发搜索、文件格式覆盖测试、TTS 播放控制、PWA 安装后独立运行、跨标签页同步等。
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>在步骤 11.4 中按设计文档第 26 章的完整测试矩阵补齐，按模块分组列出全部测试项。
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 未覆盖项 -->
+  <section>
+    <h2><span class="num">3</span>未覆盖项（4 项 — 需补充到对应步骤）</h2>
+
+    <div class="gap-item missing">
+      <div class="gap-meta">
+        <span class="tag tag-missing">未覆盖</span>
+        <span class="tag tag-na">第 5.3 节 → 建议补充到步骤 4 或 5</span>
+      </div>
+      <h4>3.1 多模型切换 + 参数调节（温度 / 最大 Token / 系统提示词自定义）</h4>
+      <div class="gap-body">
+        设计文档第 5.3 节和第 4.2.3 节定义了顶部导航栏的模型选择器（DeepSeek V4-Flash / V4 / R1）、温度参数调节（0.0-2.0）、最大 Token 数设置、系统提示词自定义。执行文档无任何步骤提及这些功能。设计文档第 29 章阶段 5 明确包含"多模型切换 + 参数调节"。
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>在步骤 5 中新增 5.7 小节"模型选择器与参数面板"：(1) 顶部导航栏模型选择下拉框（从 APIRouter 的 <code>availableModels</code> 动态加载）；(2) 设置面板中温度滑块 + 最大 Token 输入框；(3) 参数值存储到 conversations 表或 localStorage；(4) 系统提示词自定义（高级功能，可标为可选）。预估增加 0.5 天工时。
+      </div>
+    </div>
+
+    <div class="gap-item missing">
+      <div class="gap-meta">
+        <span class="tag tag-missing">未覆盖</span>
+        <span class="tag tag-na">第 5.5 节 → 建议补充到步骤 2 或 10</span>
+      </div>
+      <h4>3.2 设置面板二级功能（数据管理 / 关于页面 / 快捷键参考）</h4>
+      <div class="gap-body">
+        设计文档第 5.5 节定义了设置面板的完整功能列表。执行文档步骤 2.5 仅有"主题切换 / 字体大小 / 语言切换"，缺失：
+        <ul style="margin:6px 0 0 16px; font-size:13px;">
+          <li><strong>数据管理</strong>：清除本地缓存（localStorage + SW 缓存）、删除云端对话数据（调用 Supabase 批量删除）</li>
+          <li><strong>关于页面</strong>：应用版本、开发者信息、文明之树图标</li>
+          <li><strong>快捷键参考</strong>：弹窗展示完整快捷键列表</li>
+          <li><strong>进入官网</strong>：链接到 rincatian.top</li>
+          <li><strong>账户设置</strong>：头像、昵称、邮箱展示</li>
+        </ul>
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>在步骤 10 中新增 10.6 小节"设置面板完善"：(1) 数据管理（清除缓存 + 删除云端数据，需确认弹窗）；(2) 关于页面（静态内容）；(3) 快捷键参考弹窗（读取快捷键配置生成列表）；(4) 进入官网链接。账户信息展示在步骤 2.4 用户菜单中已有，需确认包含。预估增加 0.5 天工时。
+      </div>
+    </div>
+
+    <div class="gap-item missing">
+      <div class="gap-meta">
+        <span class="tag tag-missing">未覆盖</span>
+        <span class="tag tag-na">第 5.1 节 → 建议补充到步骤 5</span>
+      </div>
+      <h4>3.3 批量管理（多选删除）</h4>
+      <div class="gap-body">
+        设计文档第 5.1 节提及"批量管理（多选删除）"。执行文档步骤 5 的导航面板功能列表中未包含批量操作。
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>在步骤 5.4 中补充：导航面板增加"多选"模式按钮，进入后对话列表项显示 checkbox，底部显示批量操作栏（删除 / 归档）。预估增加 0.3 天工时。
+      </div>
+    </div>
+
+    <div class="gap-item missing">
+      <div class="gap-meta">
+        <span class="tag tag-missing">未覆盖</span>
+        <span class="tag tag-na">第 8.3 节 → 建议补充到步骤 3 和 4</span>
+      </div>
+      <h4>3.4 状态反馈 UI（网络断开横幅 / Token 耗尽警告 / Toast 成功提示）</h4>
+      <div class="gap-body">
+        设计文档第 8.3 节定义了 4 类状态反馈。执行文档仅覆盖"API 错误"（步骤 4.6），缺失：
+        <ul style="margin:6px 0 0 16px; font-size:13px;">
+          <li><strong>网络断开</strong>：顶部黄色横幅 + 输入框禁用（步骤 9 离线写入队列部分提及横幅，但未在步骤 3/4 实现）</li>
+          <li><strong>Token 耗尽</strong>：警告提示 + 引导切换模型</li>
+          <li><strong>操作成功 Toast</strong>：底部绿色提示（2 秒自动消失），用于复制成功、删除成功等</li>
+        </ul>
+      </div>
+      <div class="gap-rec">
+        <strong>建议：</strong>(1) 在步骤 3 中实现通用 Toast 组件（<code>showToast(message, type)</code>），供复制/删除等操作调用；(2) 在步骤 4 中实现网络断开检测（<code>navigator.onLine</code> + online/offline 事件）和 Token 耗尽警告 UI；(3) 步骤 9 的离线横幅复用此组件。
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 不需要覆盖的章节 -->
+  <section>
+    <h2><span class="num">4</span>非开发章节（无需覆盖）</h2>
+    <table>
+      <thead>
+        <tr><th>章节</th><th>名称</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>第 1 章</td><td>项目概述</td><td>背景介绍，非开发任务</td></tr>
+        <tr><td>第 11 章</td><td>实施阶段规划（初版）</td><td>已被第 29 章和执行文档取代</td></tr>
+        <tr><td>第 12 章</td><td>设计总结</td><td>总结性描述，非开发任务</td></tr>
+        <tr><td>第 29 章</td><td>实施阶段规划（权威版）</td><td>已被执行文档取代</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 5. 修复建议汇总 -->
+  <section>
+    <h2><span class="num">5</span>修复建议汇总</h2>
+
+    <div class="callout callout-info">
+      <div class="callout-title">修改策略</div>
+      无需新增步骤，仅需在现有步骤中补充内容。预估增加 <strong>1.8 个工作日</strong>，总工时从 18.5 天调整为 <strong>20.3 天</strong>。
+    </div>
+
+    <h3>按步骤归类</h3>
+    <table>
+      <thead>
+        <tr><th>执行步骤</th><th>需补充内容</th><th>来源章节</th><th>增加工时</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>步骤 1（UI 骨架）</td><td>动效清单（5 类过渡 + 8 个微交互）作为 CSS 检查清单</td><td>第 8.1-8.2 节</td><td>0.2 天</td></tr>
+        <tr><td>步骤 3（对话 UI）</td><td>通用 Toast 组件 + 快捷键补齐 9 项</td><td>第 8.3 节 + 第 4.7 节</td><td>0.3 天</td></tr>
+        <tr><td>步骤 4（API 对接）</td><td>网络断开检测 + Token 耗尽警告 + APIRouter 熔断策略</td><td>第 8.3 节 + 第 23 章</td><td>0.3 天</td></tr>
+        <tr><td>步骤 5（数据持久化）</td><td>多模型选择器 + 参数面板 + 批量管理</td><td>第 5.3 节 + 第 5.1 节</td><td>0.5 天</td></tr>
+        <tr><td>步骤 7-8（搜索/多模态）</td><td>搜索结果缓存 + OCR 缓存 + 代码块按需高亮</td><td>第 25.2-25.3 节</td><td>0.2 天</td></tr>
+        <tr><td>步骤 10（导出/体验）</td><td>Onboarding 4 步 + 设置面板二级功能 + 请求去重 + 内存管理</td><td>第 7.1 节 + 第 5.5 节 + 第 25.1/25.4 节</td><td>0.5 天</td></tr>
+        <tr><td>步骤 11（测试收尾）</td><td>完整集成测试矩阵（30+ 项）</td><td>第 26 章</td><td>0.2 天</td></tr>
+        <tr style="font-weight:600; background:#E8F0FE;"><td colspan="3">合计增加</td><td>1.8 天</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 6. 最终结论 -->
+  <section>
+    <h2><span class="num">6</span>最终结论</h2>
+    <div class="verdict-box">
+      <h3>覆盖度评估：88%（B+）</h3>
+      <p>执行文档<strong>基本全面涵盖</strong>了设计文档的内容。33 章中 23 章完全覆盖，6 章部分覆盖（细节缺失），4 章未覆盖（二级功能），4 章为非开发章节无需覆盖。</p>
+
+      <p><strong>核心功能链路完整：</strong>从 UI 骨架 → 状态管理 → 对话交互 → API 对接 → 数据持久化 → 模式/知识库 → 深度思考/搜索 → 多模态 → PWA → 导出分享 → 安全测试，主线流程无断裂。</p>
+
+      <p><strong>缺失内容性质：</strong>均为二级功能或实现细节，不影响核心开发路径。通过在现有步骤中补充即可解决，无需重新规划步骤结构。</p>
+
+      <p><strong>建议操作：</strong>按第 5 节的修复建议汇总表，在执行文档对应步骤中补充内容。补充后执行文档覆盖度将达到 <strong>95%+</strong>，可正式开始开发。</p>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

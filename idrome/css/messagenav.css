@@ -1,0 +1,331 @@
+/* ==========================================================================
+   messagenav.css — 消息导航面板样式（右侧展开式）
+   提供用户消息快速定位跳转功能
+   使用主题变量确保明暗主题一致
+   ========================================================================== */
+
+/* ==================== 面板容器 ==================== */
+:root {
+  --msg-nav-w: 280px;
+}
+
+.msg-nav-panel {
+  position: fixed;
+  /* 桌面端从顶栏下方开始，避免遮挡顶栏右侧的开关/分享按钮；移动端在媒体查询中恢复全高 */
+  top: var(--top-nav-height, 56px);
+  right: 0;
+  bottom: 0;
+  width: var(--msg-nav-w);
+  z-index: 900;
+  pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(100%);
+}
+
+.msg-nav-panel.open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* 桌面端：面板打开时聊天区与输入区右移让位，避免发送按钮等被面板盖住 */
+@media (min-width: 769px) {
+  .main-content,
+  .input-area {
+    transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  body.msg-nav-open .main-content,
+  body.msg-nav-open .input-area {
+    margin-right: var(--msg-nav-w);
+  }
+}
+
+/* ==================== 遮罩层（移动端） ==================== */
+.msg-nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+/* 遮罩仅在移动端启用（见下方 @media (max-width: 768px)）——桌面端为侧边抽屉，不遮挡页面交互 */
+
+/* ==================== 面板内容 ==================== */
+.msg-nav-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-nav-panel, #F8F9FA);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .msg-nav-content {
+  background: var(--bg-nav-panel, #1A1A2E);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ==================== 头部 ==================== */
+.msg-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--border-default, #E0E0E0);
+  flex-shrink: 0;
+  background: var(--bg-top-nav, #FFFFFF);
+}
+
+[data-theme="dark"] .msg-nav-header {
+  background: var(--bg-top-nav, #1E1E2E);
+}
+
+.msg-nav-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #202124);
+  margin: 0;
+}
+
+.msg-nav-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm, 6px);
+  background: transparent;
+  color: var(--text-secondary, #5F6368);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.msg-nav-close:hover {
+  background: var(--bg-btn-hover, #EFEFEF);
+  color: var(--text-primary, #202124);
+}
+
+[data-theme="dark"] .msg-nav-close:hover {
+  background: var(--bg-btn-hover, #3D3D58);
+  color: var(--text-primary, #E8E8F0);
+}
+
+/* ==================== 消息列表 ==================== */
+.msg-nav-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--spacing-xs, 4px);
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+
+.msg-nav-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.msg-nav-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.msg-nav-list::-webkit-scrollbar-thumb {
+  background: var(--border-default, #C0C0C0);
+  border-radius: 3px;
+}
+
+.msg-nav-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-hint, #999);
+}
+
+/* ==================== 消息项 ==================== */
+.msg-nav-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 12px);
+  margin-bottom: 4px;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.msg-nav-item:hover {
+  background: var(--bg-btn-hover, #EFEFEF);
+  border-color: var(--border-default, #E0E0E0);
+}
+
+[data-theme="dark"] .msg-nav-item:hover {
+  background: var(--bg-btn-hover, #2D2D48);
+  border-color: var(--border-default, #3D3D4E);
+}
+
+.msg-nav-item:active {
+  transform: scale(0.99);
+}
+
+.msg-nav-item.active {
+  background: var(--accent-primary, #4A6FA5);
+  border-color: var(--accent-primary, #4A6FA5);
+}
+
+.msg-nav-item.active .msg-nav-item-snippet,
+.msg-nav-item.active .msg-nav-item-time {
+  color: #FFFFFF;
+}
+
+/* 序号徽章 */
+.msg-nav-item-index {
+  position: absolute;
+  top: var(--spacing-xs, 4px);
+  right: var(--spacing-sm, 8px);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-hint, #999);
+  background: var(--bg-btn-default, #F0F0F0);
+  border-radius: 10px;
+  padding: 1px 6px;
+  min-width: 18px;
+  text-align: center;
+}
+
+[data-theme="dark"] .msg-nav-item-index {
+  background: var(--bg-btn-default, #2D2D48);
+  color: var(--text-secondary, #A0A0B8);
+}
+
+.msg-nav-item.active .msg-nav-item-index {
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+/* 消息摘要文本 */
+.msg-nav-item-snippet {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-primary, #202124);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+  padding-right: 28px;
+}
+
+/* 时间戳 */
+.msg-nav-item-time {
+  font-size: 0.7rem;
+  color: var(--text-hint, #999);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* ==================== 空状态 ==================== */
+.msg-nav-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl, 40px) var(--spacing-md, 16px);
+  text-align: center;
+  color: var(--text-secondary, #5F6368);
+  gap: var(--spacing-xs, 4px);
+  flex: 1;
+}
+
+.msg-nav-empty p {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.msg-nav-empty-hint {
+  font-size: 0.75rem !important;
+  color: var(--text-hint, #999);
+}
+
+/* ==================== 消息高亮动画（跳转后） ==================== */
+.message-item.msg-jump-highlight {
+  animation: msg-jump-flash 1.5s ease-out;
+}
+
+@keyframes msg-jump-flash {
+  0% {
+    background: var(--accent-primary, #4A6FA5);
+    box-shadow: 0 0 0 4px rgba(74, 111, 165, 0.3);
+  }
+  50% {
+    background: var(--accent-primary, #4A6FA5);
+    box-shadow: 0 0 0 4px rgba(74, 111, 165, 0.2);
+  }
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* ==================== 响应式 ==================== */
+
+/* 平板及以下 — 全宽面板 */
+@media (max-width: 1024px) {
+  :root {
+    --msg-nav-w: 300px;
+  }
+}
+
+/* 移动端 — 全宽面板 + 遮罩 */
+@media (max-width: 768px) {
+  .msg-nav-panel {
+    top: 0;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .msg-nav-overlay {
+    z-index: 0;
+  }
+
+  /* 移动端：面板打开时显示全屏遮罩，点击遮罩关闭面板 */
+  .msg-nav-panel.open .msg-nav-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .msg-nav-content {
+    box-shadow: -4px 0 32px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* 小屏移动端 */
+@media (max-width: 480px) {
+  .msg-nav-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .msg-nav-item-snippet {
+    font-size: 0.78rem;
+  }
+}
+
+/* ==================== 动画偏好 ==================== */
+@media (prefers-reduced-motion: reduce) {
+  .msg-nav-panel,
+  .msg-nav-overlay {
+    transition: opacity 0.1s ease;
+  }
+
+  .message-item.msg-jump-highlight {
+    animation: none;
+    background: rgba(74, 111, 165, 0.15);
+  }
+}

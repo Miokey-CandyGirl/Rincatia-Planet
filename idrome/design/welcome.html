@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iDrome — 欢迎页</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- ========== 顶部导航栏 ========== -->
+    <header class="navbar">
+      <!-- 左侧：Logo -->
+      <div class="navbar__left">
+        <div class="navbar__logo" role="button" tabindex="0" aria-label="打开导航面板">
+          <div class="navbar__logo-icon">D</div>
+          <div class="navbar__logo-text">
+            <span class="navbar__logo-title">iDrome</span>
+            <span class="navbar__logo-subtitle">田语：DromAI</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间：模型选择器 -->
+      <div class="navbar__center">
+        <button class="model-selector" type="button">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+          </svg>
+          <span class="model-selector__name">DeepSeek V4-Flash</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 右侧：功能按钮组 -->
+      <div class="navbar__right">
+        <!-- 深度思考 -->
+        <button class="nav-icon-btn" type="button" aria-label="深度思考" data-active="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-7 7c0 3 2 5 3 6 .5.5 1 1 1 2h6c0-1 .5-1.5 1-2 1-1 3-3 3-6a7 7 0 0 0-7-7z"/>
+          </svg>
+        </button>
+
+        <!-- 联网搜索 -->
+        <button class="nav-icon-btn" type="button" aria-label="联网搜索" data-active="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </button>
+
+        <!-- 新建对话 -->
+        <button class="nav-icon-btn" type="button" aria-label="新建对话">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </button>
+
+        <!-- 设置 -->
+        <button class="nav-icon-btn" type="button" aria-label="设置">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ========== 主内容区 ========== -->
+    <main class="main">
+      <div class="main__inner">
+
+        <!-- 欢迎页内容 -->
+        <div class="welcome">
+
+          <!-- 欢迎标题 -->
+          <div class="welcome__heading">
+            <h1 class="welcome__title">欢迎来到 iDrome</h1>
+            <p class="welcome__subtitle">田语：DromAI — 你的琳凯蒂亚智慧助手</p>
+            <div class="welcome__divider"></div>
+          </div>
+
+          <!-- 模式选择卡片 -->
+          <div class="welcome__modes">
+            <!-- 普通对话 -->
+            <button class="mode-card mode-card--normal" type="button">
+              <div class="mode-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="mode-card__title">普通对话</div>
+                <div class="mode-card__desc">日常问答、创意写作、代码辅助</div>
+              </div>
+            </button>
+
+            <!-- 田语翻译 -->
+            <button class="mode-card mode-card--tianyu" type="button">
+              <div class="mode-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 5h7M9 3v2c0 4.418-2.239 8-5 8M5 9c0 2.144 2.952 3.908 6.7 4M12 20l4-9 4 9M14.5 16h3"/>
+                </svg>
+              </div>
+              <div>
+                <div class="mode-card__title">田语翻译</div>
+                <div class="mode-card__desc">琳凯蒂亚语与中文互译、语法解析</div>
+              </div>
+            </button>
+
+            <!-- 小说文化 -->
+            <button class="mode-card mode-card--novel" type="button">
+              <div class="mode-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="mode-card__title">小说文化</div>
+                <div class="mode-card__desc">琳凯蒂亚小说解读、世界观探索</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- 建议问题卡片 -->
+          <div class="welcome__suggestions">
+            <button class="suggestion-card" type="button">
+              <svg class="suggestion-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 5h7M9 3v2c0 4.418-2.239 8-5 8M5 9c0 2.144 2.952 3.908 6.7 4M12 20l4-9 4 9M14.5 16h3"/>
+              </svg>
+              <span class="suggestion-card__text">帮我翻译一段田语文字</span>
+            </button>
+
+            <button class="suggestion-card" type="button">
+              <svg class="suggestion-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4M12 8h.01"/>
+              </svg>
+              <span class="suggestion-card__text">解释琳凯蒂亚的文化背景</span>
+            </button>
+
+            <button class="suggestion-card" type="button">
+              <svg class="suggestion-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span class="suggestion-card__text">分析《琳凯蒂亚志》中的角色</span>
+            </button>
+
+            <button class="suggestion-card" type="button">
+              <svg class="suggestion-card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+              <span class="suggestion-card__text">创作一篇关于琳凯蒂亚的短文</span>
+            </button>
+          </div>
+
+        </div>
+        <!-- /welcome -->
+
+      </div>
+      <!-- /main__inner -->
+    </main>
+
+    <!-- ========== 底部输入区 ========== -->
+    <footer class="input-area">
+      <div class="input-area__inner">
+        <!-- 附件按钮 -->
+        <button class="input-icon-btn" type="button" aria-label="添加附件">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+          </svg>
+        </button>
+
+        <!-- 文本输入框 -->
+        <textarea class="input-textarea" placeholder="输入消息..." rows="1"></textarea>
+
+        <!-- 语音按钮 -->
+        <button class="input-icon-btn" type="button" aria-label="语音输入">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+          </svg>
+        </button>
+
+        <!-- 发送按钮 -->
+        <button class="send-btn" type="button" aria-label="发送消息">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+
+  </div>
+  <!-- /app -->
+</body>
+</html>
